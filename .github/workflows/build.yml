@@ -22,7 +22,7 @@ jobs:
       # NOTE: Ideally, the cache should be saved again after each job, but it is not working as expected. The error "Unable to reserve cache with key X. Another job may be creating this cache"
       # This produce that the cache is only saved the first time we push to the branch. Every consequent modification produces tasks to be re executed always.
       - name: Nx cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: .nx
           key: nx-cache-${{ github.workflow }}-${{ github.ref }}
@@ -55,8 +55,3 @@ jobs:
       - name: Test component
         if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=test:component --all
-      - name: Nx cache
-        uses: actions/cache/save@v4
-        with:
-          path: .nx
-          key: nx-cache-${{ github.workflow }}-${{ github.ref }}
