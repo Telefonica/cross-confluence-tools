@@ -29,7 +29,7 @@
     ]
   },
   "dependencies": {
-    "@mermaid-js/mermaid-cli": "10.8.0",
+    "@mermaid-js/mermaid-cli": "11.4.0",
     "@mocks-server/config": "2.0.0-beta.3",
     "@mocks-server/logger": "2.0.0-beta.2",
     "@telefonica-cross/confluence-sync": "workspace:*",

@@ -1498,8 +1498,7 @@ describe("markdown-confluence-sync binary", () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  describe.skip("mermaid diagrams", () => {
+  describe("mermaid diagrams", () => {
     let createRequests: SpyRequest[];
     let cli: ChildProcessManagerInterface;
     let exitCode: number | null;
