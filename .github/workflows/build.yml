@@ -89,7 +89,7 @@ jobs:
           key: nx-cache-test-unit-${{ github.ref }}
           restore-keys: |
             nx-cache-check-types-${{ github.ref }}
-      - name: Check types
+      - name: Test unit
         run: pnpm nx run-many --target=test:unit --all
         env:
           NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
@@ -111,7 +111,7 @@ jobs:
           key: nx-cache-build-${{ github.ref }}
           restore-keys: |
             nx-cache-test-unit-${{ github.ref }}
-      - name: Check types
+      - name: Build
         run: pnpm nx run-many --target=build --all
         env:
           NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
@@ -133,7 +133,7 @@ jobs:
           key: nx-cache-test-component-${{ github.ref }}
           restore-keys: |
             nx-cache-build-${{ github.ref }}
-      - name: Check types
+      - name: Test component
         run: pnpm nx run-many --target=test:component --all
         env:
           NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
