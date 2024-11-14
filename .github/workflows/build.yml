@@ -37,3 +37,18 @@ jobs:
       - uses: ./.github/actions/update-cache
         with:
           cache-key: ${{ steps.install.outputs.cache-key }}
+
+  check-types:
+    name: Check types
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/install
+        id: install
+      - name: Check types
+        run: pnpm nx run-many --target=check:types --all
+      - uses: ./.github/actions/update-cache
+        with:
+          cache-key: ${{ steps.install.outputs.cache-key }}
