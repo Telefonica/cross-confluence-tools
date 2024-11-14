@@ -23,11 +23,42 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
-      - uses: ./.github/actions/install
-        id: install
       - uses: ./.github/actions/run-nx-target
         with:
           target: lint
+  check-spell:
+    name: Check spell
+    runs-on: ubuntu-latest
+    env:
+      cache-key: nx-cache
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/run-nx-target
+        with:
+          target: check:spell
+  check-types:
+    name: Check types
+    runs-on: ubuntu-latest
+    env:
+      cache-key: nx-cache
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/run-nx-target
+        with:
+          target: check:types
+  test-unit:
+    name: Test unit
+    runs-on: ubuntu-latest
+    env:
+      cache-key: nx-cache
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/run-nx-target
+        with:
+          target: test:unit
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -37,55 +68,17 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
-      - uses: ./.github/actions/install
-        id: install
-      # NOTE: Ideally, the cache should be saved again after each job, but it is not working as expected. The error "Unable to reserve cache with key X. Another job may be creating this cache"
-      # This produce that the cache is only saved the first time we push to the branch. Every consequent modification produces tasks to be re executed always.
-      - name: Nx cache
-        uses: actions/cache/restore@v4
-        id: cache-restore
+      - uses: ./.github/actions/run-nx-target
         with:
-          path: .nx
-          key: ${{ env.cache-key }}
-      - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        if: github.event_name == 'pull_request'
-        uses: nrwl/nx-set-shas@v2
+          target: build
+  test-component:
+    name: Test component
+    runs-on: ubuntu-latest
+    env:
+      cache-key: nx-cache
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/run-nx-target
         with:
-          main-branch-name: ${{ github.event.pull_request.base.ref }}
-      - name: Lint - Affected
-        if: github.event_name == 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx affected -t lint --base=origin/${{ github.event.pull_request.base.ref }} --head=HEAD
-      - name: Lint
-        if: github.event_name != 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=lint --all
-      - name: Check spell - Affected
-        if: github.event_name == 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx affected -t check:spell --base=origin/${{ github.event.pull_request.base.ref }} --head=HEAD
-      - name: Check spell
-        if: github.event_name != 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=check:spell --all
-      - name: Check types
-        if: github.event_name != 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=check:types --all
-      - name: Test unit
-        if: github.event_name != 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=test:unit --all
-      - name: Build
-        if: github.event_name != 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=build --all
-      - name: Test component
-        if: github.event_name != 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=test:component --all
-      - name: Delete Previous Nx Cache
-        if: ${{ steps.cache-restore.outputs.cache-hit }}
-        continue-on-error: true
-        run: |
-          gh extension install actions/gh-actions-cache
-          gh actions-cache delete "${{ env.cache-key }}" --confirm
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Nx cache
-        uses: actions/cache/save@v4
-        with:
-          path: .nx
-          key: ${{ env.cache-key }}
+          target: test:component

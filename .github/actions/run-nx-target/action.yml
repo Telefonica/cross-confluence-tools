@@ -12,6 +12,8 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: ./.github/actions/install
+      id: install
     - name: Restore Nx cache
       uses: actions/cache/restore@v4
       id: cache-restore
