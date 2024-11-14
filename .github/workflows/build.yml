@@ -28,6 +28,7 @@ jobs:
       - uses: ./.github/actions/run-nx-target
         with:
           target: lint
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
   build:
     name: Build
     runs-on: ubuntu-latest
