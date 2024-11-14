@@ -17,21 +17,16 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
         id: install
-      - name: Nx cache restore
+      - name: Nx cache
         id: cache-nx
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: .nx
-          key: nx-cache-lint-test-${{ github.ref }}
+          key: nx-cache-lint-${{ github.ref }}
       - name: Lint
         run: pnpm nx run-many --target=lint --all
         env:
-          NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
-      - name: Nx cache save
-        uses: actions/cache/save@v4
-        with:
-          path: .nx
-          key: ${{ steps.cache-nx.outputs.cache-primary-key }}
+          NX_REJECT_UNKNOWN_LOCAL_CACHE: "0"
 
   check-spell:
     name: Check spelling
@@ -49,7 +44,7 @@ jobs:
           path: .nx
           key: nx-cache-check-spell-${{ github.ref }}
           restore-keys: |
-            nx-cache-lint-test-${{ github.ref }}
+            nx-cache-lint-${{ github.ref }}
       - name: Check spelling
         run: pnpm nx run-many --target=check:spell --all
         env:
