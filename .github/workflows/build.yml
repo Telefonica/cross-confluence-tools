@@ -24,7 +24,7 @@ jobs:
           path: .nx
           key: nx-cache-lint-${{ github.ref }}
       - name: Lint
-        run: pnpm nx run-many --target=lint --all
+        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=lint --all
         env:
           NX_REJECT_UNKNOWN_LOCAL_CACHE: "0"
 
@@ -46,7 +46,7 @@ jobs:
           restore-keys: |
             nx-cache-lint-${{ github.ref }}
       - name: Check spelling
-        run: pnpm nx run-many --target=check:spell --all
+        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=check:spell --all
         env:
           NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
