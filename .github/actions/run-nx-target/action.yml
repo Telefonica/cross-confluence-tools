@@ -1,6 +1,9 @@
 name: Run Nx target
 description: Setup the Nx cache, and run a target
 
+env:
+  cache_key: "nx-cache-${{ github.ref }}"
+
 inputs:
   target:
     description: The Nx target to run
@@ -14,8 +17,6 @@ runs:
   steps:
     - uses: ./.github/actions/install
       id: install
-    - env:
-        cache_key: "nx-cache-${{ github.ref }}"
     - name: Restore Nx cache
       uses: actions/cache/restore@v4
       id: cache-restore
