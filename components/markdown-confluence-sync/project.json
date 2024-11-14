@@ -19,14 +19,7 @@
           "target": "eslint:config",
           "projects": ["eslint-config"]
         },
-        {
-          "target": "build",
-          "projects": ["confluence-sync"]
-        },
-        {
-          "target": "build",
-          "projects": ["child-process-manager"]
-        }
+        "build"
       ]
     },
     // Redefine the build target to include the config directory as an output
