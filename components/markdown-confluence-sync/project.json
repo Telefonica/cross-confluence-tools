@@ -22,6 +22,10 @@
         {
           "target": "build",
           "projects": ["confluence-sync"]
+        },
+        {
+          "target": "build",
+          "projects": ["child-process-manager"]
         }
       ]
     },
