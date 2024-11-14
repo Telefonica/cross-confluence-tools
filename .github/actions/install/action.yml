@@ -1,11 +1,6 @@
 name: Install and cache
 description: Setup the runner environment, by installing dependencies and restoring caches
 
-outputs:
-  cache-key:
-    description: The key to the Nx cache
-    value: ${{ steps.cache-nx-restore.outputs.cache-primary-key }}
-
 runs:
   using: composite
   steps:
@@ -25,9 +20,3 @@ runs:
     - name: Install Node.js dependencies
       shell: bash
       run: pnpm install
-    - name: Restore Nx cache
-      id: cache-nx-restore
-      uses: actions/cache/restore@v4
-      with:
-        path: .nx
-        key: nx-cache-${{ github.ref }}
