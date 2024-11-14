@@ -10,10 +10,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      cache-key: nx-cache
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -22,10 +28,11 @@ jobs:
       # NOTE: Ideally, the cache should be saved again after each job, but it is not working as expected. The error "Unable to reserve cache with key X. Another job may be creating this cache"
       # This produce that the cache is only saved the first time we push to the branch. Every consequent modification produces tasks to be re executed always.
       - name: Nx cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
+        id: cache-restore
         with:
           path: .nx
-          key: nx-cache-${{ github.workflow }}-${{ github.ref }}
+          key: ${{ env.cache-key }}
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         if: github.event_name == 'pull_request'
         uses: nrwl/nx-set-shas@v2
@@ -55,3 +62,16 @@ jobs:
       - name: Test component
         if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=test:component --all
+      - name: Delete Previous Nx Cache
+        if: ${{ steps.cache-restore.outputs.cache-hit }}
+        continue-on-error: true
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "${{ env.cache-key }}" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Nx cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .nx
+          key: ${{ env.cache-key }}
