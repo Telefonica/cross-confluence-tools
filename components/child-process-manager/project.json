@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "child-process-manager",
+  "projectType": "library",
+  "tags": [
+    "type:node:lib"
+  ],
+  "implicitDependencies": [
+    "eslint-config",
+    "cspell-config"
+  ]
+}

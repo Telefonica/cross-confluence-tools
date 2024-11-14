@@ -1,0 +1,40 @@
+{
+  "name": "@telefonica-cross/child-process-manager",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc",
+    "check:ci": "echo 'All checks passed'",
+    "check:spell": "cspell .",
+    "check:types:test": "tsc --noEmit --project ./test/unit/tsconfig.json",
+    "check:types:lib": "tsc --noEmit",
+    "check:types": "npm run check:types:test && npm run check:types:lib",
+    "lint": "eslint .",
+    "test:unit": "jest --config jest.config.js"
+  },
+  "nx": {
+    "includedScripts": [
+      "build",
+      "check:ci",
+      "check:spell",
+      "check:types",
+      "lint",
+      "test:unit"
+    ]
+  },
+  "dependencies": {
+    "cross-spawn": "7.0.3",
+    "tree-kill": "1.2.2"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "6.0.6"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}

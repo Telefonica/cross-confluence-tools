@@ -1,0 +1,37 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "markdown-confluence-sync",
+  "projectType": "library",
+  "tags": [
+    "type:node:app",
+    "type:node:lib"
+  ],
+  "targets": {
+    // Redefine the build target to include the config directory as an output
+    "build": {
+      "cache": true,
+      "dependsOn": [
+        {
+          "projects": ["confluence-sync"],
+          "target": "build"
+        }
+      ],
+      "inputs": [
+        "default",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "outputs": [
+        "{projectRoot}/dist/**/*",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{projectRoot}/CHANGELOG.md",
+        "{projectRoot}/bin/**/*",
+        "{projectRoot}/config/**/*"
+      ]
+    }
+  },
+  "implicitDependencies": [
+    "eslint-config",
+    "cspell-config"
+  ]
+}

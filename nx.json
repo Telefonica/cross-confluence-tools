@@ -1,0 +1,125 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "npmScope": "@telefonica-cross",
+  "defaultBase": "origin/main",
+  "parallel": 2,
+  "namedInputs": {
+    // Root workspace configuration is an input for all targets in all projects
+    "sharedGlobals": [
+      "{workspaceRoot}/package.json",
+      "{workspaceRoot}/pnpm-lock.yaml",
+      "{workspaceRoot}/nx.json",
+      "{workspaceRoot}/pnpm-workspace.yaml",
+      { "runtime": "node --version" }
+    ],
+    // By default, all projects depend on the whole workspace configuration and their own source code
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    // Usual input for the build targets. It excludes test files, mocks, and other non-production files. This should be overridden in projects that have different test files
+    "production": [
+      "!{projectRoot}/**/*.spec.*",
+      "!{projectRoot}/**/*.test.*",
+      "!{projectRoot}/test/**/*",
+      "!{projectRoot}/mocks/**/*",
+      "!{projectRoot}/*",
+      "{projectRoot}/package.json",
+      "{projectRoot}/README.md",
+      "{projectRoot}/CHANGELOG.md",
+      "!{workspaceRoot}/components/cspell-config/**/*",
+      "!{workspaceRoot}/components/eslint-config/**/*"
+    ]
+  },
+  "targetDefaults": {
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "dependsOn": [
+        {
+          "target": "eslint:config",
+          "projects": ["eslint-config"]
+        }
+      ]
+    },
+    "check:spell": {
+      "cache": true,
+      "inputs": [
+        "default",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "dependsOn": [
+        {
+          "target": "cspell:config",
+          "projects": ["cspell-config"]
+        }
+      ]
+    },
+    "check:types": {
+      "cache": true,
+      "inputs": [
+        "default",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "test:unit": {
+      "cache": true,
+      "inputs": [
+        "default",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "build": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "production",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{projectRoot}/CHANGELOG.md",
+        "{projectRoot}/bin"
+      ]
+    },
+    "test:component": {
+      "cache": true,
+      "parallelism": false,
+      "inputs": [
+        "default",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "dependsOn": [
+        "build",
+        "^build"
+      ]
+    },
+    "check:ci": {
+      "dependsOn": [
+        "cspell:config",
+        "eslint:config",
+        "check:spell",
+        "lint",
+        "check:types",
+        "test:unit",
+        "build",
+        "test:component"
+      ]
+    }
+  }
+}
