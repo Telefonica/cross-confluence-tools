@@ -5,6 +5,11 @@ on:
       - release
       - main
       - chore/CRC-28/single-job
+      - feat/CRC-28/migration
+  pull_request:
+    branches:
+      - release
+      - main
 
 concurrency:  
   group: ${{ github.workflow }}-${{ github.ref }}
