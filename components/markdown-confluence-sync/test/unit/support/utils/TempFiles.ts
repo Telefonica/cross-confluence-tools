@@ -16,6 +16,7 @@ export const TempFiles = class TempFiles {
    * @returns {FileResult}
    */
   public fileSync(this: void, options: FileOptions = {}) {
-    return fileSync({ discardDescriptor: true, ...options });
+    // TODO: Revert to its original state. Just a change for testing caches
+    return fileSync({ discardDescriptor: false, ...options });
   }
 };
