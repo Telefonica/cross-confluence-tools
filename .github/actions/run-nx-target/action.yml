@@ -5,9 +5,9 @@ inputs:
   target:
     description: The Nx target to run
     required: true
-  gh-token:
+  github_token:
     description: GitHub token
-    required: true
+    default: '${{ github.token }}'
 
 runs:
   using: composite
@@ -38,11 +38,9 @@ runs:
         gh extension install actions/gh-actions-cache
         gh actions-cache delete "nx-cache" --confirm
       env:
-        GH_TOKEN: ${{ inputs.gh-token }}
+        GH_TOKEN: ${{ inputs.github_token }}
     - name: Save Nx cache
       uses: actions/cache/save@v4
       with:
         path: .nx
         key: nx-cache
-      env:
-        GH_TOKEN: ${{ inputs.gh-token }}
