@@ -18,6 +18,7 @@ runs:
         path: node_modules
         key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
     - name: Install Node.js dependencies
+      shell: bash
       run: pnpm install
     - name: Cache Nx
       id: cache-nx
