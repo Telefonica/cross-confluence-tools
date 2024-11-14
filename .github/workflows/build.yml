@@ -22,7 +22,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .nx
-          key: nx-cache-lint-${{ github.ref }}
+          key: nx-cache-lint-test-${{ github.ref }}
       - name: Lint
         run: pnpm nx run-many --target=lint --all
         env:
@@ -49,7 +49,7 @@ jobs:
           path: .nx
           key: nx-cache-check-spell-${{ github.ref }}
           restore-keys: |
-            nx-cache-lint-${{ github.ref }}
+            nx-cache-lint-test-${{ github.ref }}
       - name: Check spelling
         run: pnpm nx run-many --target=check:spell --all
         env:
