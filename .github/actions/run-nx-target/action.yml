@@ -8,15 +8,13 @@ inputs:
 
 runs:
   using: composite
-  env:
-    cache-key: nx-cache
   steps:
     - name: Restore Nx cache
       uses: actions/cache/restore@v4
       id: cache-restore
       with:
         path: .nx
-        key: ${{ env.cache-key }}
+        key: nx-cache
     - name: Derive appropriate SHAs for base and head for `nx affected` commands
       if: github.event_name == 'pull_request'
       uses: nrwl/nx-set-shas@v2
@@ -33,11 +31,11 @@ runs:
       continue-on-error: true
       run: |
         gh extension install actions/gh-actions-cache
-        gh actions-cache delete "${{ env.cache-key }}" --confirm
+        gh actions-cache delete "nx-cache" --confirm
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Save Nx cache
       uses: actions/cache/save@v4
       with:
         path: .nx
-        key: ${{ env.cache-key }}
+        key: nx-cache
