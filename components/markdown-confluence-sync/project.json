@@ -19,6 +19,12 @@
           "target": "eslint:config",
           "projects": ["eslint-config"]
         },
+        // Build the dev dependency of sync-confluence to resolve imports
+        {
+          "target": "build",
+          "projects": ["child-process-manager"]
+        },
+        // Build the package itself and dependencies to resolve imports
         "build"
       ]
     },
