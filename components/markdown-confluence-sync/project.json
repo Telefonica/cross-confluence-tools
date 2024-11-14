@@ -7,6 +7,24 @@
     "type:node:lib"
   ],
   "targets": {
+    // Redefine the lint target to include the dependency of building sync-confluence to resolve imports
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+      ],
+      "dependsOn": [
+        {
+          "target": "eslint:config",
+          "projects": ["eslint-config"]
+        },
+        {
+          "target": "build",
+          "projects": ["confluence-sync"]
+        }
+      ]
+    },
     // Redefine the build target to include the config directory as an output
     "build": {
       "cache": true,
