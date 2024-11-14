@@ -2,7 +2,9 @@ name: "Check and build"
 on:
   push:
     branches:
-      - feat/CRC-28/migration
+      - release
+      - main
+      - feat/CRC-28/single-job
 
 concurrency:  
   group: ${{ github.workflow }}-${{ github.ref }}
