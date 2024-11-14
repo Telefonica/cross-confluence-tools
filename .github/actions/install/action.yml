@@ -1,0 +1,27 @@
+name: Install and cache
+description: Setup the runner environment, by installing dependencies and restoring caches
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: 'pnpm'
+    - name: Cache dependencies
+      id: cache-pnpm
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+    - name: Install Node.js dependencies
+      run: pnpm install
+    - name: Cache Nx
+      id: cache-nx
+      uses: actions/cache@v4
+      with:
+        path: .nx
+        key: nx-${{ github.ref }}

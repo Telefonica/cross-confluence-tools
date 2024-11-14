@@ -1,0 +1,38 @@
+name: "Check and build"
+on:
+  push:
+    branches:
+      - feat/CRC-28/migration
+
+concurrency:  
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install:
+    name: Install and cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/install
+      - name: Lint
+        run: pnpm nx run-many --target=lint --all
+  check-spell:
+    name: Check spelling
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/install
+      - name: Check spelling
+        run: pnpm nx run-many --target=check-spell --all
