@@ -18,5 +18,4 @@ export const TempFiles = class TempFiles {
   public fileSync(this: void, options: FileOptions = {}) {
     return fileSync({ discardDescriptor: true, ...options });
   }
-  // eslint-disable-next-line
-}
+};
