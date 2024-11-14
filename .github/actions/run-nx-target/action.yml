@@ -28,7 +28,7 @@ runs:
     - name: Run - Affected
       if: github.event_name == 'pull_request'
       shell: bash
-      run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx affected -t ${{ inputs.target }} --base=origin/${{ github.event.pull_request.base.ref }} --head=HEAD
+      run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx affected -t ${{ inputs.target }} --base origin/${{ github.event.pull_request.base.ref }} --head HEAD
     - name: Lint
       if: github.event_name != 'pull_request'
       shell: bash

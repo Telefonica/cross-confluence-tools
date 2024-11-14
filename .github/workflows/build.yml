@@ -4,7 +4,6 @@ on:
     branches:
       - release
       - main
-      - chore/CRC-28/single-job
       - feat/CRC-28/migration
   pull_request:
     branches:
@@ -23,11 +22,11 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    env:
-      cache-key: nx-cache
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/run-nx-target
         with:
           target: lint
@@ -35,11 +34,11 @@ jobs:
     needs: lint
     name: Check spell
     runs-on: ubuntu-latest
-    env:
-      cache-key: nx-cache
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/run-nx-target
         with:
           target: check:spell
@@ -47,11 +46,11 @@ jobs:
     needs: check-spell
     name: Check types
     runs-on: ubuntu-latest
-    env:
-      cache-key: nx-cache
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/run-nx-target
         with:
           target: check:types
@@ -59,11 +58,11 @@ jobs:
     needs: check-types
     name: Test unit
     runs-on: ubuntu-latest
-    env:
-      cache-key: nx-cache
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/run-nx-target
         with:
           target: test:unit
@@ -71,11 +70,11 @@ jobs:
     needs: test-unit
     name: Build
     runs-on: ubuntu-latest
-    env:
-      cache-key: nx-cache
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/run-nx-target
         with:
           target: build
@@ -83,11 +82,11 @@ jobs:
     needs: build
     name: Test component
     runs-on: ubuntu-latest
-    env:
-      cache-key: nx-cache
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/run-nx-target
         with:
           target: test:component
