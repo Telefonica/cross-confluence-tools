@@ -34,6 +34,7 @@ runs:
     - name: Delete Previous Nx Cache
       if: ${{ steps.cache-restore.outputs.cache-hit }}
       continue-on-error: true
+      shell: bash
       run: |
         gh extension install actions/gh-actions-cache
         gh actions-cache delete "nx-cache" --confirm
