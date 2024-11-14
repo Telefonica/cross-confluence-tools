@@ -21,15 +21,15 @@ jobs:
         id: cache-nx-restore
         uses: actions/cache/restore@v4
         with:
-          path: .nx
-          key: nx-cache-ref-${{ github.ref }}
+          path: ./.nx
+          key: nx-cache-test-${{ github.ref }}
       - name: Lint
         run: pnpm nx run-many --target=lint --all
       - name: Update cache
         id: cache-update
         uses: actions/cache/save@v4
         with:
-          path: .nx
+          path: ./.nx
           key: ${{ steps.cache-nx-restore.outputs.cache-primary-key }}
 
   check-spell:
@@ -45,15 +45,15 @@ jobs:
         id: cache-nx-restore
         uses: actions/cache/restore@v4
         with:
-          path: .nx
-          key: nx-cache-ref-${{ github.ref }}
+          path: ./.nx
+          key: nx-cache-test-${{ github.ref }}
       - name: Check spelling
         run: pnpm nx run-many --target=check:spell --all
       - name: Update cache
         id: cache-update
         uses: actions/cache/save@v4
         with:
-          path: .nx
+          path: ./.nx
           key: ${{ steps.cache-nx-restore.outputs.cache-primary-key }}
 
   check-types:
@@ -69,13 +69,13 @@ jobs:
         id: cache-nx-restore
         uses: actions/cache/restore@v4
         with:
-          path: .nx
-          key: nx-cache-ref-${{ github.ref }}
+          path: ./.nx
+          key: nx-cache-test-${{ github.ref }}
       - name: Check types
         run: pnpm nx run-many --target=check:types --all
       - name: Update cache
         id: cache-update
         uses: actions/cache/save@v4
         with:
-          path: .nx
+          path: ./.nx
           key: ${{ steps.cache-nx-restore.outputs.cache-primary-key }}

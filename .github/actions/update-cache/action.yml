@@ -13,5 +13,5 @@ runs:
       id: cache-update
       uses: actions/cache/save@v4
       with:
-        path: .nx
+        path: ./.nx
         key: ${{ inputs.cache-key }}
