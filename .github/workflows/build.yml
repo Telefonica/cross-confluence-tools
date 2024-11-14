@@ -71,7 +71,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Nx cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/save@v4
         with:
           path: .nx
           key: ${{ env.cache-key }}
