@@ -28,8 +28,7 @@ import type {
 
 const MODULE_NAME = "markdown-confluence-sync";
 const DOCUSAURUS_NAMESPACE = "docusaurus";
-// eslint-disable-next-line
-const CONFLUENCE_NAMESPACE = "confluence"
+const CONFLUENCE_NAMESPACE = "confluence";
 
 const DEFAULT_CONFIG: Configuration["config"] = {
   readArguments: false,
