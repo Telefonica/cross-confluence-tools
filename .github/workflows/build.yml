@@ -20,7 +20,7 @@ jobs:
       # NOTE: Ideally, the cache should be saved again after each job, but it is not working as expected. The error "Unable to reserve cache with key X. Another job may be creating this cache"
       # This produce that the cache is only saved the first time we push to the branch. Every consequent modification produces tasks to be re executed always.
       - name: Nx cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: .nx
           key: nx-cache-lint-${{ github.ref }}
@@ -35,6 +35,13 @@ jobs:
       - name: Lint
         if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=lint --all
+      - name: Save cache
+        id: cache-primes-save
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          key: nx-cache-lint-${{ github.ref }}
+          path: .nx
 
   check-spell:
     name: Check spelling
