@@ -24,7 +24,16 @@ jobs:
         with:
           path: .nx
           key: nx-cache-lint-${{ github.ref }}
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        if: github.event_name == 'pull_request'
+        uses: nrwl/nx-set-shas@v2
+        with:
+          main-branch-name: ${{ github.event.pull_request.base.ref }}
+      - name: Lint - Affected
+        if: github.event_name == 'pull_request'
+        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx affected -t lint --base=origin/${{ github.event.pull_request.base.ref }} --head=HEAD
       - name: Lint
+        if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=lint --all
 
   check-spell:
@@ -49,12 +58,13 @@ jobs:
         uses: nrwl/nx-set-shas@v2
         with:
           main-branch-name: ${{ github.event.pull_request.base.ref }}
-      - name: Check spelling - Affected
-        if: github.event_name != 'pull_request'
-        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=check:spell --all
-      - name: Check spelling
+      - name: Check spell - Affected
         if: github.event_name == 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx affected -t check:spell --base=origin/${{ github.event.pull_request.base.ref }} --head=HEAD
+      - name: Check spell
+        if: github.event_name != 'pull_request'
+        run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=check:spell --all
+      
 
   check-types:
     name: Check types
@@ -74,6 +84,7 @@ jobs:
           restore-keys: |
             nx-cache-check-spell-${{ github.ref }}
       - name: Check types
+        if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=check:types --all
 
   test-unit:
@@ -94,6 +105,7 @@ jobs:
           restore-keys: |
             nx-cache-check-types-${{ github.ref }}
       - name: Test unit
+        if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=test:unit --all
 
   build:
@@ -114,6 +126,7 @@ jobs:
           restore-keys: |
             nx-cache-test-unit-${{ github.ref }}
       - name: Build
+        if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=build --all
 
   test-component:
@@ -134,4 +147,5 @@ jobs:
           restore-keys: |
             nx-cache-build-${{ github.ref }}
       - name: Test component
+        if: github.event_name != 'pull_request'
         run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=test:component --all
