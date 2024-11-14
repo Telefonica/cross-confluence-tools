@@ -1,9 +1,6 @@
 name: Run Nx target
 description: Setup the Nx cache, and run a target
 
-env:
-  cache_key: "nx-cache-${{ github.ref }}"
-
 inputs:
   target:
     description: The Nx target to run
@@ -11,6 +8,9 @@ inputs:
   github_token:
     description: GitHub token
     default: '${{ github.token }}'
+  cache_key:
+    description: The cache key to use
+    default: "nx-cache-${{ github.ref }}"
 
 runs:
   using: composite
@@ -22,7 +22,7 @@ runs:
       id: cache-restore
       with:
         path: .nx
-        key: ${{ env.cache_key }}
+        key: ${{ inputs.cache_key }}
     - name: Derive appropriate SHAs for base and head for `nx affected` commands
       if: github.event_name == 'pull_request'
       uses: nrwl/nx-set-shas@v2
@@ -42,11 +42,11 @@ runs:
       shell: bash
       run: |
         gh extension install actions/gh-actions-cache
-        gh actions-cache delete "${{ env.cache_key }}" --confirm
+        gh actions-cache delete "${{ inputs.cache_key }}" --confirm
       env:
         GH_TOKEN: ${{ inputs.github_token }}
     - name: Save Nx cache
       uses: actions/cache/save@v4
       with:
         path: .nx
-        key: ${{ env.cache_key }}
+        key: ${{ inputs.cache_key }}
