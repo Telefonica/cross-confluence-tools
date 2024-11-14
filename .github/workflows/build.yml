@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .nx
-          key: nx-cache-lint-${{ github.ref }}
+          key: nx-cache-lint-foo
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         if: github.event_name == 'pull_request'
         uses: nrwl/nx-set-shas@v2
@@ -40,7 +40,7 @@ jobs:
         if: always()
         uses: actions/cache/save@v4
         with:
-          key: nx-cache-lint-${{ github.ref }}
+          key: nx-cache-lint-foo
           path: .nx
 
   check-spell:
