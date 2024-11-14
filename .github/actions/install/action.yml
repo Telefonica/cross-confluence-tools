@@ -30,4 +30,4 @@ runs:
       uses: actions/cache/restore@v4
       with:
         path: .nx
-        key: nx-${{ github.ref }}
+        key: nx-cache-${{ github.ref }}
