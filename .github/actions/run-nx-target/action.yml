@@ -14,12 +14,14 @@ runs:
   steps:
     - uses: ./.github/actions/install
       id: install
+    - env:
+        cache_key: "nx-cache-${{ github.ref }}"
     - name: Restore Nx cache
       uses: actions/cache/restore@v4
       id: cache-restore
       with:
         path: .nx
-        key: nx-cache
+        key: ${{ env.cache_key }}
     - name: Derive appropriate SHAs for base and head for `nx affected` commands
       if: github.event_name == 'pull_request'
       uses: nrwl/nx-set-shas@v2
@@ -39,11 +41,11 @@ runs:
       shell: bash
       run: |
         gh extension install actions/gh-actions-cache
-        gh actions-cache delete "nx-cache" --confirm
+        gh actions-cache delete "${{ env.cache_key }}" --confirm
       env:
         GH_TOKEN: ${{ inputs.github_token }}
     - name: Save Nx cache
       uses: actions/cache/save@v4
       with:
         path: .nx
-        key: nx-cache
+        key: ${{ env.cache_key }}
