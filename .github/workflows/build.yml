@@ -26,10 +26,11 @@ jobs:
       - uses: ./.github/actions/install
       - name: Lint
         run: pnpm nx run-many --target=lint --all
+
   check-spell:
     name: Check spelling
     runs-on: ubuntu-latest
-    needs: install
+    needs: lint
     steps:
       - name: Check out
         uses: actions/checkout@v4
