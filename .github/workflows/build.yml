@@ -25,6 +25,8 @@ jobs:
           key: nx-cache-lint-${{ github.ref }}
       - name: Lint
         run: pnpm nx run-many --target=lint --all
+        env:
+          NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
   check-spell:
     name: Check spelling
@@ -45,6 +47,8 @@ jobs:
             nx-cache-lint-${{ github.ref }}
       - name: Check spelling
         run: pnpm nx run-many --target=check:spell --all
+        env:
+          NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
   check-types:
     name: Check types
@@ -65,6 +69,8 @@ jobs:
             nx-cache-check-spell-${{ github.ref }}
       - name: Check types
         run: pnpm nx run-many --target=check:types --all
+        env:
+          NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
   test-unit:
     name: Test unit
@@ -85,6 +91,8 @@ jobs:
             nx-cache-check-types-${{ github.ref }}
       - name: Check types
         run: pnpm nx run-many --target=test:unit --all
+        env:
+          NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
   build:
     name: Build
@@ -105,6 +113,8 @@ jobs:
             nx-cache-test-unit-${{ github.ref }}
       - name: Check types
         run: pnpm nx run-many --target=build --all
+        env:
+          NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
   test-component:
     name: Test component
@@ -125,3 +135,5 @@ jobs:
             nx-cache-build-${{ github.ref }}
       - name: Check types
         run: pnpm nx run-many --target=test:component --all
+        env:
+          NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
