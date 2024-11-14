@@ -24,10 +24,14 @@ runs:
         key: nx-cache-${{ github.ref }}
         # Try restoring the cache also from the PR branch, the head branch of the PR, the base branch of the PR, the release branch, and the main branch
         restore-keys: |
-          nx-cache-${{ github.event.pull_request.head.ref }}
-          nx-cache-${{ github.event.pull_request.base.ref }}
+          nx-cache-refs/heads/${{ github.event.pull_request.head.ref }}
+          nx-cache-refs/heads/${{ github.event.pull_request.base.ref }}
           nx-cache-refs/heads/release
           nx-cache-refs/heads/main
+          nx-cache-${{ github.event.pull_request.head.ref }}
+          nx-cache-${{ github.event.pull_request.base.ref }}
+          nx-cache-release
+          nx-cache-main
           nx-cache-
     # Restore the cache for the current branch in non-PRs
     - name: Restore Nx cache
@@ -40,6 +44,8 @@ runs:
         restore-keys: |
           nx-cache-refs/heads/release
           nx-cache-refs/heads/main
+          nx-cache-release
+          nx-cache-main
           nx-cache-
     
     # Prepare the SHAs for the base and head for the `nx affected` commands
