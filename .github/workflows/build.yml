@@ -28,4 +28,4 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
       - name: Check spelling
-        run: pnpm nx run-many --target=check-spell --all
+        run: pnpm nx run-many --target=check:spell --all
