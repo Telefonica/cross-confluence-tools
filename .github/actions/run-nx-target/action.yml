@@ -8,9 +8,6 @@ inputs:
   github_token:
     description: GitHub token
     default: '${{ github.token }}'
-  cache_key:
-    description: The cache key to use
-    default: "nx-cache-${{ github.ref }}"
 
 runs:
   using: composite
@@ -19,10 +16,27 @@ runs:
       id: install
     - name: Restore Nx cache
       uses: actions/cache/restore@v4
+      if: github.event_name == 'pull_request'
       id: cache-restore
       with:
         path: .nx
-        key: ${{ inputs.cache_key }}
+        key: nx-cache-${{ github.ref }}
+        restore-keys: |
+          nx-cache-${{ github.event.pull_request.head.ref }}
+          nx-cache-${{ github.event.pull_request.base.ref }}
+          nx-cache-refs/heads/release
+          nx-cache-refs/heads/main
+          nx-cache-
+    - name: Restore Nx cache
+      uses: actions/cache/restore@v4
+      if: github.event_name != 'pull_request'
+      id: cache-restore
+      with:
+        path: .nx
+        key: nx-cache-${{ github.ref }}
+        restore-keys: |
+          nx-cache-${{ github.event.pull_request.head.ref }}
+          nx-cache-${{ github.event.pull_request.base.ref }}
     - name: Derive appropriate SHAs for base and head for `nx affected` commands
       if: github.event_name == 'pull_request'
       uses: nrwl/nx-set-shas@v2
@@ -36,17 +50,25 @@ runs:
       if: github.event_name != 'pull_request'
       shell: bash
       run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=${{ inputs.target }} --all
+    - name: Check Nx cache to delete
+      uses: actions/cache/restore@v4
+      if: github.event_name == 'pull_request'
+      id: cache-check
+      with:
+        path: .nx
+        key: nx-cache-${{ github.ref }}
+        lookup-only: true
     - name: Delete Previous Nx Cache
-      if: ${{ steps.cache-restore.outputs.cache-hit }}
+      if: steps.cache-check.outputs.cache-hit == 'true'
       continue-on-error: true
       shell: bash
       run: |
         gh extension install actions/gh-actions-cache
-        gh actions-cache delete "${{ inputs.cache_key }}" --confirm
+        gh actions-cache delete "nx-cache-${{ github.ref }}" --confirm
       env:
         GH_TOKEN: ${{ inputs.github_token }}
     - name: Save Nx cache
       uses: actions/cache/save@v4
       with:
         path: .nx
-        key: ${{ inputs.cache_key }}
+        key: nx-cache-${{ github.ref }}
