@@ -17,20 +17,14 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
         id: install
-      - name: Restore Nx cache
-        id: cache-nx-restore
-        uses: actions/cache/restore@v4
+      - name: Nx cache
+        id: cache-nx
+        uses: actions/cache@v4
         with:
-          path: ./.nx
-          key: nx-cache-test-${{ github.ref }}
+          path: .nx
+          key: nx-cache-lint-${{ github.ref }}
       - name: Lint
         run: pnpm nx run-many --target=lint --all
-      - name: Update cache
-        id: cache-update
-        uses: actions/cache/save@v4
-        with:
-          path: ./.nx
-          key: ${{ steps.cache-nx-restore.outputs.cache-primary-key }}
 
   check-spell:
     name: Check spelling
@@ -41,20 +35,16 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
         id: install
-      - name: Restore Nx cache
-        id: cache-nx-restore
-        uses: actions/cache/restore@v4
+      - name: Nx cache
+        id: cache-nx
+        uses: actions/cache@v4
         with:
-          path: ./.nx
-          key: nx-cache-test-${{ github.ref }}
+          path: .nx
+          key: nx-cache-check-spell-${{ github.ref }}
+          restore-keys: |
+            nx-cache-lint-${{ github.ref }}
       - name: Check spelling
         run: pnpm nx run-many --target=check:spell --all
-      - name: Update cache
-        id: cache-update
-        uses: actions/cache/save@v4
-        with:
-          path: ./.nx
-          key: ${{ steps.cache-nx-restore.outputs.cache-primary-key }}
 
   check-types:
     name: Check types
@@ -65,12 +55,14 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
         id: install
-      - name: Restore Nx cache
-        id: cache-nx-restore
-        uses: actions/cache/restore@v4
+      - name: Nx cache
+        id: cache-nx
+        uses: actions/cache@v4
         with:
-          path: ./.nx
-          key: nx-cache-test-${{ github.ref }}
+          path: .nx
+          key: nx-cache-check-types-${{ github.ref }}
+          restore-keys: |
+            nx-cache-check-spell-${{ github.ref }}
       - name: Check types
         run: pnpm nx run-many --target=check:types --all
       - name: Update cache
