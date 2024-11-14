@@ -4,7 +4,7 @@ on:
     branches:
       - release
       - main
-      - feat/CRC-28/single-job
+      - chore/CRC-28/single-job
 
 concurrency:  
   group: ${{ github.workflow }}-${{ github.ref }}
