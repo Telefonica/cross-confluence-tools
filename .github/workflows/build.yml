@@ -119,7 +119,7 @@ jobs:
   test-component:
     name: Test component
     runs-on: ubuntu-latest
-    needs: test-unit
+    needs: build
     steps:
       - name: Check out
         uses: actions/checkout@v4
