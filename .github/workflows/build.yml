@@ -16,8 +16,12 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
+        id: install
       - name: Lint
         run: pnpm nx run-many --target=lint --all
+      - uses: ./.github/actions/update-cache
+        with:
+          cache-key: ${{ steps.install.outputs.cache-key }}
 
   check-spell:
     name: Check spelling
@@ -27,5 +31,9 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
+        id: install
       - name: Check spelling
         run: pnpm nx run-many --target=check:spell --all
+      - uses: ./.github/actions/update-cache
+        with:
+          cache-key: ${{ steps.install.outputs.cache-key }}
