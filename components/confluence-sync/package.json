@@ -1,6 +1,6 @@
 {
   "name": "@tid-cross/confluence-sync",
-  "description": "Synchronize a JSON object containing HTML contents with Confluence pages",
+  "description": "Synchronize an array of elements with HTML contents with Confluence pages",
   "version": "1.0.0-beta.1",
   "license": "Apache-2.0",
   "author": "Telefónica Innovación Digital",
