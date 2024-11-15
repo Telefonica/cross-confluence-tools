@@ -1,6 +1,6 @@
 # confluence-sync-pages
 
-Synchronize an array of elements with HTML contents with Confluence pages. Supports nested pages and attachments upload. Also supports updating single pages with an id.
+Synchronize an array of elements with HTML contents to Confluence pages. Supports nested pages and attachments upload. Also supports updating single pages with an id.
 
 Read [Features](#features) for more information about the two sync modes available, "tree" and "flat".
 
