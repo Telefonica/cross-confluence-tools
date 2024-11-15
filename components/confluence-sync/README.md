@@ -1,4 +1,4 @@
-# confluence-sync-pages
+# confluence-sync
 
 Creates/updates/deletes Confluence pages based on a list of page elements that may be nested.
 
