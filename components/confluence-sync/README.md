@@ -33,7 +33,7 @@ This library requires:
 
 ### Compatibility
 
-> ![Warning]
+> [!WARNING]
 > This library has been tested only with Confluence 8.5.x. It may work with other versions, but it has not been tested.
 
 ## Installation
@@ -97,7 +97,7 @@ Note that the __root page must exist before running the sync process__, and that
 * Updates Confluence pages if they already exist.
 * Deletes Confluence pages that are not present in the list.
 
-> ![Warning]
+> [!WARNING]
 > All pages not present in the list will be deleted.
 
 ### Flat mode
@@ -120,7 +120,7 @@ The library will create a new attachment if it doesn't exist, or delete it and c
 
 When defining the attachments, you can use paths relative to the `process.cwd()` or absolute paths.
 
-> ![Note]
+> [!NOTE]
 > Deleting attachments that already exist in Confluence without uploading a new one to replace it is not supported.
 
 ## How to get the root page id
@@ -162,7 +162,7 @@ To enable the flat mode, you have to set the `syncMode` property of the configur
 
 As mentioned in the [features](#features) section, it is possible to update specific pages by using their Confluence id. This is __only supported in flat mode__.
 
-> ![Caution]
+> [!CAUTION]
 > If all pages in the list have an id, __you should not provide a root page id__. If you provide it, the library will consider that you don't want any page under it, and, therefore, __it will delete all root page children.__
 
 ```js title="Example updating specific pages"
