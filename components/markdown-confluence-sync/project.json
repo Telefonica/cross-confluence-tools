@@ -39,6 +39,7 @@
       ],
       "inputs": [
         "default",
+        "production",
         { "dependentTasksOutputFiles": "**/*", "transitive": true }
       ],
       "outputs": [
