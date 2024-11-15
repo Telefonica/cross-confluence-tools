@@ -1,6 +1,30 @@
 {
   "name": "@tid-cross/confluence-sync",
-  "version": "0.1.0",
+  "description": "Synchronize a JSON object containing HTML contents with Confluence pages",
+  "version": "1.0.0-beta.1",
+  "license": "Apache-2.0",
+  "author": "Telefónica Innovación Digital",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/cross-confluence-tools",
+    "directory": "components/confluence-sync"
+  },
+  "homepage": "https://github.com/Telefonica/cross-confluence-tools/tree/main/components/confluence-sync",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "confluence",
+    "html",
+    "content",
+    "page",
+    "pages",
+    "tree",
+    "sync",
+    "cli",
+    "node",
+    "json"
+  ],
   "scripts": {
     "build": "tsc",
     "check:ci": "echo 'All checks passed'",

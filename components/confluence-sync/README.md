@@ -189,74 +189,10 @@ The list of pages to sync is an array of objects with the following properties:
 
 This getter returns the [logger instance](https://github.com/mocks-server/main/tree/master/packages/logger) used internally. You may want to use it to attach listeners, write tests, etc.
 
-## Development
+## Contributing
 
-### Installation
+Please read our [Contributing Guidelines](./CONTRIBUTING.md) for details on how to contribute to this project before submitting a pull request.
 
-TypeScript components of the IDP project use Pnpm as dependencies manager. So, to start working on them, you have to install the dependencies by running `pnpm install` in the root folder of the repository.
+## License
 
-Please refer to the monorepo README file for further information about [common requirements](../../README.md#requirements) and [installation process](../../README.md#installation) of all TypeScript components.
-
-### Monorepo tool
-
-Note that this component is part of a monorepo, so you can execute any command of the components from the root folder, and Nx will take care of executing the dependent commands in the right order. Any command described here should be executed from the root folder of the repository, using Nx.
-
-For example, a command like this:
-
-```sh title="Execute unit tests of the component inside its folder"
-pnpm run test:unit
-```
-
-Should be executed like this:
-
-```sh title="Execute unit tests of the component, and all needed dependencies, from root folder"
-pnpm nx test:unit confluence-sync-pages
-```
-
-### Unit tests
-
-Unit tests are executed using [Jest](https://jestjs.io/). To run them, execute the following command:
-
-```sh
-pnpm run test:unit
-```
-
-### Component tests
-
-Component tests are executed also using [Jest](https://jestjs.io/). But in this case, no dependencies are mocked, so the tests are executed against the real dependencies. A [mock server](https://www.mocks-server.org/) is used to simulate the Confluence API. To run them, execute the following command, which will start the mock server and execute the tests:
-
-```sh
-pnpm run test:component
-```
-
-You can also start the mock server in a separate terminal, and then execute the tests, which will allow you to see and change the requests and responses in the mock server in real time, so you can better understand what is happening, and debug the tests:
-
-```sh
-pnpm run confluence:mock
-```
-
-And, in a separate terminal:
-
-```sh
-pnpm run test:component:run
-```
-
-### Build
-
-This command generates the library into the `dist` directory, which is the one defined as the entry point in the `package.json` file. __Note that other components in the repository won't be able to use the library until this command is executed.__
-
-```sh
-pnpm run build
-```
-
-### NPM scripts reference
-
-- `test:unit` - Run unit tests.
-- `test:component` - Run component tests.
-- `test:component:run` - Run component tests without starting the mock server.
-- `confluence:mock` - Start the mock server.
-- `build` - Build the library.
-- `check:types` - Checks the TypeScript types.
-- `lint` - Lint the code.
-- `lint:fix` - Fix lint errors.
-
+This project is licensed under the Apache-2.0 License - see the [LICENSE](./LICENSE) file for details.

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 export const PAGES_EMPTY_ROOT = [
   {
     id: "foo-root-id",
