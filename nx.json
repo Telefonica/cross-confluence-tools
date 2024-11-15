@@ -38,8 +38,8 @@
     "lint": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         {
@@ -51,8 +51,8 @@
     "check:spell": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         {
@@ -64,8 +64,8 @@
     "check:types": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         "^build"
@@ -74,8 +74,8 @@
     "test:unit": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "outputs": ["{projectRoot}/coverage"],
       "dependsOn": [
@@ -85,9 +85,9 @@
     "build": {
       "cache": true,
       "inputs": [
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
         "default",
-        "production",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        "production"
       ],
       "dependsOn": [
         "^build"
@@ -104,8 +104,8 @@
       "cache": true,
       "parallelism": false,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         "build",

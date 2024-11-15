@@ -11,8 +11,8 @@
     "lint": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         {
@@ -38,9 +38,9 @@
         }
       ],
       "inputs": [
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
         "default",
-        "production",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        "production"
       ],
       "outputs": [
         "{projectRoot}/dist/**/*",
