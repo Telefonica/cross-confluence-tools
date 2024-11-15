@@ -3,10 +3,7 @@ import type {
   ConfluenceInputPage,
   ConfluenceSyncPagesInterface,
 } from "@tid-cross/confluence-sync";
-import {
-  ConfluenceSyncPages,
-  SyncModes,
-} from "@tid-cross/confluence-sync";
+import { ConfluenceSyncPages, SyncModes } from "@tid-cross/confluence-sync";
 
 import type { ModeOption } from "../DocusaurusToConfluence.types.js";
 import { isStringWithLength } from "../support/typesValidations.js";
