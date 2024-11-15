@@ -1,5 +1,5 @@
-import type { ChildProcessManagerInterface } from "@telefonica-cross/child-process-manager";
-import { ChildProcessManager } from "@telefonica-cross/child-process-manager";
+import type { ChildProcessManagerInterface } from "@tid-cross/child-process-manager";
+import { ChildProcessManager } from "@tid-cross/child-process-manager";
 
 import { cleanLogs } from "../support/Logs";
 import {

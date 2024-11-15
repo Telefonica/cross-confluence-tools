@@ -1,8 +1,8 @@
 import { rm } from "fs/promises";
 import { resolve } from "path";
 
-import type { ChildProcessManagerInterface } from "@telefonica-cross/child-process-manager";
-import { ChildProcessManager } from "@telefonica-cross/child-process-manager";
+import type { ChildProcessManagerInterface } from "@tid-cross/child-process-manager";
+import { ChildProcessManager } from "@tid-cross/child-process-manager";
 import { glob } from "glob";
 import { dedent } from "ts-dedent";
 

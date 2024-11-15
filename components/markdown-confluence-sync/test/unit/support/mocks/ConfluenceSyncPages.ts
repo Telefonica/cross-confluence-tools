@@ -1,6 +1,6 @@
-jest.mock("@telefonica-cross/confluence-sync");
+jest.mock("@tid-cross/confluence-sync");
 
-import * as confluenceSyncPagesMock from "@telefonica-cross/confluence-sync";
+import * as confluenceSyncPagesMock from "@tid-cross/confluence-sync";
 
 export const customConfluenceSyncPages = {
   sync: jest.fn(),

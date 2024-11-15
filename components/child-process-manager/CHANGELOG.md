@@ -11,4 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
-## [Unreleased]
+## [1.0.0-beta.1]
+
+### Added
+
+- feat: Initial release of the child process manager.

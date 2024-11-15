@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+# SPDX-License-Identifier: MIT
+
 name: Install and cache
 description: Setup the runner environment, by installing dependencies and restoring caches
 

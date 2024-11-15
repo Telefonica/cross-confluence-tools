@@ -4,7 +4,7 @@ import type {
   OptionDefinition,
 } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
-import type { ConfluenceInputPage } from "@telefonica-cross/confluence-sync";
+import type { ConfluenceInputPage } from "@tid-cross/confluence-sync";
 
 import type { ModeOption } from "../DocusaurusToConfluence.types";
 

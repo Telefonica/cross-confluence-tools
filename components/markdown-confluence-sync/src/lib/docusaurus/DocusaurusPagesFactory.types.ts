@@ -1,6 +1,6 @@
 import type { ConfigInterface } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
-import type { SyncModes } from "@telefonica-cross/confluence-sync";
+import type { SyncModes } from "@tid-cross/confluence-sync";
 
 import type { FilesPattern } from "..";
 

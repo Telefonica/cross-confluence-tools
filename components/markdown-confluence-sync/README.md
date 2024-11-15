@@ -320,7 +320,7 @@ You can also import the library in your code and use it programmatically. In thi
 
 ```js title="Programmatic usage"
 import path from "path";
-import { DocusaurusToConfluence } from '@telefonica-cross/markdown-confluence-sync';
+import { DocusaurusToConfluence } from '@tid-cross/markdown-confluence-sync';
 
 const docusaurusToConfluence = new DocusaurusToConfluence({
   docsDir: path.resolve(__dirname, "..", "docs");
@@ -365,7 +365,7 @@ You can also use the `confluence.noticeTemplate` option to provide a custom temp
   * `{{default}}`: The default message.
 
 ```js
-/** @type {import('@telefonica-cross/markdown-confluence-sync').Configuration} */
+/** @type {import('@tid-cross/markdown-confluence-sync').Configuration} */
 
 module.exports = {
   docsDir: "./docs",

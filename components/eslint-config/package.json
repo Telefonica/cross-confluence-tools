@@ -1,5 +1,5 @@
 {
-  "name": "@telefonica-cross/eslint-config",
+  "name": "@tid-cross/eslint-config",
   "version": "0.1.0",
   "private": true,
   "type": "module",

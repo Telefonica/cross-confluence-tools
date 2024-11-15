@@ -2,11 +2,11 @@ import type { LoggerInterface } from "@mocks-server/logger";
 import type {
   ConfluenceInputPage,
   ConfluenceSyncPagesInterface,
-} from "@telefonica-cross/confluence-sync";
+} from "@tid-cross/confluence-sync";
 import {
   ConfluenceSyncPages,
   SyncModes,
-} from "@telefonica-cross/confluence-sync";
+} from "@tid-cross/confluence-sync";
 
 import type { ModeOption } from "../DocusaurusToConfluence.types.js";
 import { isStringWithLength } from "../support/typesValidations.js";

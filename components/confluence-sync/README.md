@@ -51,7 +51,7 @@ This package is not published in NPM, so, for the moment it can be used only in 
 ```json title="package.json"
 {
   "dependencies": {
-    "@telefonica-cross/confluence-sync": "workspace:*"
+    "@tid-cross/confluence-sync": "workspace:*"
   }
 }
 ```
@@ -79,7 +79,7 @@ This package is not published in NPM, so, for the moment it can be used only in 
 Once installed, you can import it and use it in your code, and then execute it passing a list of pages to sync:
 
 ```js title="Example"
-import { ConfluenceSyncPages } from '@telefonica-cross/confluence-sync';
+import { ConfluenceSyncPages } from '@tid-cross/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
   url: "https://confluence.tid.es",
@@ -124,7 +124,7 @@ await confluenceSyncPages.sync([
 #### Example
 
 ```js title="ExampleWithFlatMode"
-import { ConfluenceSyncPages, SyncModes } from '@telefonica-cross/confluence-sync';
+import { ConfluenceSyncPages, SyncModes } from '@tid-cross/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
   url: "https://confluence.tid.es",

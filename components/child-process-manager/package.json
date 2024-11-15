@@ -1,6 +1,35 @@
 {
-  "name": "@telefonica-cross/child-process-manager",
-  "version": "0.1.0",
+  "name": "@tid-cross/child-process-manager",
+  "description": "Async child process manager providing access to exit code and stdout/stderr",
+  "version": "1.0.0-beta.1",
+  "license": "Apache-2.0",
+  "author": "Telefónica Innovación Digital",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/cross-confluence-tools",
+    "directory": "components/child-process-manager"
+  },
+  "homepage": "https://github.com/Telefonica/cross-confluence-tools/tree/main/components/child-process-manager",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "spawn",
+    "cross",
+    "async",
+    "promise",
+    "kill",
+    "stderr",
+    "stdout",
+    "logs",
+    "child",
+    "process",
+    "child process",
+    "manager",
+    "test tools",
+    "testing",
+    "utilities"
+  ],
   "scripts": {
     "build": "tsc",
     "check:ci": "echo 'All checks passed'",

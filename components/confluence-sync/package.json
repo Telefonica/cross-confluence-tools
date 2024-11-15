@@ -1,5 +1,5 @@
 {
-  "name": "@telefonica-cross/confluence-sync",
+  "name": "@tid-cross/confluence-sync",
   "version": "0.1.0",
   "scripts": {
     "build": "tsc",

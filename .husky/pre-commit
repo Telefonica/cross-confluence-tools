@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+# SPDX-License-Identifier: MIT
+
 if ! [ -x "$(command -v pnpm)" ]; then
   echo 'Pnpm is not installed, skipping lint hook' >&2
   exit 0

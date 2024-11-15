@@ -2,7 +2,7 @@ import type { ConfigInterface } from "@mocks-server/config";
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import { Logger } from "@mocks-server/logger";
-import { SyncModes } from "@telefonica-cross/confluence-sync";
+import { SyncModes } from "@tid-cross/confluence-sync";
 
 import { ConfluenceSync } from "./confluence/ConfluenceSync.js";
 import type {
