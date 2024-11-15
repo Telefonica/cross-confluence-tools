@@ -7,7 +7,7 @@ They are distributed as NPM packages. Please refer to the documentation of each 
 ## Main packages
 
 * [Markdown Confluence Sync](components/markdown-confluence-sync/README.md): A tool to __synchronize a folder containing Markdown files with Confluence pages__.
-* [Confluence Sync](components/confluence-sync/README.md): A tool to __synchronize a JSON object containing HTML contents with Confluence pages__.
+* [Confluence Sync](components/confluence-sync/README.md): A tool to __synchronize a JSON object containing HTML contents with Confluence pages__. Supports nested pages and attachments upload.
 
 ## Other tools
 
