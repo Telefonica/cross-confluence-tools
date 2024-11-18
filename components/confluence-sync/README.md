@@ -1,8 +1,8 @@
 # confluence-sync
 
-Creates/updates/deletes Confluence pages based on a list of page elements that may be nested.
+Creates/updates/deletes Confluence pages based on a list of objects containing the page contents. Supports nested pages and attachments upload.
 
-Supports nested pages and attachments upload. Also supports updating specific pages directly by providing their id.
+Also supports updating specific pages directly by providing their id.
 
 Read [Features](#features) for more information about the two sync modes available, "tree" and "flat".
 

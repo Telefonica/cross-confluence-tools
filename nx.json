@@ -112,7 +112,7 @@
         "^build"
       ]
     },
-    "check:ci": {
+    "check:all": {
       "dependsOn": [
         "cspell:config",
         "eslint:config",

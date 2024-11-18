@@ -1,9 +1,12 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { relative } from "node:path";
 
 import type { LoggerInterface } from "@mocks-server/logger";
 import { glob } from "glob";
 
-import type { FilesPattern } from "../DocusaurusToConfluence.types.js";
+import type { FilesPattern } from "../MarkdownConfluenceSync.types.js";
 import { isStringWithLength } from "../support/typesValidations.js";
 
 import type {

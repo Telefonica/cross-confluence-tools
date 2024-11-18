@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import remarkFrontmatter from "remark-frontmatter";
 import remarkParse from "remark-parse";
 import remarkParseFrontmatter from "remark-parse-frontmatter";

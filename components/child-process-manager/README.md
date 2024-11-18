@@ -29,7 +29,7 @@ npm install @tid-cross/child-process-manager
 
 ## Example
 
-Import the library, create a child process and wait for it to finish. It will return the exit code and the logs in the resolved object.
+Import the library, create a child process and wait for it to finish. It will return the exit code and the array of logs in the resolved object.
 
 ```js title="Example"
 import { ChildProcessManager } from '@tid-cross/child-process-manager';

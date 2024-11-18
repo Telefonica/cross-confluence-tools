@@ -1,4 +1,7 @@
-import type { ConfigInterface } from "@mocks-server/config";
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import type { ConfigInterface as customMarkdownConfluenceSyncClass } from "@mocks-server/config";
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import { Logger } from "@mocks-server/logger";
@@ -15,8 +18,8 @@ import type {
   DocusaurusPagesInterface,
 } from "./docusaurus/DocusaurusPages.types.js";
 import type {
-  DocusaurusToConfluenceConstructor,
-  DocusaurusToConfluenceInterface,
+  MarkdownConfluenceSyncConstructor,
+  MarkdownConfluenceSyncInterface,
   Configuration,
   LogLevelOption,
   LogLevelOptionDefinition,
@@ -24,7 +27,7 @@ import type {
   FilesPatternOptionDefinition,
   ModeOption,
   FilesPatternOption,
-} from "./DocusaurusToConfluence.types.js";
+} from "./MarkdownConfluenceSync.types.js";
 
 const MODULE_NAME = "markdown-confluence-sync";
 const DOCUSAURUS_NAMESPACE = "docusaurus";
@@ -53,12 +56,12 @@ const filesPatternOption: FilesPatternOptionDefinition = {
   type: "string",
 };
 
-export const DocusaurusToConfluence: DocusaurusToConfluenceConstructor = class DocusaurusToConfluence
-  implements DocusaurusToConfluenceInterface
+export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class MarkdownConfluenceSync
+  implements MarkdownConfluenceSyncInterface
 {
   private _docusaurusPages: DocusaurusPagesInterface;
   private _confluenceSync: ConfluenceSyncInterface;
-  private _configuration: ConfigInterface;
+  private _configuration: customMarkdownConfluenceSyncClass;
   private _initialized = false;
   private _config: Configuration;
   private _logger: LoggerInterface;

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { Root } from "mdast";
 import { mdxToMarkdown } from "mdast-util-mdx";
 import type { MdxJsxFlowElement } from "mdast-util-mdx-jsx";

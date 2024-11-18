@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { Blockquote, Content, Paragraph, Root } from "mdast";
 import type { Plugin as UnifiedPlugin } from "unified";
 import find from "unist-util-find";

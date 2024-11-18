@@ -32,7 +32,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "check:ci": "echo 'All checks passed'",
+    "check:all": "echo 'All checks passed'",
     "check:spell": "cspell .",
     "check:types:test": "tsc --noEmit --project ./test/unit/tsconfig.json",
     "check:types:lib": "tsc --noEmit",
@@ -43,7 +43,7 @@
   "nx": {
     "includedScripts": [
       "build",
-      "check:ci",
+      "check:all",
       "check:spell",
       "check:types",
       "lint",

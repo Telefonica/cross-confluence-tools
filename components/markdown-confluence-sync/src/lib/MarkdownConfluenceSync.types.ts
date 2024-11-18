@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type {
   OptionDefinition,
   OptionInterfaceOfType,
@@ -9,7 +12,7 @@ export type FilesPattern = string | string[];
 
 declare global {
   //eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace DocusaurusToConfluence {
+  namespace MarkdownConfluenceSync {
     interface Config {
       /** Configuration options */
       config?: {
@@ -35,7 +38,7 @@ declare global {
 }
 
 // eslint-disable-next-line no-undef
-export type Configuration = DocusaurusToConfluence.Config;
+export type Configuration = MarkdownConfluenceSync.Config;
 
 export type LogLevelOptionDefinition = OptionDefinition<
   LogLevel,
@@ -58,16 +61,16 @@ export type FilesPatternOptionDefinition = OptionDefinition<FilesPattern>;
 
 export type FilesPatternOption = OptionInterfaceOfType<FilesPattern>;
 
-/** Creates a DocusaurusToConfluence interface */
-export interface DocusaurusToConfluenceConstructor {
-  /** Returns DocusaurusToConfluence interface
-   * @returns DocusaurusToConfluence instance {@link DocusaurusToConfluenceInterface}.
+/** Creates a MarkdownConfluenceSync interface */
+export interface MarkdownConfluenceSyncConstructor {
+  /** Returns MarkdownConfluenceSync interface
+   * @returns MarkdownConfluenceSync instance {@link MarkdownConfluenceSyncInterface}.
    */
   // eslint-disable-next-line no-undef
-  new (options: DocusaurusToConfluence.Config): DocusaurusToConfluenceInterface;
+  new (options: MarkdownConfluenceSync.Config): MarkdownConfluenceSyncInterface;
 }
 
-export interface DocusaurusToConfluenceInterface {
+export interface MarkdownConfluenceSyncInterface {
   /** Sync pages in Confluence*/
   sync(): Promise<void>;
 }

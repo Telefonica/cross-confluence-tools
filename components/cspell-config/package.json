@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "check:ci": "echo 'All checks passed'",
+    "check:all": "echo 'All checks passed'",
     "check:spell": "cspell .",
     "cspell:config": "echo 'cspell config ready'",
     "lint": "eslint ."

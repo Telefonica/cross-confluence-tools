@@ -1,9 +1,41 @@
 {
   "name": "@tid-cross/markdown-confluence-sync",
-  "version": "0.1.0",
+  "description": "Creates/updates/deletes Confluence pages based on markdown files in a directory",
+  "version": "1.0.0-beta.1",
+  "license": "Apache-2.0",
+  "author": "Telefónica Innovación Digital",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/cross-confluence-tools",
+    "directory": "components/markdown-confluence-sync"
+  },
+  "homepage": "https://github.com/Telefonica/cross-confluence-tools/tree/main/components/markdown-confluence-sync",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "confluence",
+    "page",
+    "pages",
+    "markdown",
+    "md",
+    "mdx",
+    "files",
+    "folder",
+    "tree",
+    "sync",
+    "update",
+    "create",
+    "delete",
+    "cli",
+    "node",
+    "json",
+    "attachments",
+    "images"
+  ],
   "scripts": {
     "build": "tsc",
-    "check:ci": "echo 'All checks passed'",
+    "check:all": "echo 'All checks passed'",
     "check:spell": "cspell .",
     "check:types": "npm run check:types:test:unit && npm run check:types:test:component && npm run check:types:lib",
     "check:types:lib": "tsc --noEmit",
@@ -20,7 +52,7 @@
   "nx": {
     "includedScripts": [
       "build",
-      "check:ci",
+      "check:all",
       "check:spell",
       "check:types",
       "lint",

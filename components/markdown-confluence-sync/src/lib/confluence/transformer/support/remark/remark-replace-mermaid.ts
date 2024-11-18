@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { rmSync, writeFileSync } from "node:fs";

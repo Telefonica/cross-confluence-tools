@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { u } from "unist-builder";
 
 import { replace } from "@src/lib/support/unist/unist-util-replace";
