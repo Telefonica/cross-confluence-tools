@@ -347,7 +347,7 @@ Apart of supporting the most common markdown features, the library also supports
 
 ### Docusaurus compatibility
 
-The library is designed to work with Docusaurus projects, so it supports some Docusaurus specific features:
+The library is designed to work with [Docusaurus projects](https://docusaurus.io/) without much further configuration, so it also supports some Docusaurus specific features:
 
 * [Admonitions](https://docusaurus.io/docs/markdown-features/admonitions) - Docusaurus admonitions are converted to block quotes keeping their content.
 * [Docusaurus MDX code blocks](https://docusaurus.io/docs/i18n/crowdin#mdx-solutions) will be removed, except for the next tags:
