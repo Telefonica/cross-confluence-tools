@@ -7,11 +7,13 @@ Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confl
 - [Requirements](#requirements)
   - [Compatibility](#compatibility)
 - [Features](#features)
+- [Alternatives](#alternatives)
 - [Quick start](#quick-start)
   - [Installation](#installation)
   - [Usage](#usage)
 - [Sync modes](#sync-modes)
   - [Tree mode](#tree-mode)
+    - [Page names](#page-names)
     - [Index files](#index-files)
     - [Category files](#category-files)
     - [Example](#example)
@@ -51,7 +53,7 @@ The library reads the markdown files in a given folder and create/delete/update 
 
 Markdown documents to be synced __must have a `title` property, and a `sync_to_confluence` property set to `true` in the [frontmatter metadata](https://jekyllrb.com/docs/front-matter/).__
 
-The library has two modes in the configuration for sync pages (`tree` or `flat`):
+The library has __two modes for syncing__:
 * `tree` sync mode - Mirrors the hierarchical pages structure from given folder under a Confluence root page. Some files are used for [representing indices in the hierarchy](#index-files).
 * `flat` sync mode - Synchronize a list of markdown files matched by a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) as children page of a Confluence root page, without any hierarchy.
   * As an extra in this mode, a Confluence id can be provided to each page using the frontmatter, and, in such case, the corresponding Confluence page will be always updated, even when it is not a children of the Confluence root page.
@@ -63,6 +65,11 @@ Other features are:
 * Supports __configuration per page using [frontmatter metadata](https://jekyllrb.com/docs/front-matter/).__ Some of the things you can configure are:
   * Title of the page in Confluence.
   * Adding ancestors title to every page title.
+
+## Alternatives
+
+* [Markdown-Confluence-CLI](https://github.com/markdown-confluence/markdown-confluence/tree/main/packages/cli) - A CLI tool to sync markdown files with Confluence. It converts the markdown files to [ADF format](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/) and sends them to Confluence. Some Confluence versions do not work well with ADF format, so it may not work in all cases.
+* [Markdown-to-Confluence](https://github.com/duo-labs/markdown-to-confluence) - A CLI tool to sync markdown files with Confluence made in Python. It uses the Confluence REST API to create pages. It seems to not support hierarchical structures, or Mermaid diagrams.
 
 ## Quick start
 
@@ -112,7 +119,9 @@ The library has two modes for reading markdown files, `tree` and `flat`:
 
 The `tree` mode will creates a hierarchy based on the markdown files structure in the folder to sync, and send the pages to Confluence respecting it. This is the default mode.
 
-Confluence requires unique page names within a space. To meet this requirement, pages are created by combining the titles of their ancestors with their own title. Ancestors refer to parent pages or categories that the page belongs to. For example:
+#### Page names
+
+__Confluence requires unique page names within a space__. To meet this requirement, pages are created by combining the titles of their ancestors with their own title. Ancestors refer to parent pages or categories that the page belongs to. For example:
   * If we have a page named `Page C` with ancestors `Category A` and `Category B` it will be created with the title `[Category A][Category B] Page C` in Confluence.
 
 #### Index files
