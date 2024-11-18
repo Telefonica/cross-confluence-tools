@@ -5,6 +5,7 @@ Thank you for being part of the Telefónica Innovación Digital Open Source Comm
 # Table of Contents
 
 - [Getting started](#getting-started)
+- [Component tasks](#component-tasks)
 - [License](#license)
   - [Licensing of new files](#licensing-of-new-files)
   - [Public Domain](#public-domain)
@@ -14,7 +15,55 @@ Thank you for being part of the Telefónica Innovación Digital Open Source Comm
 
 # Getting started
 
-TO BE FILLED BY THE PROJECT MAINTAINER
+This repository is a [Pnpm]https://pnpm.io/es/ and [Nx](https://nx.dev/react)  monorepo that contains multiple components. Each component is a separate package that can be built, tested, and linted independently.
+
+Every component has to be created in the `components` folder. Each one must contain its own package.json file, and it can have its own dependencies. Common dependencies for development and testing should be added to the root package.json file.
+
+## Installation
+
+To get started, clone the repository and install the dependencies:
+
+```bash
+pnpm install
+```
+
+# Component tasks
+
+Component task names are standardized across the repository. This enables to define common dependencies and files impacting them in the root `nx.json` file. The following are the most common tasks:
+
+* `lint`: Lints the component.
+* `check:types`: Checks the TypeScript types in the component.
+* `check:spell`: Checks the spelling in the component.
+* `build`: Builds the component.
+* `test:unit`: Runs the unit tests.
+* `test:component`: Runs the component tests.
+* `check:all`: Run all the checks and build the component.
+
+You can also rewrite the tasks to fit the component's needs. For example, if a component has special requirements for unit tests, you can define a `test:unit` task in the component's `project.json` file, redefining the Nx inputs, outputs, and dependencies in order to fit the component's needs and optimize the cache accordingly. _(See how the `markdown-confluence-sync` component does this for an example)_
+
+> [!WARNING]
+> It is crucial to configure properly the tasks dependencies, input, and output files, so __Nx can keep or clean the cache correctly, avoiding running unnecessary tasks__, both locally or in the pipeline.
+
+## Running tasks in components
+
+Nx provides a way to run commands in a specific component, taking care of the task dependencies. To run a command in a component, use the following syntax: `pnpm nx run <task> <component>`. For example, to run the unit tests in the `child-process-manager` component, use the following command:
+
+```bash
+pnpm nx test:unit child-process-manager
+```
+
+> ![TIP]
+> Using Nx also has the advantage of being able to cache the results of tasks, so if you run the same command again, it will be faster if any file impacting the task has not changed.
+
+## Running a task in all components
+
+To run a task in all components, use the following syntax: `pnpm nx run-many <task> --all`. For example, to run the unit tests in all components, use the following command:
+
+```bash
+pnpm nx run-many test:unit --all
+```
+
+This will run the `test:unit` task in all components and also the corresponding dependencies, in the right order, so everything is built and tested correctly.
 
 # License
 

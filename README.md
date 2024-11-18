@@ -15,6 +15,13 @@ These tools are used by the main packages, but are also published as separate pa
 
 * [child-process-manager](components/child-process-manager/README.md): A tool to manage child processes. Useful to execute shell commands from tests and check their output, for example.
 
+## Internal tools
+
+Some other components in the repository are not published, because they are used only in the development of the main packages:
+
+* [eslint-config](components/eslint-config/README.md): Base configuration for ESLint, enabling to extend it on each different component.
+* [cspell-config](components/cspell-config/README.md): Base configuration for cspell, enabling to extend it on each different component.
+
 ## Contributing
 
 Please read our [Contributing Guidelines](./.github/CONTRIBUTING.md) for details on how to contribute to this project before submitting a pull request.
