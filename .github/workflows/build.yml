@@ -22,6 +22,19 @@ permissions:
   actions: write
 
 jobs:
+  lint-root:
+    name: Lint root folder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/install
+      - name: Lint
+        run: pnpm lint
+      - name: Check spell
+        run: pnpm check:spell
   lint:
     name: Lint
     runs-on: ubuntu-latest

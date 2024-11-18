@@ -1,6 +1,5 @@
 {
   "files.associations": {
-    "nx.json": "jsonc",
-    "**/project.json": "jsonc"
+    "*.yaml": "home-assistant"
   }
 }
