@@ -4,22 +4,14 @@ First of all, thank you for considering contributing to the this project! 🎉
 
 # Table of contents
 
-- [License, Code of Conduct, and Contribution License Agreement](#license-code-of-conduct-and-contribution-license-agreement)
-- [Pull requests](#pull-requests)
 - [Development](#development)
   - [Installation](#installation)
   - [Monorepo tool](#monorepo-tool)
   - [Unit tests](#unit-tests)
   - [Build](#build)
   - [NPM scripts reference](#npm-scripts-reference)
-
-## License, Code of Conduct, and Contribution License Agreement
-
-By contributing to this project, you agree that your contributions will be licensed under the [LICENSE](./LICENSE) file in this folder, and that you agree to the terms described in the [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](../../.github/CODE_OF_CONDUCT.md) files in this repository.
-
-## Pull requests
-
-Please follow the recommendations in the main [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) file in this repository before submitting a pull request.
+- [License, Code of Conduct, and Contribution License Agreement](#license-code-of-conduct-and-contribution-license-agreement)
+- [Pull requests](#pull-requests)
 
 ## Development
 
@@ -75,3 +67,11 @@ pnpm nx build child-process-manager
 - `check:spell` - Checks spelling.
 - `check:types` - Checks the TypeScript types.
 - `lint` - Lint the code.
+
+## License, Code of Conduct, and Contribution License Agreement
+
+By contributing to this project, you agree that your contributions will be licensed under the [LICENSE](./LICENSE) file in this folder, and that you agree to the terms described in the [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](../../.github/CODE_OF_CONDUCT.md) files in this repository.
+
+## Pull requests
+
+Please follow the recommendations in the main [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) file in this repository before submitting a pull request.

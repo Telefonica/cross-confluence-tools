@@ -6,7 +6,7 @@ They are distributed as NPM packages. Please refer to the documentation of each 
 
 ## Main packages
 
-* [Markdown Confluence Sync](components/markdown-confluence-sync/README.md): A tool to __synchronize a folder containing Markdown files with Confluence pages__.
+* [Markdown Confluence Sync](components/markdown-confluence-sync/README.md): A tool to __synchronize a folder containing Markdown files with Confluence pages__. Supports Mermaid diagrams and per-page configuration using [frontmatter metadata](https://jekyllrb.com/docs/front-matter/). Works great with [Docusaurus](https://docusaurus.io/).
 * [Confluence Sync](components/confluence-sync/README.md): A tool that __creates/updates/deletes Confluence pages based on a list of objects containing the page contents__. Supports nested pages and attachments upload.
 
 ## Other tools

@@ -4,22 +4,15 @@ First of all, thank you for considering contributing to the this project! 🎉
 
 # Table of contents
 
-- [License, Code of Conduct, and Contribution License Agreement](#license-code-of-conduct-and-contribution-license-agreement)
-- [Pull requests](#pull-requests)
 - [Development](#development)
   - [Installation](#installation)
   - [Monorepo tool](#monorepo-tool)
   - [Unit tests](#unit-tests)
+  - [Component tests](#component-tests)
   - [Build](#build)
   - [NPM scripts reference](#npm-scripts-reference)
-
-## License, Code of Conduct, and Contribution License Agreement
-
-By contributing to this project, you agree that your contributions will be licensed under the [LICENSE](./LICENSE) file in this folder, and that you agree to the terms described in the [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](../../.github/CODE_OF_CONDUCT.md) files in this repository.
-
-## Pull requests
-
-Please follow the recommendations in the main [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) file in this repository before submitting a pull request.
+- [License, Code of Conduct, and Contribution License Agreement](#license-code-of-conduct-and-contribution-license-agreement)
+- [Pull requests](#pull-requests)
 
 ## Development
 
@@ -59,6 +52,30 @@ Unit tests are executed using [Jest](https://jestjs.io/). To run them, execute t
 pnpm nx test:unit markdown-confluence-sync
 ```
 
+### Component tests
+
+Component tests are executed using [Jest](https://jestjs.io/) also, but they use a child process to start the component's CLI and verify that it calls to the Confluence API as expected. The Confluence API is mocked using a mock server, so the component doesn't need to connect to a real Confluence instance.
+
+There are different docs fixtures in the `test/component/fixtures` directory that are used to test different scenarios.
+
+To run them, execute the following command, which will start the mock server and execute the tests:
+
+```sh
+pnpm nx test:component markdown-confluence-sync
+```
+
+You can also start the mock server in a separate terminal, and then execute the tests, which will allow you to see and change the requests and responses in the mock server in real time, so you can better understand what is happening, and debug the tests:
+
+```sh
+pnpm nx confluence:mock markdown-confluence-sync
+```
+
+And, in a separate terminal:
+
+```sh
+pnpm nx test:component:run markdown-confluence-sync
+```
+
 ### Build
 
 This command generates the library into the `dist` directory. __Note that other components in the repository won't be able to use the library until this command is executed.__
@@ -75,3 +92,11 @@ pnpm nx build markdown-confluence-sync
 - `check:spell` - Checks spelling.
 - `check:types` - Checks the TypeScript types.
 - `lint` - Lint the code.
+
+## License, Code of Conduct, and Contribution License Agreement
+
+By contributing to this project, you agree that your contributions will be licensed under the [LICENSE](./LICENSE) file in this folder, and that you agree to the terms described in the [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](../../.github/CODE_OF_CONDUCT.md) files in this repository.
+
+## Pull requests
+
+Please follow the recommendations in the main [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) file in this repository before submitting a pull request.

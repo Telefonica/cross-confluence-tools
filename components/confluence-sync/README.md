@@ -9,6 +9,7 @@ Read [Features](#features) for more information about the two sync modes availab
 ## Table of Contents
 
 - [Requirements](#requirements)
+  - [Compatibility](#compatibility)
 - [Installation](#installation)
 - [Example](#example)
 - [Features](#features)
@@ -24,6 +25,8 @@ Read [Features](#features) for more information about the two sync modes availab
 - [API](#api)
   - [`ConfluenceSyncPages`](#confluencesyncpages)
   - [`sync`](#sync)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Requirements
 
@@ -171,9 +174,9 @@ As mentioned in the [features](#features) section, it is possible to update spec
 import { ConfluenceSyncPages, SyncModes } from '@tid-cross/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
-  url: "https://confluence.tid.es",
+  url: "https://my.confluence.es",
   personalAccessToken: "*******",
-  spaceId: "CTO",
+  spaceId: "MY-SPACE",
   logLevel: "debug",
   dryRun: false,
   syncMode: SyncModes.FLAT,
