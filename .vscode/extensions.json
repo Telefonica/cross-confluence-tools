@@ -1,5 +1,7 @@
 {
   "recommendations": [
-    "nrwl.angular-console"
+    "nrwl.angular-console",
+    "streetsidesoftware.code-spell-checker",
+    "dbaeumer.vscode-eslint"
   ]
 }
