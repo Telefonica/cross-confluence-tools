@@ -72,7 +72,6 @@ runs:
     # Check if the cache for the current branch exists
     - name: Check Nx cache to delete
       uses: actions/cache/restore@v4
-      if: github.event_name == 'pull_request'
       id: cache-check
       with:
         path: .nx
