@@ -82,6 +82,13 @@ jobs:
       - uses: ./.github/actions/run-nx-target
         with:
           target: test:unit
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-test-coverage
+          path: components/*/coverage
+          if-no-files-found: ignore
+          retention-days: 1
   build:
     needs: test-unit
     name: Build
