@@ -14,7 +14,8 @@ describe("childProcessManager", () => {
       );
       const { logs, exitCode } = await childProcessManager.run();
 
-      expect(logs).toEqual(["Hello world!"]);
+      // eslint-disable-next-line
+      expect(logs).toEqual(["Hello world!"])
       expect(exitCode).toBe(0);
     });
 
