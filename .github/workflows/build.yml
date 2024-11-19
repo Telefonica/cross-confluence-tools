@@ -7,7 +7,6 @@ on:
     branches:
       - release
       - main
-      - feat/CRC-28/migration
   pull_request:
     branches:
       - release
