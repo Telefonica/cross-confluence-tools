@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: MIT
+
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "eslint-config",

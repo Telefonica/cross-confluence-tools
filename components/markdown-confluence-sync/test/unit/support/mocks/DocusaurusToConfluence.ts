@@ -1,13 +1,16 @@
-jest.mock("@src/lib/DocusaurusToConfluence");
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
 
-import * as customDocusaurusToConfluenceClass from "@src/lib/DocusaurusToConfluence";
+jest.mock("@src/lib/MarkdownConfluenceSync");
 
-export const customDocusaurusToConfluence = {
+import * as customMarkdownConfluenceSyncClass from "@src/lib/MarkdownConfluenceSync";
+
+export const customMarkdownConfluenceSync = {
   sync: jest.fn(),
 };
 
 jest
-  .spyOn(customDocusaurusToConfluenceClass, "DocusaurusToConfluence")
+  .spyOn(customMarkdownConfluenceSyncClass, "MarkdownConfluenceSync")
   .mockImplementation(() => {
-    return customDocusaurusToConfluence;
+    return customMarkdownConfluenceSync;
   });

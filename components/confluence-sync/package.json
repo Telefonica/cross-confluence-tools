@@ -1,9 +1,38 @@
 {
-  "name": "@telefonica-cross/confluence-sync",
-  "version": "0.1.0",
+  "name": "@tid-cross/confluence-sync",
+  "description": "Creates/updates/deletes Confluence pages based on a list of objects containing the page contents. Supports nested pages and attachments upload",
+  "version": "1.0.0-beta.1",
+  "license": "Apache-2.0",
+  "author": "Telefónica Innovación Digital",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/cross-confluence-tools",
+    "directory": "components/confluence-sync"
+  },
+  "homepage": "https://github.com/Telefonica/cross-confluence-tools/tree/main/components/confluence-sync",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "confluence",
+    "html",
+    "content",
+    "page",
+    "pages",
+    "tree",
+    "sync",
+    "update",
+    "create",
+    "delete",
+    "cli",
+    "node",
+    "json",
+    "attachments",
+    "images"
+  ],
   "scripts": {
     "build": "tsc",
-    "check:ci": "echo 'All checks passed'",
+    "check:all": "echo 'All checks passed'",
     "check:spell": "cspell .",
     "check:types": "npm run check:types:test:unit && npm run check:types:test:component && npm run check:types:lib",
     "check:types:lib": "tsc --noEmit",
@@ -19,7 +48,7 @@
   "nx": {
     "includedScripts": [
       "build",
-      "check:ci",
+      "check:all",
       "check:spell",
       "check:types",
       "lint",

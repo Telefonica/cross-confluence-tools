@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { Data, Node as UnistNode } from "unist";
 import type { Test } from "unist-util-is";
 import { visit } from "unist-util-visit";

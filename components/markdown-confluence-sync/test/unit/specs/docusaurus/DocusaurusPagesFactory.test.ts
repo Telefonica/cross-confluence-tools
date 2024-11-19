@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type {
   ConfigInterface,
   ConfigNamespaceInterface,
@@ -5,7 +8,7 @@ import type {
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import { Logger } from "@mocks-server/logger";
-import type { SyncModes } from "@telefonica-cross/confluence-sync";
+import type { SyncModes } from "@tid-cross/confluence-sync";
 
 import { DocusaurusPagesFactory } from "@src/lib/docusaurus/DocusaurusPagesFactory";
 import type { DocusaurusPagesFactoryOptions } from "@src/lib/docusaurus/DocusaurusPagesFactory.types";

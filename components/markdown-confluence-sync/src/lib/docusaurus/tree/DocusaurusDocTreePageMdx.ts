@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { isStringWithLength } from "../../support/typesValidations.js";
 import type { DocusaurusDocPageOptions } from "../pages/DocusaurusDocPage.types.js";
 import { DocusaurusDocPageMdx } from "../pages/DocusaurusDocPageMdx.js";

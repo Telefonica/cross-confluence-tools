@@ -1,10 +1,10 @@
 {
-  "name": "@telefonica-cross/eslint-config",
+  "name": "@tid-cross/eslint-config",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "check:ci": "echo 'All checks passed'",
+    "check:all": "echo 'All checks passed'",
     "check:spell": "cspell .",
     "eslint:config": "echo 'eslint config ready'",
     "lint": "eslint ."

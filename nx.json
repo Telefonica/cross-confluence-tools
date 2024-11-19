@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: MIT
+
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "@telefonica-cross",
+  "npmScope": "@tid-cross",
   "defaultBase": "origin/main",
   "parallel": 2,
   "namedInputs": {
@@ -35,8 +38,8 @@
     "lint": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         {
@@ -48,8 +51,8 @@
     "check:spell": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         {
@@ -61,8 +64,8 @@
     "check:types": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         "^build"
@@ -71,8 +74,8 @@
     "test:unit": {
       "cache": true,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "outputs": ["{projectRoot}/coverage"],
       "dependsOn": [
@@ -82,9 +85,9 @@
     "build": {
       "cache": true,
       "inputs": [
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
         "default",
-        "production",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        "production"
       ],
       "dependsOn": [
         "^build"
@@ -101,15 +104,15 @@
       "cache": true,
       "parallelism": false,
       "inputs": [
-        "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
       ],
       "dependsOn": [
         "build",
         "^build"
       ]
     },
-    "check:ci": {
+    "check:all": {
       "dependsOn": [
         "cspell:config",
         "eslint:config",

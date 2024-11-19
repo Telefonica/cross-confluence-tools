@@ -1,12 +1,15 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type {
   ConfigNamespaceInterface,
   OptionInterfaceOfType,
   OptionDefinition,
 } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
-import type { ConfluenceInputPage } from "@telefonica-cross/confluence-sync";
+import type { ConfluenceInputPage } from "@tid-cross/confluence-sync";
 
-import type { ModeOption } from "../DocusaurusToConfluence.types";
+import type { ModeOption } from "../MarkdownConfluenceSync.types";
 
 type UrlOptionValue = string;
 type PersonalAccessTokenOptionValue = string;
@@ -19,7 +22,7 @@ type DryRunOptionValue = boolean;
 
 declare global {
   //eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace DocusaurusToConfluence {
+  namespace MarkdownConfluenceSync {
     interface Config {
       confluence?: {
         /** Confluence URL */

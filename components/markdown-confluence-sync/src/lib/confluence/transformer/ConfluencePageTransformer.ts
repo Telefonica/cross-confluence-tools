@@ -1,7 +1,10 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { dirname, resolve } from "node:path";
 
 import type { LoggerInterface } from "@mocks-server/logger";
-import type { ConfluenceInputPage } from "@telefonica-cross/confluence-sync";
+import type { ConfluenceInputPage } from "@tid-cross/confluence-sync";
 import type { TemplateDelegate } from "handlebars";
 import Handlebars from "handlebars";
 import rehypeRaw from "rehype-raw";

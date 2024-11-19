@@ -1,90 +1,63 @@
-# confluence-sync-pages
+# confluence-sync
 
-This library is used to sync Confluence pages. It has two modes: tree and flat:
-* In tree mode, the library receives an object defining a tree of Confluence pages, and it creates/deletes/updates the corresponding Confluence pages. All the pages are created under a root page, which must be also provided. Note that the root page must exist before running the sync process, and that all pages not present in the list will be deleted.
-* In flat mode, the library receives a list of Confluence pages, which can't be nested. Then, the library creates/deletes/updates the corresponding Confluence pages under a root page, which must be also provided. Note that the root page must exist before running the sync process, and that all pages under the root page not present in the list will be deleted.
-  * In flat mode, a Confluence id can be also provided for each page, and then it will be used to update the corresponding Confluence page. In such case, the root page is ignored. So, if all the pages have an id, the root page is not needed.
+Creates/updates/deletes Confluence pages based on a list of objects containing the page contents. Supports nested pages and attachments upload.
 
+Also supports updating specific pages directly by providing their id.
+
+Read [Features](#features) for more information about the two sync modes available, "tree" and "flat".
 
 ## Table of Contents
 
+- [Requirements](#requirements)
+  - [Compatibility](#compatibility)
+- [Installation](#installation)
+- [Example](#example)
 - [Features](#features)
-- [Usage](#usage)
-  - [Installation](#installation)
-  - [Example](#example)
-  - [API](#api)
-    - [`ConfluenceSyncPages`](#confluencesyncpages)
-    - [`sync`](#sync)
-- [Development](#development)
-  - [Installation](#installation-1)
-  - [Monorepo tool](#monorepo-tool)
-  - [Unit tests](#unit-tests)
-  - [Component tests](#component-tests)
-  - [Build](#build)
-  - [NPM scripts reference](#npm-scripts-reference)
+  - [Tree mode](#tree-mode)
+  - [Flat mode](#flat-mode)
+  - [Updating specific pages](#updating-specific-pages)
+- [Attachments](#attachments)
+- [How to get the root page id](#how-to-get-the-root-page-id)
+- [Sync modes in detail](#sync-modes-in-detail)
+  - [Tree](#tree-mode-1)
+  - [Flat](#flat-mode-1)
+  - [Updating specific pages](#updating-specific-pages-1)
+- [API](#api)
+  - [`ConfluenceSyncPages`](#confluencesyncpages)
+  - [`sync`](#sync)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Features
+## Requirements
 
-The library supports the following features:
+This library requires:
 
-Sync Mode: Tree
-* Create Confluence pages from a list of pages with their corresponding paths, under a root page.
-* Support for nested pages.
-* Create Confluence pages if they don't exist.
-* Update Confluence pages if they already exist.
-* Delete Confluence pages that are not present in the list.
-* Support for images.
+* A Confluence instance.
+* The id of the Confluence space where the pages will be created.
+* A personal access token to authenticate. You can create a personal access token following the instructions in the [Atlassian documentation](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 
-Sync Mode: Flat
-* Update Confluence pages from a list of pages with id that already exist.
-* Create Confluence pages from a list of pages without id under the root page.
-* Update Confluence pages without id, if they already exist under the root page.
-* Delete Confluence pages under the root page that are not present in the list.
-* Support for images.
+### Compatibility
 
-## Usage
+> [!WARNING]
+> This library has been tested only with Confluence 8.5.x. It may work with other versions, but it has not been tested.
 
-### Installation
+## Installation
 
-This package is not published in NPM, so, for the moment it can be used only in this repository through PNPM workspaces. To use it, you have to add it to your dependencies in the `package.json` file:
-
-```json title="package.json"
-{
-  "dependencies": {
-    "@telefonica-cross/confluence-sync": "workspace:*"
-  }
-}
+```bash
+npm install @tid-cross/confluence-sync
 ```
 
-### Sync Mode: Tree
+## Example
 
-- By default, the library will run in tree mode. If you want to run it in flat mode, you have to set the `syncMode` property of the configuration object to `flat`.
-- The images are uploaded to Confluence as attachments. The library will create a new attachment if it doesn't exist, or delete it and create it again if it already exists.
-- The library assumes that the Confluence instance is using the default page hierarchy, where pages are organized in spaces. The library will create all the pages under a root page of the space.
-- The root page must exist before running the sync process.
-- The ancestors of each page should be ordered from the root page to the page itself. For example, if you want to create a page under the page `Introduction to the documentation`, which is under the page `Welcome to the documentation`, you should provide the following list of ancestors: `['Welcome to the documentation', 'Introduction to the documentation']`.
-- The first ancestor of each page must be the root page, if not, it will be added automatically.
-- As a consequence of the previous point, the library doesn't support to update the root page.
-- The pages are identified by their title. If a page with the same title already exists, it will be updated. If it doesn't exist, it will be created.
-- The pages not present in the list will be deleted.
-- The library doesn't support to move pages from one parent to another. If you want to move a page, you should delete it and create it again under the new parent.
-- To get the ID of the root page, you can use the [Confluence REST API](https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get) or follow the next steps:
-  * Enter to Confluence.
-  * Go to the page of the space where you want to create the pages. 
-  * Click on the `...` button and select `Page information`.
-  * Copy the ID of the page from the URL. For example, if the URL is `https://confluence.tid.es/pages/viewpage.action?pageId=12345678`, the ID of the page is `12345678`. 
-
-#### Example
-
-Once installed, you can import it and use it in your code, and then execute it passing a list of pages to sync:
+Import it and pass to it a list of pages to sync:
 
 ```js title="Example"
-import { ConfluenceSyncPages } from '@telefonica-cross/confluence-sync';
+import { ConfluenceSyncPages } from '@tid-cross/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
-  url: "https://confluence.tid.es",
+  url: "https://your.confluence.com",
   personalAccessToken: "*******",
-  spaceId: "CTO",
+  spaceId: "your-space-id",
   rootPageId: "12345678"
   logLevel: "debug",
   dryRun: false,
@@ -111,25 +84,99 @@ await confluenceSyncPages.sync([
 ]);
 ```
 
-### Sync Mode: Flat
+## Features
 
-- By default, the library will run in tree mode. If you want to run it in flat mode, you have to set the `syncMode` property of the configuration object to `flat`.
-- The images are uploaded to Confluence as attachments. The library will create a new attachment if it doesn't exist, or delete it and create it again if it already exists.
-- The pages provided with id must exist before running the sync process.
-- If all the pages provided have an id, rootPageId is not required.
-- The pages provided with id will be updated, the pages provided without id will be created/updated under the root page.
-- If rootPageId is provided, the pages under the root page that are not present in the input will be deleted.
-- Pages without id must not have ancestors. Those pages will be created/updated under the root page.
+It is possible to use two different sync modes, `tree` and `flat`. And it also supports updating specific pages using their id in Confluence.
 
-#### Example
+Every mode supports uploading attachments to the pages. The main differences between them are:
 
-```js title="ExampleWithFlatMode"
-import { ConfluenceSyncPages, SyncModes } from '@telefonica-cross/confluence-sync';
+### Tree mode
+
+In tree mode, the library receives an object defining a tree of Confluence pages, and it creates/deletes/updates the corresponding Confluence pages. All the pages are created under a __root page, which must be also provided__.
+
+Note that the __root page must exist before running the sync process__, and that __all pages not present in the list will be deleted__.
+
+* Creates Confluence pages from a list of pages with their corresponding paths, under a root page.
+* Supports nested pages.
+* Creates Confluence pages if they don't exist.
+* Updates Confluence pages if they already exist.
+* Deletes Confluence pages that are not present in the list.
+
+> [!WARNING]
+> All pages not present in the list will be deleted.
+
+### Flat mode
+
+It is also possible to use a flat mode, where all pages will be always created under a root page, without nested levels. Differences from the tree mode are:
+
+* Creates Confluence pages from a list of pages __always under the root page.__
+* It __does not support nested pages__. So, all pages without id will be created/updated under the root page. So, the `ancestors` property is not supported in this mode.
+
+### Updating specific pages
+
+In flat mode, it is also possible to provide a Confluence id for each page. In this case, the library will always update the corresponding Confluence page with the id provided. __It may be under the root page or not__.
+
+* The page must exist in Confluence before running the sync process.
+* Passing an id __is only supported in flat mode.__
+
+## Attachments
+
+The library will create a new attachment if it doesn't exist, or delete it and create it again if it already exists.
+
+When defining the attachments, you can use paths relative to the `process.cwd()` or absolute paths.
+
+> [!NOTE]
+> Deleting attachments that already exist in Confluence without uploading a new one to replace it is not supported.
+
+## How to get the root page id
+
+To get the ID of the root page, you can use the [Confluence REST API](https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get) or follow the next steps:
+
+* Enter to Confluence.
+* Go to the page of the space where you want to create the pages. 
+* Click on the `...` button and select `Page information`.
+* Copy the ID of the page from the URL. For example, if the URL is `https://confluence.tid.es/pages/viewpage.action?pageId=12345678`, the ID of the page is `12345678`. 
+
+## Sync modes in detail
+
+To get an idea of how the library works in each mode, please read the [features](#features) section. The following sections provide more details about each mode.
+
+### Tree mode
+
+This is the default mode of the library. It creates a tree of Confluence pages under a root page, following the hierarchy provided in the list of pages.
+
+* The root page must exist before running the sync process.
+* The library assumes that the __Confluence instance is using the default page hierarchy, where pages are organized in spaces__. It creates all the pages under a root page of the space.
+* __The pages are identified by their title__. If a page with the same title already exists, it will be updated. If it doesn't exist, it will be created.
+* The ancestors of each page should be ordered always from the root page to the page itself.
+  * For example, if you want to create a page under the page `Introduction to the documentation`, which is under the page `Welcome to the documentation`, you should provide the following list of ancestors: `['Welcome to the documentation', 'Introduction to the documentation']`.
+  * So, the first ancestor of each page must be the root page, if not, it will be added automatically.
+* Updates Confluence pages if they already exist under the root page.
+* __The pages under the root page that are not present in the list will be deleted.__
+* __Updating the root page is not supported__.
+
+### Flat mode
+
+To enable the flat mode, you have to set the `syncMode` property of the configuration object to `flat`. Differences from the tree mode are:
+
+* Creates Confluence pages from a list of pages __always under the root page.__
+* It __does not support nested pages__. So, all pages without id will be created/updated under the root page. The `ancestors` property is not supported in this mode.
+* It supports to pass specific ids for the pages. Read [Updating specific pages](#updating-specific-pages) for more information.
+
+### Updating specific pages
+
+As mentioned in the [features](#features) section, it is possible to update specific pages by using their Confluence id. This is __only supported in flat mode__.
+
+> [!CAUTION]
+> If all pages in the list have an id, __you should not provide a root page id__. If you provide it, the library will consider that you don't want any page under it, and, therefore, __it will delete all root page children.__
+
+```js title="Example updating specific pages"
+import { ConfluenceSyncPages, SyncModes } from '@tid-cross/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
-  url: "https://confluence.tid.es",
+  url: "https://my.confluence.es",
   personalAccessToken: "*******",
-  spaceId: "CTO",
+  spaceId: "MY-SPACE",
   logLevel: "debug",
   dryRun: false,
   syncMode: SyncModes.FLAT,
@@ -161,7 +208,7 @@ await confluenceSyncPages.sync([
 
 #### `ConfluenceSyncPages`
 
-This class is the main class of the library. It receives a configuration object with the following properties:
+The main class of the library. It receives a configuration object with the following properties:
 
 * `url`: URL of the Confluence instance.
 * `personalAccessToken`: Personal access token to authenticate in Confluence.
@@ -189,74 +236,10 @@ The list of pages to sync is an array of objects with the following properties:
 
 This getter returns the [logger instance](https://github.com/mocks-server/main/tree/master/packages/logger) used internally. You may want to use it to attach listeners, write tests, etc.
 
-## Development
+## Contributing
 
-### Installation
+Please read our [Contributing Guidelines](./CONTRIBUTING.md) for details on how to contribute to this project before submitting a pull request.
 
-TypeScript components of the IDP project use Pnpm as dependencies manager. So, to start working on them, you have to install the dependencies by running `pnpm install` in the root folder of the repository.
+## License
 
-Please refer to the monorepo README file for further information about [common requirements](../../README.md#requirements) and [installation process](../../README.md#installation) of all TypeScript components.
-
-### Monorepo tool
-
-Note that this component is part of a monorepo, so you can execute any command of the components from the root folder, and Nx will take care of executing the dependent commands in the right order. Any command described here should be executed from the root folder of the repository, using Nx.
-
-For example, a command like this:
-
-```sh title="Execute unit tests of the component inside its folder"
-pnpm run test:unit
-```
-
-Should be executed like this:
-
-```sh title="Execute unit tests of the component, and all needed dependencies, from root folder"
-pnpm nx test:unit confluence-sync-pages
-```
-
-### Unit tests
-
-Unit tests are executed using [Jest](https://jestjs.io/). To run them, execute the following command:
-
-```sh
-pnpm run test:unit
-```
-
-### Component tests
-
-Component tests are executed also using [Jest](https://jestjs.io/). But in this case, no dependencies are mocked, so the tests are executed against the real dependencies. A [mock server](https://www.mocks-server.org/) is used to simulate the Confluence API. To run them, execute the following command, which will start the mock server and execute the tests:
-
-```sh
-pnpm run test:component
-```
-
-You can also start the mock server in a separate terminal, and then execute the tests, which will allow you to see and change the requests and responses in the mock server in real time, so you can better understand what is happening, and debug the tests:
-
-```sh
-pnpm run confluence:mock
-```
-
-And, in a separate terminal:
-
-```sh
-pnpm run test:component:run
-```
-
-### Build
-
-This command generates the library into the `dist` directory, which is the one defined as the entry point in the `package.json` file. __Note that other components in the repository won't be able to use the library until this command is executed.__
-
-```sh
-pnpm run build
-```
-
-### NPM scripts reference
-
-- `test:unit` - Run unit tests.
-- `test:component` - Run component tests.
-- `test:component:run` - Run component tests without starting the mock server.
-- `confluence:mock` - Start the mock server.
-- `build` - Build the library.
-- `check:types` - Checks the TypeScript types.
-- `lint` - Lint the code.
-- `lint:fix` - Fix lint errors.
-
+This project is licensed under the Apache-2.0 License - see the [LICENSE](./LICENSE) file for details.

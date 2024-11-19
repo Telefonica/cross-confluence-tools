@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: MIT
+
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "markdown-confluence-sync",
@@ -7,6 +10,27 @@
     "type:node:lib"
   ],
   "targets": {
+    // Redefine the lint target to include the dependency of building sync-confluence to resolve imports
+    "lint": {
+      "cache": true,
+      "inputs": [
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default"
+      ],
+      "dependsOn": [
+        {
+          "target": "eslint:config",
+          "projects": ["eslint-config"]
+        },
+        // Build the dev dependency of sync-confluence to resolve imports
+        {
+          "target": "build",
+          "projects": ["child-process-manager"]
+        },
+        // Build the package itself and dependencies to resolve imports
+        "build"
+      ]
+    },
     // Redefine the build target to include the config directory as an output
     "build": {
       "cache": true,
@@ -17,8 +41,9 @@
         }
       ],
       "inputs": [
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
         "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        "production"
       ],
       "outputs": [
         "{projectRoot}/dist/**/*",

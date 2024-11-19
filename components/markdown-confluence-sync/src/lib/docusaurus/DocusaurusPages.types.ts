@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type {
   OptionInterfaceOfType,
   OptionDefinition,
@@ -8,7 +11,7 @@ import type { LoggerInterface } from "@mocks-server/logger";
 import type {
   FilesPatternOption,
   ModeOption,
-} from "../DocusaurusToConfluence.types.js";
+} from "../MarkdownConfluenceSync.types.js";
 
 export type DocusaurusPageId = string;
 
@@ -16,7 +19,7 @@ type DocsDirOptionValue = string;
 
 declare global {
   //eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace DocusaurusToConfluence {
+  namespace MarkdownConfluenceSync {
     interface Config {
       /** Documents directory */
       docsDir?: DocsDirOptionValue;

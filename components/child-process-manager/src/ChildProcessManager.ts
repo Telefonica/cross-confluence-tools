@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import crossSpawn from "cross-spawn";
 import treeKill from "tree-kill";
 import { Readable } from "stream";
@@ -11,9 +14,13 @@ import type {
   ChildProcessManagerExitCode,
   ChildProcessManagerResult,
 } from "./types";
+import { SpawnOptions } from "child_process";
 
 const ENCODING_TYPE = "utf8";
 
+/**
+ * Class to manage child processes
+ */
 export const ChildProcessManager: ChildProcessManagerConstructor = class ChildProcessManager
   implements ChildProcessManagerInterface
 {
@@ -26,31 +33,53 @@ export const ChildProcessManager: ChildProcessManagerConstructor = class ChildPr
   private _resolveExitPromise: () => void;
   private _cliProcess: ReturnType<typeof crossSpawn> | null;
   private _exitCode: ChildProcessManagerExitCode;
+  private _crossSpawnOptions: SpawnOptions;
 
+  /**
+   * Creates a new instance of ChildProcessManager
+   * @param commandAndArguments Array with the command and arguments
+   * @param options Options to customize the process {@link ChildProcessManagerOptions}
+   * @param crossSpawnOptions Options to be passed to cross-spawn {@link SpawnOptions}
+   */
   constructor(
     commandAndArguments: string[],
     options: ChildProcessManagerOptions = {},
+    crossSpawnOptions?: SpawnOptions,
   ) {
     this._command = this._getCommandToExecute(commandAndArguments);
     this._silent = options.silent || false;
     this._cwd = options.cwd || process.cwd();
+    this._crossSpawnOptions = crossSpawnOptions || {};
     this._env = options.env;
     this._logger = new Logger({ silent: this._silent });
     this._cliProcess = null;
   }
 
+  /**
+   * Returns the process exit promise
+   */
   public get exitPromise() {
     return this._exitPromise;
   }
 
+  /**
+   * Returns the process exit code
+   */
   public get exitCode() {
     return this._exitCode;
   }
 
+  /**
+   * Returns the process logs
+   */
   public get logs() {
     return this._logger.logs;
   }
 
+  /**
+   * Runs the process and returns a promise that resolves when the process is finished
+   * @returns Promise that resolves when the process is finished
+   */
   public async run(): Promise<ChildProcessManagerResult> {
     this._exitPromise = new Promise((resolve) => {
       this._resolveExitPromise = () => {
@@ -68,6 +97,7 @@ export const ChildProcessManager: ChildProcessManagerConstructor = class ChildPr
           ...process.env,
           ...this._env,
         },
+        ...this._crossSpawnOptions,
       });
 
       const stdout = this._cliProcess.stdout as Readable;
@@ -96,6 +126,10 @@ export const ChildProcessManager: ChildProcessManagerConstructor = class ChildPr
     return this._exitPromise;
   }
 
+  /**
+   * Kills the process and returns a promise that resolves when the process is killed
+   * @returns Promise that resolves when the process is killed
+   */
   public async kill(): Promise<ChildProcessManagerResult> {
     if (this._cliProcess?.pid) {
       treeKill(this._cliProcess.pid);
@@ -107,6 +141,11 @@ export const ChildProcessManager: ChildProcessManagerConstructor = class ChildPr
     };
   }
 
+  /**
+   * Returns the command to execute
+   * @param commandAndArguments Array with the command and arguments
+   * @returns Object with the command and arguments
+   */
   private _getCommandToExecute(commandAndArguments: string[]): {
     name: string;
     params: string[];

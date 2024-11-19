@@ -1,4 +1,7 @@
-import { SyncModes } from "@telefonica-cross/confluence-sync";
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import { SyncModes } from "@tid-cross/confluence-sync";
 
 import { DocusaurusFlatPages } from "./DocusaurusFlatPages.js";
 import type { DocusaurusFlatPagesOptions } from "./DocusaurusFlatPages.types.js";

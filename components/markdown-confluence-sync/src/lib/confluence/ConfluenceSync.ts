@@ -1,14 +1,14 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { LoggerInterface } from "@mocks-server/logger";
 import type {
   ConfluenceInputPage,
   ConfluenceSyncPagesInterface,
-} from "@telefonica-cross/confluence-sync";
-import {
-  ConfluenceSyncPages,
-  SyncModes,
-} from "@telefonica-cross/confluence-sync";
+} from "@tid-cross/confluence-sync";
+import { ConfluenceSyncPages, SyncModes } from "@tid-cross/confluence-sync";
 
-import type { ModeOption } from "../DocusaurusToConfluence.types.js";
+import type { ModeOption } from "../MarkdownConfluenceSync.types.js";
 import { isStringWithLength } from "../support/typesValidations.js";
 
 import type {

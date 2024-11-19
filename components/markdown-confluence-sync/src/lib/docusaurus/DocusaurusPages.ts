@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { resolve } from "node:path";
 
 import type { ConfigInterface } from "@mocks-server/config";
@@ -7,7 +10,7 @@ import type {
   FilesPattern,
   FilesPatternOption,
   ModeOption,
-} from "../DocusaurusToConfluence.types.js";
+} from "../MarkdownConfluenceSync.types.js";
 
 import type {
   DocsDirOption,

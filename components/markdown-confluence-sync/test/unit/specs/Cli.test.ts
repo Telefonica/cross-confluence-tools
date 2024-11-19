@@ -1,4 +1,7 @@
-import { customDocusaurusToConfluence } from "@support/mocks/DocusaurusToConfluence";
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import { customMarkdownConfluenceSync } from "@support/mocks/DocusaurusToConfluence";
 
 import { run } from "@src/Cli";
 
@@ -12,9 +15,9 @@ describe("cli", () => {
   });
 
   it("should call DocusaurusToConfluence sync function", async () => {
-    customDocusaurusToConfluence.sync.mockReturnValue(true);
+    customMarkdownConfluenceSync.sync.mockReturnValue(true);
     await run();
 
-    await expect(customDocusaurusToConfluence.sync).toHaveBeenCalled();
+    await expect(customMarkdownConfluenceSync.sync).toHaveBeenCalled();
   });
 });

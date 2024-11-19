@@ -1,4 +1,7 @@
-import type { FilesPattern } from "../DocusaurusToConfluence.types";
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import type { FilesPattern } from "../MarkdownConfluenceSync.types";
 
 import type {
   DocusaurusPagesInterface,

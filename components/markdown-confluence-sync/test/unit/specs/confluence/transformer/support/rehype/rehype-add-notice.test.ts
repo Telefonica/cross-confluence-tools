@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { rehype } from "rehype";
 
 import rehypeAddNotice from "@src/lib/confluence/transformer/support/rehype/rehype-add-notice";

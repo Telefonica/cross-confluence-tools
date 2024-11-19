@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { existsSync, lstatSync } from "fs";
 import { readdir } from "fs/promises";
 import { join } from "node:path";

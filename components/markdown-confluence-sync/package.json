@@ -1,9 +1,46 @@
 {
-  "name": "@telefonica-cross/markdown-confluence-sync",
-  "version": "0.1.0",
+  "name": "@tid-cross/markdown-confluence-sync",
+  "description": "Creates/updates/deletes Confluence pages based on markdown files in a directory. Supports Mermaid diagrams and per-page configuration using frontmatter metadata. Works great with Docusaurus",
+  "version": "1.0.0-beta.1",
+  "license": "Apache-2.0",
+  "author": "Telefónica Innovación Digital",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/cross-confluence-tools",
+    "directory": "components/markdown-confluence-sync"
+  },
+  "homepage": "https://github.com/Telefonica/cross-confluence-tools/tree/main/components/markdown-confluence-sync",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "Confluence",
+    "markdown",
+    "Docusaurus",
+    "sync",
+    "page",
+    "pages",
+    "md",
+    "mdx",
+    "frontmatter",
+    "metadata",
+    "files",
+    "folder",
+    "directory",
+    "tree",
+    "sync",
+    "update",
+    "create",
+    "delete",
+    "cli",
+    "node",
+    "json",
+    "attachments",
+    "images"
+  ],
   "scripts": {
     "build": "tsc",
-    "check:ci": "echo 'All checks passed'",
+    "check:all": "echo 'All checks passed'",
     "check:spell": "cspell .",
     "check:types": "npm run check:types:test:unit && npm run check:types:test:component && npm run check:types:lib",
     "check:types:lib": "tsc --noEmit",
@@ -20,7 +57,7 @@
   "nx": {
     "includedScripts": [
       "build",
-      "check:ci",
+      "check:all",
       "check:spell",
       "check:types",
       "lint",
@@ -29,10 +66,10 @@
     ]
   },
   "dependencies": {
-    "@mermaid-js/mermaid-cli": "10.8.0",
+    "@mermaid-js/mermaid-cli": "11.4.0",
     "@mocks-server/config": "2.0.0-beta.3",
     "@mocks-server/logger": "2.0.0-beta.2",
-    "@telefonica-cross/confluence-sync": "workspace:*",
+    "@tid-cross/confluence-sync": "workspace:*",
     "fs-extra": "11.2.0",
     "handlebars": "4.7.8",
     "hast": "1.0.0",
@@ -69,7 +106,7 @@
     "@mocks-server/admin-api-client": "8.0.0-beta.2",
     "@mocks-server/core": "5.0.0-beta.3",
     "@mocks-server/main": "5.0.0-beta.4",
-    "@telefonica-cross/child-process-manager": "workspace:*",
+    "@tid-cross/child-process-manager": "workspace:*",
     "@types/fs-extra": "11.0.4",
     "@types/glob": "8.1.0",
     "@types/hast": "2.3.10",

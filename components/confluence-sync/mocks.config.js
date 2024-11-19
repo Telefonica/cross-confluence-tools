@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: MIT
+
 // For a detailed explanation regarding each configuration property, visit:
 // https://www.mocks-server.org/docs/configuration/how-to-change-settings
 // https://www.mocks-server.org/docs/configuration/options
