@@ -7,7 +7,9 @@
     "pnpm": "9.4.0",
     "node": "22.4.0"
   },
-  "baseBranches": ["release"],
+  "baseBranches": [
+    "release"
+  ],
   "automerge": true,
   "platformAutomerge": true,
   "automergeStrategy": "squash",
@@ -23,16 +25,19 @@
     {
       "groupName": "all patch and minor dependencies",
       "groupSlug": "all-patch-and-minor-dependencies",
-      "matchPackagePatterns": [
-        "*"
-      ],
       "matchUpdateTypes": [
         "patch",
         "minor"
+      ],
+      "matchPackageNames": [
+        "*"
       ]
     },
     {
-      "matchDepTypes": ["peerDependencies", "engines"],
+      "matchDepTypes": [
+        "peerDependencies",
+        "engines"
+      ],
       "rangeStrategy": "widen"
     }
   ],
@@ -40,10 +45,12 @@
     "dependencies",
     "renovate"
   ],
-  "stabilityDays": 5,
+  "minimumReleaseAge": "5 days",
   "prHourlyLimit": 1,
   "prConcurrentLimit": 2,
   "timezone": "Europe/Madrid",
-  "schedule": ["after 5pm on every weekday"],
-  "masterIssue": true
+  "schedule": [
+    "after 5pm every weekday"
+  ],
+  "dependencyDashboard": true
 }
