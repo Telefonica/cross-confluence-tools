@@ -35,4 +35,4 @@ jobs:
           path-to-document: 'https://github.com/Telefonica/cross-confluence-tools/blob/master/.github/CLA.md'
           branch: 'cla-signatures'
           # the below is the list of users who are allowed to sign the CLA without any check
-          # allowlist: user1,bot*
+          allowlist: renovate[bot],dependabot[bot]
