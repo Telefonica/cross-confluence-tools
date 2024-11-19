@@ -1,0 +1,9 @@
+# MacOS
+.DS_store
+
+# Dependencies
+node_modules
+
+# Generated
+/coverage
+/dist

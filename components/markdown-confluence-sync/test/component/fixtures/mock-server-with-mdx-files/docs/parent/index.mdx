@@ -1,0 +1,38 @@
+---
+id: foo-parent
+title: foo-parent-title
+sync_to_confluence: true
+---
+
+import Tabs from '@theme/Tabs';
+
+## Mdx Code Block
+
+This is a mdx code block:
+```mdx-code-block
+    <h1>Hello world</h1>
+```
+
+<Tabs>
+    <TabItem value="file-tree" label="File tree" default>
+        Tab Item Content
+:::tip title
+This is a tip
+:::
+      <Tabs>
+        <TabItem value="file-tree" label="File tree" default>
+            Tab Item Content
+        </TabItem>
+        <TabItem value="file-tree" label="File tree">
+            Tab Item Content
+:::note
+This is a note
+:::
+        </TabItem>
+      </Tabs>
+    </TabItem>
+    <TabItem value="file-tree" label="File tree">
+        Tab Item Content
+    </TabItem>
+</Tabs>
+

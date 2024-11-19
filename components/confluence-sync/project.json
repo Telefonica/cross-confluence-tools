@@ -1,0 +1,15 @@
+// SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+// SPDX-License-Identifier: MIT
+
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "confluence-sync",
+  "projectType": "library",
+  "tags": [
+    "type:node:lib"
+  ],
+  "implicitDependencies": [
+    "eslint-config",
+    "cspell-config"
+  ]
+}

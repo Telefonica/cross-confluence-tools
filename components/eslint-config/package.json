@@ -1,0 +1,16 @@
+{
+  "name": "@tid-cross/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:all": "echo 'All checks passed'",
+    "check:spell": "cspell .",
+    "eslint:config": "echo 'eslint config ready'",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}

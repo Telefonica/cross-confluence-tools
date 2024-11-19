@@ -1,0 +1,69 @@
+{
+  "name": "@tid-cross/child-process-manager",
+  "description": "Async child process manager providing access to exit code and stdout/stderr",
+  "version": "1.0.0-beta.1",
+  "license": "Apache-2.0",
+  "author": "Telefónica Innovación Digital",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/cross-confluence-tools",
+    "directory": "components/child-process-manager"
+  },
+  "homepage": "https://github.com/Telefonica/cross-confluence-tools/tree/main/components/child-process-manager",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "spawn",
+    "cross",
+    "async",
+    "promise",
+    "kill",
+    "stderr",
+    "stdout",
+    "logs",
+    "child",
+    "process",
+    "child process",
+    "manager",
+    "test tools",
+    "testing",
+    "utilities"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "check:all": "echo 'All checks passed'",
+    "check:spell": "cspell .",
+    "check:types:test": "tsc --noEmit --project ./test/unit/tsconfig.json",
+    "check:types:lib": "tsc --noEmit",
+    "check:types": "npm run check:types:test && npm run check:types:lib",
+    "lint": "eslint .",
+    "test:unit": "jest --config jest.config.js"
+  },
+  "nx": {
+    "includedScripts": [
+      "build",
+      "check:all",
+      "check:spell",
+      "check:types",
+      "lint",
+      "test:unit"
+    ]
+  },
+  "dependencies": {
+    "cross-spawn": "7.0.3",
+    "tree-kill": "1.2.2"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "6.0.6"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}
