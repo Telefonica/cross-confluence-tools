@@ -1,3 +1,4 @@
+automerge
 cacheable
 frontmatter
 nrwl

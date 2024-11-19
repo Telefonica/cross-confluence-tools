@@ -20,9 +20,10 @@ permissions:
 
 jobs:
   require-contributor-license-agreement:
+    name: "Require Contributor License Agreement"
     runs-on: ubuntu-latest
     steps:
-      - name: "Require Contributor License Agreement"
+      - name: "Contributor License Agreement"
         if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
         uses: contributor-assistant/github-action@v2.6.1
         env:
@@ -34,4 +35,4 @@ jobs:
           path-to-document: 'https://github.com/Telefonica/cross-confluence-tools/blob/master/.github/CLA.md'
           branch: 'cla-signatures'
           # the below is the list of users who are allowed to sign the CLA without any check
-          # allowlist: user1,bot*
+          allowlist: renovate,renovate[bot]
