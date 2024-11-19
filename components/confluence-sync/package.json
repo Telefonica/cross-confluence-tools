@@ -1,0 +1,83 @@
+{
+  "name": "@tid-cross/confluence-sync",
+  "description": "Creates/updates/deletes Confluence pages based on a list of objects containing the page contents. Supports nested pages and attachments upload",
+  "version": "1.0.0-beta.1",
+  "license": "Apache-2.0",
+  "author": "Telefónica Innovación Digital",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telefonica/cross-confluence-tools",
+    "directory": "components/confluence-sync"
+  },
+  "homepage": "https://github.com/Telefonica/cross-confluence-tools/tree/main/components/confluence-sync",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "confluence",
+    "html",
+    "content",
+    "page",
+    "pages",
+    "tree",
+    "sync",
+    "update",
+    "create",
+    "delete",
+    "cli",
+    "node",
+    "json",
+    "attachments",
+    "images"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "check:all": "echo 'All checks passed'",
+    "check:spell": "cspell .",
+    "check:types": "npm run check:types:test:unit && npm run check:types:test:component && npm run check:types:lib",
+    "check:types:lib": "tsc --noEmit",
+    "check:types:test:component": "tsc --noEmit --project ./test/component/tsconfig.json",
+    "check:types:test:unit": "tsc --noEmit --project ./test/unit/tsconfig.json",
+    "confluence:mock": "mocks-server",
+    "confluence:mock:ci": "mocks-server --no-plugins.inquirerCli.enabled",
+    "lint": "eslint .",
+    "test:component": "start-server-and-test confluence:mock:ci http-get://127.0.0.1:3110/api/about test:component:run",
+    "test:component:run": "jest --config jest.component.config.js --runInBand",
+    "test:unit": "jest --config jest.unit.config.js"
+  },
+  "nx": {
+    "includedScripts": [
+      "build",
+      "check:all",
+      "check:spell",
+      "check:types",
+      "lint",
+      "test:unit",
+      "test:component"
+    ]
+  },
+  "dependencies": {
+    "@mocks-server/logger": "2.0.0-beta.2",
+    "axios": "1.6.7",
+    "confluence.js": "1.7.4",
+    "fastq": "1.17.1"
+  },
+  "devDependencies": {
+    "@mocks-server/admin-api-client": "8.0.0-beta.2",
+    "@mocks-server/core": "5.0.0-beta.3",
+    "@mocks-server/main": "5.0.0-beta.4",
+    "@types/tmp": "0.2.6",
+    "cross-fetch": "4.0.0",
+    "start-server-and-test": "2.0.8",
+    "tmp": "0.2.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}

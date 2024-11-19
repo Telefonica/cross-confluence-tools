@@ -1,0 +1,95 @@
+# SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+# SPDX-License-Identifier: MIT
+
+name: Run Nx target
+description: Setup the Nx cache, and run a target
+
+inputs:
+  target:
+    description: The Nx target to run
+    required: true
+  github_token:
+    description: GitHub token
+    default: '${{ github.token }}'
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/install
+      id: install
+
+    # Restore the cache for the current branch in PRs
+    - name: Restore Nx cache
+      uses: actions/cache/restore@v4
+      if: github.event_name == 'pull_request'
+      with:
+        path: .nx
+        key: nx-cache-${{ github.ref }}
+        # Try restoring the cache also from the PR branch, the head branch of the PR, the base branch of the PR, the release branch, and the main branch
+        restore-keys: |
+          nx-cache-refs/heads/${{ github.event.pull_request.head.ref }}
+          nx-cache-refs/heads/${{ github.event.pull_request.base.ref }}
+          nx-cache-refs/heads/release
+          nx-cache-refs/heads/main
+          nx-cache-${{ github.event.pull_request.head.ref }}
+          nx-cache-${{ github.event.pull_request.base.ref }}
+          nx-cache-release
+          nx-cache-main
+          nx-cache-
+    # Restore the cache for the current branch in non-PRs
+    - name: Restore Nx cache
+      uses: actions/cache/restore@v4
+      if: github.event_name != 'pull_request'
+      with:
+        path: .nx
+        key: nx-cache-${{ github.ref }}
+        # Try restoring the cache also from the release branch and the main branch
+        restore-keys: |
+          nx-cache-refs/heads/release
+          nx-cache-refs/heads/main
+          nx-cache-release
+          nx-cache-main
+          nx-cache-
+    
+    # Prepare the SHAs for the base and head for the `nx affected` commands
+    - name: Derive appropriate SHAs for base and head for `nx affected` commands
+      if: github.event_name == 'pull_request'
+      uses: nrwl/nx-set-shas@v2
+      with:
+        main-branch-name: ${{ github.event.pull_request.base.ref }}
+    # Run the affected target in PRs
+    - name: Run - Affected
+      if: github.event_name == 'pull_request'
+      shell: bash
+      run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx affected -t ${{ inputs.target }} --base origin/${{ github.event.pull_request.base.ref }} --head HEAD
+
+    # Run the target in non-PRs
+    - name: Run
+      if: github.event_name != 'pull_request'
+      shell: bash
+      run: NX_REJECT_UNKNOWN_LOCAL_CACHE=0 pnpm nx run-many --target=${{ inputs.target }} --all
+
+    # Check if the cache for the current branch exists
+    - name: Check Nx cache to delete
+      uses: actions/cache/restore@v4
+      id: cache-check
+      with:
+        path: .nx
+        key: nx-cache-${{ github.ref }}
+        lookup-only: true
+    # Delete the cache for the current branch if it exists
+    - name: Delete Previous Nx Cache
+      if: steps.cache-check.outputs.cache-hit == 'true'
+      continue-on-error: true
+      shell: bash
+      run: |
+        gh extension install actions/gh-actions-cache
+        gh actions-cache delete "nx-cache-${{ github.ref }}" --confirm
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+    # Save the cache for the current branch
+    - name: Save Nx cache
+      uses: actions/cache/save@v4
+      with:
+        path: .nx
+        key: nx-cache-${{ github.ref }}

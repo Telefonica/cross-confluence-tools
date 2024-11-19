@@ -1,0 +1,19 @@
+{
+  "name": "@tid-cross/cspell-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "check:all": "echo 'All checks passed'",
+    "check:spell": "cspell .",
+    "cspell:config": "echo 'cspell config ready'",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "deepmerge": "4.3.1"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}

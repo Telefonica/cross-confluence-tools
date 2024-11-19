@@ -1,0 +1,120 @@
+# SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+# SPDX-License-Identifier: MIT
+
+name: "Check and build"
+on:
+  push:
+    branches:
+      - release
+      - main
+  pull_request:
+    branches:
+      - release
+      - main
+
+concurrency:  
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  lint-root:
+    name: Lint root folder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/install
+      - name: Lint
+        run: pnpm lint
+      - name: Check spell
+        run: pnpm check:spell
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Lint
+        uses: ./.github/actions/run-nx-target
+        with:
+          target: lint
+  check-spell:
+    needs: lint
+    name: Check spell
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check spell
+        uses: ./.github/actions/run-nx-target
+        with:
+          target: check:spell
+  check-types:
+    needs: check-spell
+    name: Check types
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check types
+        uses: ./.github/actions/run-nx-target
+        with:
+          target: check:types
+  test-unit:
+    needs: check-types
+    name: Test unit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Test unit
+        uses: ./.github/actions/run-nx-target
+        with:
+          target: test:unit
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-test-coverage
+          path: components/*/coverage
+          if-no-files-found: ignore
+          retention-days: 1
+  build:
+    needs: test-unit
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build
+        uses: ./.github/actions/run-nx-target
+        with:
+          target: build
+  test-component:
+    needs: build
+    name: Test component
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Test component
+        uses: ./.github/actions/run-nx-target
+        with:
+          target: test:component
