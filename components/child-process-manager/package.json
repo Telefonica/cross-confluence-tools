@@ -1,5 +1,5 @@
 {
-  "name": "@tid-cross/child-process-manager",
+  "name": "@tid-xcut/child-process-manager",
   "description": "Async child process manager providing access to exit code and stdout/stderr",
   "version": "1.0.0-beta.1",
   "license": "Apache-2.0",

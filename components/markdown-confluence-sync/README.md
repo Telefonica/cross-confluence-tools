@@ -82,8 +82,12 @@ Other features are:
 
 ### Installation
 
+First of all, you need to __get permissions to install the package__. Please follow the instructions in the [Confluence page about NPM packages](https://confluence.tid.es/display/CTO/%5BCross%5D+NPM+Packages).
+
+Then, you can install the package using npm:
+
 ```bash
-npm install @tid-cross/markdown-confluence-sync
+npm install @tid-xcut/markdown-confluence-sync
 ```
 
 ### Usage
@@ -305,7 +309,7 @@ You can also use the `confluence.noticeTemplate` option to provide a custom temp
   * `{{default}}`: The default message.
 
 ```js
-/** @type {import('@tid-cross/markdown-confluence-sync').Configuration} */
+/** @type {import('@tid-xcut/markdown-confluence-sync').Configuration} */
 
 module.exports = {
   docsDir: "./docs",
@@ -398,7 +402,7 @@ You can also import the library in your code and use it programmatically. In thi
 
 ```js title="Programmatic usage"
 import path from "path";
-import { MarkdownConfluenceSync } from '@tid-cross/markdown-confluence-sync';
+import { MarkdownConfluenceSync } from '@tid-xcut/markdown-confluence-sync';
 
 const markdownConfluenceSync = new MarkdownConfluenceSync({
   docsDir: path.resolve(__dirname, "..", "docs");

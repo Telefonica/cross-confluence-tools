@@ -50,8 +50,12 @@ This library requires:
 
 ## Installation
 
+First of all, you need to __get permissions to install the package__. Please follow the instructions in the [Confluence page about NPM packages](https://confluence.tid.es/display/CTO/%5BCross%5D+NPM+Packages).
+
+Then, you can install the package using npm:
+
 ```bash
-npm install @tid-cross/confluence-sync
+npm install @tid-xcut/confluence-sync
 ```
 
 ## Example
@@ -59,7 +63,7 @@ npm install @tid-cross/confluence-sync
 Import it and pass to it a list of pages to sync:
 
 ```js title="Example"
-import { ConfluenceSyncPages } from '@tid-cross/confluence-sync';
+import { ConfluenceSyncPages } from '@tid-xcut/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
   url: "https://your.confluence.com",
@@ -178,7 +182,7 @@ As mentioned in the [features](#features) section, it is possible to update spec
 > If all pages in the list have an id, __you should not provide a root page id__. If you provide it, the library will consider that you don't want any page under it, and, therefore, __it will delete all root page children.__
 
 ```js title="Example updating specific pages"
-import { ConfluenceSyncPages, SyncModes } from '@tid-cross/confluence-sync';
+import { ConfluenceSyncPages, SyncModes } from '@tid-xcut/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
   url: "https://my.confluence.es",

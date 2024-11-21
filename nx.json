@@ -3,7 +3,7 @@
 
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "@tid-cross",
+  "npmScope": "@tid-xcut",
   "defaultBase": "origin/main",
   "parallel": 2,
   "namedInputs": {

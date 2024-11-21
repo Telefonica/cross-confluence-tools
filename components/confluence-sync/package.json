@@ -1,5 +1,5 @@
 {
-  "name": "@tid-cross/confluence-sync",
+  "name": "@tid-xcut/confluence-sync",
   "description": "Creates/updates/deletes Confluence pages based on a list of objects containing the page contents. Supports nested pages and attachments upload",
   "version": "1.0.0-beta.1",
   "license": "Apache-2.0",
