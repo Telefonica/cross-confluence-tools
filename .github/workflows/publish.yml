@@ -16,6 +16,7 @@ jobs:
         with:
           path: .npmrc
           contents: |
-            //nexus.tid.es/repository/npm-xcut-components/:_auth=${{ secrets.NPM_TOKEN }}
+            //nexus.tid.es/repository/npm-xcut-components/:_auth=foo-token
           write-mode: append
-      - run: pnpm -r publish --no-git-checks
+      - run: cat .npmrc
+      #- run: pnpm -r publish --no-git-checks
