@@ -15,14 +15,5 @@ jobs:
           contents: |
             //nexus.tid.es/repository/npm-xcut-components/:_auth=${{ secrets.NPM_TOKEN }}
           write-mode: append
-      - uses: actions/github-script@v7
-        id: component-name
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
-        with:
-          script: |
-            return process.env.TAG_NAME.split(/-v\d*\.\d*.\d*\./)[0];
-          result-encoding: string
-      - run: echo "Publishing ${{ steps.component-name.outputs.result }}"
-      - run: pnpm nx check:all ${{ steps.component-name.outputs.result }}
-      - run: pnpm publish components/${{ steps.component-name.outputs.result }} --no-git-checks
+      - run: pnpm nx run-many -t check:all --all
+      - run: pnpm -r publish --no-git-checks
