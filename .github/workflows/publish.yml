@@ -22,7 +22,8 @@ jobs:
         with:
           scope: '@tid-cross'
           registry: 'https://nexus.tid.es/repository/npm-xcut-components/'
-          auth-token: ${{ secrets.NPM_TOKEN }}
+          auth-token: foo-token
+      - run: cat .npmrc
       - run: pnpm -r publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
