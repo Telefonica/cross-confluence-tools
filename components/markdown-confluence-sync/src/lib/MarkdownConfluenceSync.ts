@@ -5,7 +5,7 @@ import type { ConfigInterface as customMarkdownConfluenceSyncClass } from "@mock
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import { Logger } from "@mocks-server/logger";
-import { SyncModes } from "@tid-cross/confluence-sync";
+import { SyncModes } from "@tid-xcut/confluence-sync";
 
 import { ConfluenceSync } from "./confluence/ConfluenceSync.js";
 import type {

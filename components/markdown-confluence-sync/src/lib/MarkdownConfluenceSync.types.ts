@@ -6,7 +6,7 @@ import type {
   OptionInterfaceOfType,
 } from "@mocks-server/config";
 import type { LogLevel } from "@mocks-server/logger";
-import type { SyncModes } from "@tid-cross/confluence-sync";
+import type { SyncModes } from "@tid-xcut/confluence-sync";
 
 export type FilesPattern = string | string[];
 
