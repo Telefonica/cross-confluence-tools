@@ -18,6 +18,7 @@ jobs:
           contents: |
             //nexus.tid.es/repository/npm-xcut-components/:_auth=${{ secrets.NPM_TOKEN }}
           write-mode: append
+      - run: echo "//nexus.tid.es/repository/npm-xcut-components/:_auth=${{ secrets.NPM_TOKEN }}"
       - run: cat .npmrc
       - run: pnpm -r publish --no-git-checks
         env:
