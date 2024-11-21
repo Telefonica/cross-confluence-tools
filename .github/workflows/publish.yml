@@ -9,6 +9,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/install
       - run: pnpm nx run-many check:all --all
+      - uses: healthplace/npmrc-registry-login-action@v1.0
+        with:
+          scope: '@tid-cross'
+          registry: 'https://nexus.tid.es/repository/npm-xcut-components/'
+          auth-token: ${{ secrets.NPM_TOKEN }}
       - run: pnpm -r publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
