@@ -4,6 +4,11 @@ Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confl
 
 ## Table of Contents
 
+<details>
+  <summary>
+    <strong>Details</strong>
+  </summary>
+
 - [Requirements](#requirements)
   - [Compatibility](#compatibility)
 - [Features](#features)
@@ -32,6 +37,8 @@ Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confl
   - [API](#api)
 - [Contributing](#contributing)
 - [License](#license)
+
+</details>
 
 ## Requirements
 

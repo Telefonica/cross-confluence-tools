@@ -8,6 +8,11 @@ Read [Features](#features) for more information about the two sync modes availab
 
 ## Table of Contents
 
+<details>
+  <summary>
+    <strong>Details</strong>
+  </summary>
+
 - [Requirements](#requirements)
   - [Compatibility](#compatibility)
 - [Installation](#installation)
@@ -27,6 +32,8 @@ Read [Features](#features) for more information about the two sync modes availab
   - [`sync`](#sync)
 - [Contributing](#contributing)
 - [License](#license)
+
+</details>
 
 ## Requirements
 
