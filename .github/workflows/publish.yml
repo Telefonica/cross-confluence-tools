@@ -8,6 +8,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/install
@@ -18,8 +19,6 @@ jobs:
           contents: |
             //nexus.tid.es/repository/npm-xcut-components/:_auth=${{ secrets.NPM_TOKEN }}
           write-mode: append
-      - run: echo "//nexus.tid.es/repository/npm-xcut-components/:_auth=${{ secrets.NPM_TOKEN }}"
-      - run: cat .npmrc
       - run: pnpm -r publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
