@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/install
-      - run: pnpm nx run-many check:all --all
+      - run: pnpm nx run-many -t check:all --all
       - uses: healthplace/npmrc-registry-login-action@v1.0
         with:
           scope: '@tid-cross'
