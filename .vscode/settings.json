@@ -1,6 +1,6 @@
 {
-	"files.associations": {
-		"nx.json": "jsonc",
-		"**/project.json": "jsonc"
-	}
+  "files.associations": {
+    "nx.json": "jsonc",
+    "**/project.json": "jsonc"
+  }
 }
