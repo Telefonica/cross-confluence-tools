@@ -89,6 +89,18 @@ Some important points to consider:
 * When necessary, a medium-lived branch can be created from the "release" branch to group changes that will be released together and require more time to be prepared. Once the changes are ready, the branch can be merged into the "release" branch.
 * For publishing beta versions or fix versions of precedent releases, medium-lived branches should be also created from the "release" branch, and the publish workflow should be modified accordingly to add the `--tag` option to the `pnpm publish` command. In this case, the maintainer should tag the releases directly in the branch without merging it into the "release" branch. When the code is ready to be published as a stable release, a PR should be opened to the "release" branch, and the branch should be deleted after the PR is merged.
 
+## Merging strategy
+
+We use the __squash and merge strategy for merging PRs to the release branch__. This means that all the changes in the PR will be squashed into a single commit before being merged. The reasons are:
+
+* To keep the history clean in the release branch
+* To make easier to understand the changes in each release.
+
+But we use the __merge commit strategy for merging PRs to the main branch from the release branch__. The reasons are:
+
+* To keep in the history the information about the features that were merged separately into the release branch. This is very important, because we may have changes from different packages in the release branch. Squashing all the changes into a single commit would make it difficult to understand or revert the changes for a specific package.
+* To avoid having to rebase the release branch every time a PR is merged to the main branch.
+
 # Pull Request
 
 When you're finished with the changes, please ensure the following:
