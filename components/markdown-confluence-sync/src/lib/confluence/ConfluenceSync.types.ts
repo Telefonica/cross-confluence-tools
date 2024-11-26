@@ -33,6 +33,12 @@ declare global {
         spaceKey?: SpaceKeyOptionValue;
         /** Confluence root page id */
         rootPageId?: RootPageIdOptionValue;
+        /** Customize Confluence page titles by adding a prefix to all of them for improved organization and clarity */
+        rootPageName?: RootPageNameOptionValue;
+        /** Notice message to add at the beginning of the Confluence pages */
+        noticeMessage?: NoticeMessageOptionValue;
+        /** Template string to use for the notice message. */
+        noticeTemplate?: NoticeTemplateOptionValue;
         /** Confluence dry run */
         dryRun?: DryRunOptionValue;
       };
