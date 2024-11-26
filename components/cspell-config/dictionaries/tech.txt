@@ -3,3 +3,4 @@ cacheable
 excalidraw
 frontmatter
 nrwl
+syncrc

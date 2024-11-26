@@ -35,8 +35,11 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
   implements DocusaurusDocPageInterface
 {
   protected _vFile: VFile;
+  protected _logger?: LoggerInterface;
 
   constructor(path: string, options?: DocusaurusDocPageOptions) {
+    this._logger = options?.logger;
+
     if (!existsSync(join(path))) {
       throw new PathNotExistException(`Path ${path} does not exist`);
     }
@@ -49,6 +52,7 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
     try {
       this._vFile = this._parseFile(path, options);
     } catch (e) {
+      this._logger?.error((e as Error).toString());
       throw new InvalidMarkdownFormatException(
         `Invalid markdown format: ${path}`,
         { cause: e },
