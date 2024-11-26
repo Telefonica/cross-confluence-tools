@@ -11,7 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
-## [1.0.0-beta.1]
+## [1.0.0-beta.2] - 2024-11-26
+
+### Added
+
+* feat: Log possible error when trying to parse a markdown file
+* docs: Add markdown frontmatter examples
+* docs: Add examples of supported config files
+* docs: Add link to Confluence Sync documentation
+
+### Fixed
+
+* fix: Fix missed dependencies that were defined as devDependencies
+* fix: Add missing supported configuration options to TypeScript typings
+
+## [1.0.0-beta.1] [YANKED]
 
 ### Added
 

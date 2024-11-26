@@ -2,3 +2,4 @@ automerge
 cacheable
 frontmatter
 nrwl
+syncrc
