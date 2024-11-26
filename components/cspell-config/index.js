@@ -20,6 +20,7 @@ function createConfig(config = {}) {
         "**/.gitignore",
         "**/coverage/**",
         "**/dist/**",
+        "**/*.excalidraw",
       ],
       caseSensitive: false,
       // Language - current active spelling language

@@ -1,5 +1,6 @@
 automerge
 cacheable
+excalidraw
 frontmatter
 nrwl
 syncrc
