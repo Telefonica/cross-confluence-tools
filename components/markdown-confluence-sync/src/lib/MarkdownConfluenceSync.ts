@@ -122,25 +122,10 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
 
   private async _init() {
     if (!this._initialized) {
-      this._logger.debug(
-        `Initializing with config: ${JSON.stringify({
-          ...this._config,
-          cwd: undefined,
-          config: {
-            ...DEFAULT_CONFIG,
-            ...{
-              fileSearchFrom: this._cwd,
-              fileSearchStop: this._cwd,
-            },
-            ...this._config.config,
-          },
-        })}`,
-      );
       // NOTE: We delete the cwd property from the configuration because it can be configured only programmatically. It is not a configuration option.
-      delete this._config.cwd;
-
-      await this._configuration.load({
+      const configToLoad = {
         ...this._config,
+        cwd: undefined,
         config: {
           ...DEFAULT_CONFIG,
           ...{
@@ -149,7 +134,15 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
           },
           ...this._config.config,
         },
-      });
+      };
+
+      delete configToLoad.cwd;
+
+      this._logger.debug(
+        `Initializing with config: ${JSON.stringify(configToLoad)}`,
+      );
+
+      await this._configuration.load(configToLoad);
       this._logger.setLevel(this._logLevelOption.value);
       this._initialized = true;
     }
