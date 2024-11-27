@@ -6,8 +6,8 @@ import { join, basename, dirname, relative, sep } from "node:path";
 import type { LoggerInterface } from "@mocks-server/logger";
 
 import type {
-  DocusaurusPage,
-  DocusaurusPagesInterface,
+  MarkdownDocument,
+  MarkdownDocumentsInterface,
 } from "./DocusaurusPages.types.js";
 import type {
   DocusaurusTreePagesConstructor,
@@ -18,7 +18,7 @@ import type { DocusaurusDocTreeInterface } from "./tree/DocusaurusDocTree.types.
 import { buildIndexFileRegExp, getIndexFileFromPaths } from "./util/files.js";
 
 export const DocusaurusTreePages: DocusaurusTreePagesConstructor = class DocusaurusTreePages
-  implements DocusaurusPagesInterface
+  implements MarkdownDocumentsInterface
 {
   private _path: string;
   private _tree: DocusaurusDocTreeInterface;
@@ -32,9 +32,9 @@ export const DocusaurusTreePages: DocusaurusTreePagesConstructor = class Docusau
     });
   }
 
-  public async read(): Promise<DocusaurusPage[]> {
+  public async read(): Promise<MarkdownDocument[]> {
     const items = await this._tree.flatten();
-    const pages = items.map<DocusaurusPage>((item) => ({
+    const pages = items.map<MarkdownDocument>((item) => ({
       title: item.meta.confluenceTitle || item.meta.title,
       path: item.path,
       relativePath: relative(this._path, item.path),
@@ -51,9 +51,9 @@ export const DocusaurusTreePages: DocusaurusTreePagesConstructor = class Docusau
   }
 
   private _getItemAncestors(
-    page: DocusaurusPage,
+    page: MarkdownDocument,
     paths: string[],
-  ): DocusaurusPage["ancestors"] {
+  ): MarkdownDocument["ancestors"] {
     // HACK: Added filter to removed empty string because windows separator
     // add double slash and this cause empty string in the end of array
     const dirnamePath = basename(dirname(page.path));

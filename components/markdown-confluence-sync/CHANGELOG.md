@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
+## [1.0.0-beta.3] - 2024-11-27
+
+### Added
+
+* docs: Add `confluence_id` property to the per-page configuration docs.
+
+### Changed
+
+* feat: Change logs to use "markdown files" instead of "docusaurus pages"
+* refactor: Rename first level types and classes to use Markdown instead of Docusaurus.
+* docs: Explain clearer the usage of the `confluence_title` property in frontmatter.
+
 ## [1.0.0-beta.2] - 2024-11-26
 
 ### Added

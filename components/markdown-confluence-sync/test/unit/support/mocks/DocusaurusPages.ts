@@ -10,7 +10,7 @@ export const customDocusaurusPages = {
 };
 
 jest
-  .spyOn(customDocusaurusPagesLib, "DocusaurusPages")
+  .spyOn(customDocusaurusPagesLib, "MarkdownDocuments")
   .mockImplementation(() => {
     return customDocusaurusPages;
   });

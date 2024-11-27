@@ -13,7 +13,7 @@ import type {
   ModeOption,
 } from "../MarkdownConfluenceSync.types.js";
 
-export type DocusaurusPageId = string;
+export type MarkdownPageId = string;
 
 type DocsDirOptionValue = string;
 
@@ -37,7 +37,7 @@ export type DocsDirOption = OptionInterfaceOfType<
   { hasDefault: true }
 >;
 
-export interface DocusaurusPagesOptions {
+export interface MarkdownDocumentsOptions {
   /** Configuration interface */
   config: ConfigInterface;
   /** Logger */
@@ -48,40 +48,40 @@ export interface DocusaurusPagesOptions {
   filesPattern?: FilesPatternOption;
 }
 
-/** Data about one Docusaurus page */
-export interface DocusaurusPage {
-  /** Docusaurus page title */
+/** Data about one markdown file */
+export interface MarkdownDocument {
+  /** markdown file title */
   title: string;
-  /** Docusaurus page path */
+  /** markdown file path */
   path: string;
-  /** Docusaurus page path relative to docs root dir */
+  /** markdown file path relative to docs root dir */
   relativePath: string;
-  /** Docusaurus page content */
+  /** markdown file content */
   content: string;
-  /** Docusaurus page ancestors */
+  /** markdown file ancestors */
   ancestors: string[];
   /**
-   * Docusaurus page name
+   * markdown file name
    *
    * Replaces title page in children's title.
    */
   name?: string;
 }
 
-/** Creates a DocusaurusToConfluence interface */
-export interface DocusaurusPagesConstructor {
-  /** Returns DocusaurusPagesInterface interface
-   * @returns DocusaurusPages instance {@link DocusaurusPagesInterface}.
+/** Creates a MarkdownDocuments interface */
+export interface MarkdownDocumentsConstructor {
+  /** Returns MarkdownDocumentsInterface interface
+   * @returns  MarkdownDocuments instance {@link MarkdownDocumentsInterface}.
    */
-  new (options: DocusaurusPagesOptions): DocusaurusPagesInterface;
+  new (options: MarkdownDocumentsOptions): MarkdownDocumentsInterface;
 }
 
-export interface DocusaurusPagesInterface {
-  /** Read Docusaurus pages and return a list of Docusaurus page objects */
-  read(): Promise<DocusaurusPage[]>;
+export interface MarkdownDocumentsInterface {
+  /** Read markdown files and return a list of markdown file objects */
+  read(): Promise<MarkdownDocument[]>;
 }
 
-export interface DocusaurusPagesModeOptions {
+export interface MarkdownDocumentsModeOptions {
   /** Configuration interface */
   config: ConfigInterface;
   /** Logger */

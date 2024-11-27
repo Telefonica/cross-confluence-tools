@@ -10,28 +10,28 @@ import type { LoggerInterface } from "@mocks-server/logger";
 import { Logger } from "@mocks-server/logger";
 import type { SyncModes } from "@tid-xcut/confluence-sync";
 
-import { DocusaurusPagesFactory } from "@src/lib/docusaurus/DocusaurusPagesFactory";
-import type { DocusaurusPagesFactoryOptions } from "@src/lib/docusaurus/DocusaurusPagesFactory.types";
+import { MarkdownDocumentsFactory } from "@src/lib/docusaurus/DocusaurusPagesFactory";
+import type { MarkdownDocumentsFactoryOptions } from "@src/lib/docusaurus/DocusaurusPagesFactory.types";
 
 describe("docusaurusPagesFactory", () => {
   let config: ConfigInterface;
   let namespace: ConfigNamespaceInterface;
   let logger: LoggerInterface;
-  let docusaurusPagesOptions: DocusaurusPagesFactoryOptions;
+  let docusaurusPagesOptions: MarkdownDocumentsFactoryOptions;
 
   beforeEach(async () => {
     config = new Config({
       moduleName: "markdown-confluence-sync",
     });
-    namespace = config.addNamespace("docusaurus");
+    namespace = config.addNamespace("markdown");
     logger = new Logger("", { level: "silent" });
     // @ts-expect-error Ignore to check different value for mode option
     docusaurusPagesOptions = { config: namespace, logger };
   });
 
-  it(`should throw error with text "must be one of "tree" or "flat"" when docusaurus mode isn't valid mode`, async () => {
+  it(`should throw error with text "must be one of "tree" or "flat" when mode isn't valid mode`, async () => {
     await expect(async () =>
-      DocusaurusPagesFactory.fromMode(
+      MarkdownDocumentsFactory.fromMode(
         "foo" as SyncModes,
         docusaurusPagesOptions,
       ),
