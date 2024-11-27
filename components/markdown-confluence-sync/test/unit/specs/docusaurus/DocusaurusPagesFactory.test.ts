@@ -29,7 +29,7 @@ describe("docusaurusPagesFactory", () => {
     docusaurusPagesOptions = { config: namespace, logger };
   });
 
-  it(`should throw error with text "must be one of "tree" or "flat"" when mode isn't valid mode`, async () => {
+  it(`should throw error with text "must be one of "tree" or "flat" when mode isn't valid mode`, async () => {
     await expect(async () =>
       MarkdownDocumentsFactory.fromMode(
         "foo" as SyncModes,
