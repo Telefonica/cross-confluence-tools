@@ -69,7 +69,7 @@ describe("markdown-confluence-sync binary", () => {
 
       it("should have logged pages to sync", async () => {
         expect(cleanLogs(logs)).toContain(
-          `Converting 19 Docusaurus pages to Confluence pages...`,
+          `Converting 19 markdown documents to Confluence pages...`,
         );
       });
 
@@ -642,7 +642,7 @@ describe("markdown-confluence-sync binary", () => {
 
       it("should have logged pages to sync", async () => {
         expect(cleanLogs(logs)).toContain(
-          `Converting 19 Docusaurus pages to Confluence pages...`,
+          `Converting 19 markdown documents to Confluence pages...`,
         );
       });
 
@@ -686,7 +686,7 @@ describe("markdown-confluence-sync binary", () => {
 
       it("should have logged pages to sync", async () => {
         expect(cleanLogs(logs)).toContain(
-          `Converting 6 Docusaurus pages to Confluence pages...`,
+          `Converting 6 markdown documents to Confluence pages...`,
         );
       });
 
