@@ -82,7 +82,6 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
     this._configuration = new Config({
       moduleName: MODULE_NAME,
     });
-    this._configuration.set({});
 
     this._logger = new Logger(MODULE_NAME);
     this._logLevelOption = this._configuration.addOption(
