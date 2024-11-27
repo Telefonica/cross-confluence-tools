@@ -15,12 +15,12 @@ import type {
 import type {
   DocsDirOption,
   DocsDirOptionDefinition,
-  DocusaurusPage,
-  DocusaurusPagesConstructor,
-  DocusaurusPagesInterface,
-  DocusaurusPagesOptions,
+  MarkdownDocument,
+  MarkdownDocumentsConstructor,
+  MarkdownDocumentsInterface,
+  MarkdownDocumentsOptions,
 } from "./DocusaurusPages.types.js";
-import { DocusaurusPagesFactory } from "./DocusaurusPagesFactory.js";
+import { MarkdownDocumentsFactory } from "./DocusaurusPagesFactory.js";
 
 const DEFAULT_DOCS_DIR = "docs";
 
@@ -30,19 +30,24 @@ const docsDirOption: DocsDirOptionDefinition = {
   default: DEFAULT_DOCS_DIR,
 };
 
-export const DocusaurusPages: DocusaurusPagesConstructor = class DocusaurusPages
-  implements DocusaurusPagesInterface
+export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDocuments
+  implements MarkdownDocumentsInterface
 {
   private _docsDirOption: DocsDirOption;
   private _modeOption: ModeOption;
   private _initialized = false;
   private _path: string;
-  private _pages: DocusaurusPagesInterface;
+  private _pages: MarkdownDocumentsInterface;
   private _logger: LoggerInterface;
   private _config: ConfigInterface;
   private _filesPattern?: FilesPatternOption;
 
-  constructor({ config, logger, mode, filesPattern }: DocusaurusPagesOptions) {
+  constructor({
+    config,
+    logger,
+    mode,
+    filesPattern,
+  }: MarkdownDocumentsOptions) {
     this._docsDirOption = config.addOption(docsDirOption);
     this._modeOption = mode;
     this._filesPattern = filesPattern;
@@ -50,7 +55,7 @@ export const DocusaurusPages: DocusaurusPagesConstructor = class DocusaurusPages
     this._logger = logger;
   }
 
-  public async read(): Promise<DocusaurusPage[]> {
+  public async read(): Promise<MarkdownDocument[]> {
     await this._init();
     this._logger.debug(`docsDir option is ${this._docsDirOption.value}`);
     return await this._pages.read();
@@ -61,7 +66,7 @@ export const DocusaurusPages: DocusaurusPagesConstructor = class DocusaurusPages
     if (!this._initialized) {
       const path = resolve(process.cwd(), this._docsDirOption.value);
       this._path = path;
-      this._pages = DocusaurusPagesFactory.fromMode(this._modeOption.value, {
+      this._pages = MarkdownDocumentsFactory.fromMode(this._modeOption.value, {
         config: this._config,
         logger: this._logger,
         path: this._path,

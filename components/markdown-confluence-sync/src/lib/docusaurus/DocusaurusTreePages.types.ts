@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type {
-  DocusaurusPagesInterface,
-  DocusaurusPagesModeOptions,
+  MarkdownDocumentsInterface,
+  MarkdownDocumentsModeOptions,
 } from "./DocusaurusPages.types";
 
-export interface DocusaurusTreePagesOptions extends DocusaurusPagesModeOptions {
-  /**  Docusaurus page path */
+export interface DocusaurusTreePagesOptions
+  extends MarkdownDocumentsModeOptions {
+  /**  Markdown document path */
   path?: string;
 }
 
@@ -15,7 +16,7 @@ export interface DocusaurusTreePagesOptions extends DocusaurusPagesModeOptions {
 export interface DocusaurusTreePagesConstructor {
   /** Returns DocusaurusPagesInterface interface
    * @param {DocusaurusTreePagesOptions} options
-   * @returns DocusaurusPagesMode instance {@link DocusaurusPagesInterface}.
+   * @returns DocusaurusPagesMode instance {@link MarkdownDocumentsInterface}.
    */
-  new (options: DocusaurusTreePagesOptions): DocusaurusPagesInterface;
+  new (options: DocusaurusTreePagesOptions): MarkdownDocumentsInterface;
 }

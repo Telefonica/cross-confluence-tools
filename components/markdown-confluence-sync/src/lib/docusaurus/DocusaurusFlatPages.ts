@@ -10,36 +10,36 @@ import type { FilesPattern } from "../MarkdownConfluenceSync.types.js";
 import { isStringWithLength } from "../support/typesValidations.js";
 
 import type {
-  DocusaurusFlatPagesConstructor,
-  DocusaurusFlatPagesOptions,
+  MarkdownFlatDocumentsConstructor,
+  MarkdownFlatDocumentsOptions,
 } from "./DocusaurusFlatPages.types.js";
 import type {
-  DocusaurusPage,
-  DocusaurusPagesInterface,
+  MarkdownDocument,
+  MarkdownDocumentsInterface,
 } from "./DocusaurusPages.types.js";
-import { DocusaurusDocPageFactory } from "./pages/DocusaurusDocPageFactory.js";
+import { MarkdownDocFactory } from "./pages/DocusaurusDocPageFactory.js";
 
-export const DocusaurusFlatPages: DocusaurusFlatPagesConstructor = class DocusaurusFlatPages
-  implements DocusaurusPagesInterface
+export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class MarkdownFlatDocuments
+  implements MarkdownDocumentsInterface
 {
   private _path: string;
   private _logger: LoggerInterface;
   private _initialized = false;
   private _filesPattern: FilesPattern;
 
-  constructor({ logger, filesPattern }: DocusaurusFlatPagesOptions) {
+  constructor({ logger, filesPattern }: MarkdownFlatDocumentsOptions) {
     this._path = process.cwd();
     this._filesPattern = filesPattern as FilesPattern;
     this._logger = logger.namespace("doc-flat");
   }
 
-  public async read(): Promise<DocusaurusPage[]> {
+  public async read(): Promise<MarkdownDocument[]> {
     await this._init();
     const filesPaths = await this._obtainedFilesPaths();
     this._logger.debug(
       `Found ${filesPaths.length} files in ${this._path} matching the pattern '${this._filesPattern}'`,
     );
-    return await this._transformFilePathsToDocusaurusPages(filesPaths);
+    return await this._transformFilePathsToMarkdownDocuments(filesPaths);
   }
 
   private async _obtainedFilesPaths(): Promise<string[]> {
@@ -52,13 +52,13 @@ export const DocusaurusFlatPages: DocusaurusFlatPagesConstructor = class Docusau
     });
   }
 
-  private async _transformFilePathsToDocusaurusPages(
+  private async _transformFilePathsToMarkdownDocuments(
     filesPaths: string[],
-  ): Promise<DocusaurusPage[]> {
+  ): Promise<MarkdownDocument[]> {
     const files = filesPaths.map((filePath) =>
-      DocusaurusDocPageFactory.fromPath(filePath, { logger: this._logger }),
+      MarkdownDocFactory.fromPath(filePath, { logger: this._logger }),
     );
-    const pages = files.map<DocusaurusPage>((item) => ({
+    const pages = files.map<MarkdownDocument>((item) => ({
       title: item.meta.confluenceTitle || item.meta.title,
       id: item.meta.confluencePageId,
       path: item.path,

@@ -37,11 +37,11 @@ export interface ConfluencePageTransformerConstructor {
 }
 
 export interface ConfluencePageTransformerInterface {
-  /** Transform pages from Docusaurus to Confluence
-   * @param pages - Docusaurus pages
+  /** Transform pages from markdown to Confluence
+   * @param documents - Markdown documents
    * @returns Confluence pages
    */
-  transform(pages: ConfluenceSyncPage[]): Promise<ConfluenceInputPage[]>;
+  transform(documents: ConfluenceSyncPage[]): Promise<ConfluenceInputPage[]>;
 }
 
 export interface ConfluencePageTransformerTemplateData {
