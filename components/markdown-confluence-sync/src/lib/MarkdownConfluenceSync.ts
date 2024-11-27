@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ConfigInterface as customMarkdownConfluenceSyncClass } from "@mocks-server/config";
+import { resolve } from "path";
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import { Logger } from "@mocks-server/logger";
@@ -68,14 +69,21 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
   private _logLevelOption: LogLevelOption;
   private _modeOption: ModeOption;
   private _filesPatternOption: FilesPatternOption;
+  private _workingDirectory: string;
 
   constructor(config: Configuration) {
+    const cwd = config?.cwd || process.env.MARKDOWN_CONFLUENCE_SYNC_CWD;
+    this._workingDirectory = cwd ? resolve(process.cwd(), cwd) : process.cwd();
     this._config = config;
     if (!this._config) {
       throw new Error("Please provide configuration");
     }
 
-    this._configuration = new Config({ moduleName: MODULE_NAME });
+    this._configuration = new Config({
+      moduleName: MODULE_NAME,
+    });
+    this._configuration.set({});
+
     this._logger = new Logger(MODULE_NAME);
     this._logLevelOption = this._configuration.addOption(
       logLevelOption,
@@ -96,6 +104,7 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       logger: markdownLogger,
       mode: this._modeOption,
       filesPattern: this._filesPatternOption,
+      workingDirectory: this._workingDirectory,
     });
     this._confluenceSync = new ConfluenceSync({
       config: confluenceConfig,
@@ -114,9 +123,33 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
 
   private async _init() {
     if (!this._initialized) {
+      this._logger.debug(
+        `Initializing with config: ${JSON.stringify({
+          ...this._config,
+          workingDirectory: undefined,
+          config: {
+            ...DEFAULT_CONFIG,
+            ...{
+              fileSearchFrom: this._workingDirectory,
+              fileSearchStop: this._workingDirectory,
+            },
+            ...this._config.config,
+          },
+        })}`,
+      );
+      // NOTE: We delete the cwd property from the configuration because it can be configured only programmatically. It is not a configuration option.
+      delete this._config.cwd;
+
       await this._configuration.load({
-        config: { ...DEFAULT_CONFIG, ...this._config.config },
         ...this._config,
+        config: {
+          ...DEFAULT_CONFIG,
+          ...{
+            fileSearchFrom: this._workingDirectory,
+            fileSearchStop: this._workingDirectory,
+          },
+          ...this._config.config,
+        },
       });
       this._logger.setLevel(this._logLevelOption.value);
       this._initialized = true;

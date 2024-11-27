@@ -57,6 +57,7 @@ describe("docusaurusPages", () => {
       config,
       logger,
       mode: config.option("mode") as ModeOption,
+      workingDirectory: process.cwd(),
     };
   });
 
@@ -540,6 +541,7 @@ describe("docusaurusPages", () => {
             config,
             logger,
             mode: config.option("mode") as ModeOption,
+            workingDirectory: process.cwd(),
           };
           docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
           await config.load({
@@ -657,9 +659,6 @@ describe("docusaurusPages", () => {
       });
 
       it("should read the pages whose filenames match the glob pattern provided in the filesPattern option", async () => {
-        const spy = jest.spyOn(process, "cwd");
-        spy.mockReturnValue(dir.name);
-
         // Arrange
         await config.load({
           ...CONFIG,
@@ -669,6 +668,7 @@ describe("docusaurusPages", () => {
         docusaurusPages = new MarkdownDocuments({
           ...docusaurusPagesOptions,
           filesPattern: config.option("filesPattern") as FilesPatternOption,
+          workingDirectory: dir.name,
         });
 
         const categoryDir = dirSync({ dir: dir.name, name: "category" });
@@ -747,10 +747,6 @@ describe("docusaurusPages", () => {
       });
 
       it("when MarkdownDocuments read method is called twice, the initial validation should be called only once", async () => {
-        // Arrange
-        const spy = jest.spyOn(process, "cwd");
-        spy.mockReturnValue(dir.name);
-
         const spyIsStringWithLength = jest.spyOn(
           typesValidations,
           "isStringWithLength",
@@ -765,6 +761,7 @@ describe("docusaurusPages", () => {
         docusaurusPages = new MarkdownDocuments({
           ...docusaurusPagesOptions,
           filesPattern: config.option("filesPattern") as FilesPatternOption,
+          workingDirectory: dir.name,
         });
 
         // Act

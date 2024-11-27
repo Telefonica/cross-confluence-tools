@@ -12,6 +12,8 @@ export interface MarkdownFlatDocumentsOptions
   extends MarkdownDocumentsModeOptions {
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPattern;
+  /** Working directory */
+  workingDirectory: string;
 }
 
 /** Creates a MarkdownFlatDocuments interface */

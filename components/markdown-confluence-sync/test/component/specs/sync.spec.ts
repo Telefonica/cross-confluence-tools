@@ -959,6 +959,201 @@ describe("markdown-confluence-sync binary", () => {
       });
     });
 
+    describe("when using cwd option", () => {
+      beforeAll(async () => {
+        await changeMockCollection("with-confluence-title");
+        await resetRequests();
+
+        cli = new ChildProcessManager(["./run.mjs"], {
+          cwd: getFixtureFolder("working-directory"),
+          //silent: true,
+        });
+
+        const result = await cli.run();
+        exitCode = result.exitCode;
+        logs = result.logs;
+
+        createRequests = await getRequestsByRouteId("confluence-create-page");
+      });
+
+      it("should have exit code 0", async () => {
+        expect(exitCode).toBe(0);
+      });
+
+      it("should have created 3 pages", async () => {
+        expect(createRequests).toHaveLength(3);
+      });
+
+      it("should have create page with title Confluence title", async () => {
+        const pageRequest = findRequestByTitle(
+          "Confluence title",
+          createRequests,
+        );
+
+        expect(pageRequest).toBeDefined();
+        expect(pageRequest?.url).toBe("/rest/api/content");
+        expect(pageRequest?.method).toBe("POST");
+        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+        expect(pageRequest?.body).toEqual({
+          type: "page",
+          title: "Confluence title",
+          space: {
+            key: "foo-space-id",
+          },
+          ancestors: [
+            {
+              id: "foo-root-id",
+            },
+          ],
+          body: {
+            storage: {
+              value: expect.stringContaining(
+                dedent(`
+                <h1>Hello World</h1>
+                `),
+              ),
+              representation: "storage",
+            },
+          },
+        });
+      });
+
+      it("should have create page with title [Confluence title][foo-child1-title] Confluence grandChild 1", async () => {
+        const pageRequest = findRequestByTitle(
+          "[Confluence title][foo-child1-title] Confluence grandChild 1",
+          createRequests,
+        );
+
+        expect(pageRequest).toBeDefined();
+        expect(pageRequest?.url).toBe("/rest/api/content");
+        expect(pageRequest?.method).toBe("POST");
+        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+        expect(pageRequest?.body).toEqual({
+          type: "page",
+          title: "[Confluence title][foo-child1-title] Confluence grandChild 1",
+          space: {
+            key: "foo-space-id",
+          },
+          ancestors: [
+            {
+              id: "foo-child1-id",
+            },
+          ],
+          body: {
+            storage: {
+              value: expect.stringContaining(
+                dedent(`
+                <h1>Here goes the grandChild1 title</h1>
+                <p>This is the grandChild1 content</p>
+                `),
+              ),
+              representation: "storage",
+            },
+          },
+        });
+      });
+    });
+
+    describe("when using cwd env var", () => {
+      beforeAll(async () => {
+        await changeMockCollection("with-confluence-title");
+        await resetRequests();
+
+        cli = new ChildProcessManager(["./run-with-env.mjs"], {
+          cwd: getFixtureFolder("working-directory"),
+          env: {
+            MARKDOWN_CONFLUENCE_SYNC_CWD: resolve(
+              getFixtureFolder("working-directory"),
+              "subfolder",
+            ),
+          },
+        });
+
+        const result = await cli.run();
+        exitCode = result.exitCode;
+        logs = result.logs;
+
+        createRequests = await getRequestsByRouteId("confluence-create-page");
+      });
+
+      it("should have exit code 0", async () => {
+        expect(exitCode).toBe(0);
+      });
+
+      it("should have created 3 pages", async () => {
+        expect(createRequests).toHaveLength(3);
+      });
+
+      it("should have create page with title Confluence title", async () => {
+        const pageRequest = findRequestByTitle(
+          "Confluence title",
+          createRequests,
+        );
+
+        expect(pageRequest).toBeDefined();
+        expect(pageRequest?.url).toBe("/rest/api/content");
+        expect(pageRequest?.method).toBe("POST");
+        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+        expect(pageRequest?.body).toEqual({
+          type: "page",
+          title: "Confluence title",
+          space: {
+            key: "foo-space-id",
+          },
+          ancestors: [
+            {
+              id: "foo-root-id",
+            },
+          ],
+          body: {
+            storage: {
+              value: expect.stringContaining(
+                dedent(`
+                <h1>Hello World</h1>
+                `),
+              ),
+              representation: "storage",
+            },
+          },
+        });
+      });
+
+      it("should have create page with title [Confluence title][foo-child1-title] Confluence grandChild 1", async () => {
+        const pageRequest = findRequestByTitle(
+          "[Confluence title][foo-child1-title] Confluence grandChild 1",
+          createRequests,
+        );
+
+        expect(pageRequest).toBeDefined();
+        expect(pageRequest?.url).toBe("/rest/api/content");
+        expect(pageRequest?.method).toBe("POST");
+        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+        expect(pageRequest?.body).toEqual({
+          type: "page",
+          title: "[Confluence title][foo-child1-title] Confluence grandChild 1",
+          space: {
+            key: "foo-space-id",
+          },
+          ancestors: [
+            {
+              id: "foo-child1-id",
+            },
+          ],
+          body: {
+            storage: {
+              value: expect.stringContaining(
+                dedent(`
+                <h1>Here goes the grandChild1 title</h1>
+                <p>This is the grandChild1 content</p>
+                `),
+              ),
+              representation: "storage",
+            },
+          },
+        });
+      });
+    });
+
     describe("when files in the root directory", () => {
       beforeAll(async () => {
         await changeMockCollection("empty-root");
