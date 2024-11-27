@@ -13,7 +13,7 @@ export interface MarkdownFlatDocumentsOptions
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPattern;
   /** Working directory */
-  workingDirectory: string;
+  cwd: string;
 }
 
 /** Creates a MarkdownFlatDocuments interface */

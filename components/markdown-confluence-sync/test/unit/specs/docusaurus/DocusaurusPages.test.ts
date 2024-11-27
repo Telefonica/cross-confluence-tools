@@ -57,7 +57,7 @@ describe("docusaurusPages", () => {
       config,
       logger,
       mode: config.option("mode") as ModeOption,
-      workingDirectory: process.cwd(),
+      cwd: process.cwd(),
     };
   });
 
@@ -541,7 +541,7 @@ describe("docusaurusPages", () => {
             config,
             logger,
             mode: config.option("mode") as ModeOption,
-            workingDirectory: process.cwd(),
+            cwd: process.cwd(),
           };
           docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
           await config.load({
@@ -668,7 +668,7 @@ describe("docusaurusPages", () => {
         docusaurusPages = new MarkdownDocuments({
           ...docusaurusPagesOptions,
           filesPattern: config.option("filesPattern") as FilesPatternOption,
-          workingDirectory: dir.name,
+          cwd: dir.name,
         });
 
         const categoryDir = dirSync({ dir: dir.name, name: "category" });
@@ -761,7 +761,7 @@ describe("docusaurusPages", () => {
         docusaurusPages = new MarkdownDocuments({
           ...docusaurusPagesOptions,
           filesPattern: config.option("filesPattern") as FilesPatternOption,
-          workingDirectory: dir.name,
+          cwd: dir.name,
         });
 
         // Act

@@ -30,9 +30,9 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
   constructor({
     logger,
     filesPattern,
-    workingDirectory,
+    cwd,
   }: MarkdownFlatDocumentsOptions) {
-    this._path = workingDirectory;
+    this._path = cwd;
     this._filesPattern = filesPattern as FilesPattern;
     this._logger = logger.namespace("doc-flat");
   }
