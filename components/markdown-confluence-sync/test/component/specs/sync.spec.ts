@@ -1059,7 +1059,7 @@ describe("markdown-confluence-sync binary", () => {
         await changeMockCollection("with-confluence-title");
         await resetRequests();
 
-        cli = new ChildProcessManager(["./run-with-env.mjs"], {
+        cli = new ChildProcessManager([getBinaryPathFromFixtureFolder()], {
           cwd: getFixtureFolder("working-directory"),
           env: {
             MARKDOWN_CONFLUENCE_SYNC_CWD: resolve(
