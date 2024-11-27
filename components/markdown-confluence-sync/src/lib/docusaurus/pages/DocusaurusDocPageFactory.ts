@@ -9,7 +9,7 @@ import type {
 } from "./DocusaurusDocPageFactory.types.js";
 import { DocusaurusDocPageMdx } from "./DocusaurusDocPageMdx.js";
 
-export const DocusaurusDocPageFactory: DocusaurusDocPageFactoryInterface = class DocusaurusDocPageFactory {
+export const MarkdownDocFactory: DocusaurusDocPageFactoryInterface = class DocusaurusDocPageFactory {
   public static fromPath(
     path: string,
     options?: DocusaurusDocPageFactoryFromPathOptions,

@@ -3,26 +3,26 @@
 
 import { SyncModes } from "@tid-xcut/confluence-sync";
 
-import { DocusaurusFlatPages } from "./DocusaurusFlatPages.js";
-import type { DocusaurusFlatPagesOptions } from "./DocusaurusFlatPages.types.js";
-import type { DocusaurusPagesInterface } from "./DocusaurusPages.types.js";
+import { MarkdownFlatDocuments } from "./DocusaurusFlatPages.js";
+import type { MarkdownFlatDocumentsOptions } from "./DocusaurusFlatPages.types.js";
+import type { MarkdownDocumentsInterface } from "./DocusaurusPages.types.js";
 import type {
-  DocusaurusPagesFactoryInterface,
-  DocusaurusPagesFactoryOptions,
+  MarkdownDocumentsFactoryInterface,
+  MarkdownDocumentsFactoryOptions,
 } from "./DocusaurusPagesFactory.types.js";
 import { DocusaurusTreePages } from "./DocusaurusTreePages.js";
 import type { DocusaurusTreePagesOptions } from "./DocusaurusTreePages.types.js";
 
-export const DocusaurusPagesFactory: DocusaurusPagesFactoryInterface = class DocusaurusPagesFactory {
+export const MarkdownDocumentsFactory: MarkdownDocumentsFactoryInterface = class MarkdownDocumentsFactory {
   public static fromMode(
     mode: SyncModes,
-    options: DocusaurusPagesFactoryOptions,
-  ): DocusaurusPagesInterface {
+    options: MarkdownDocumentsFactoryOptions,
+  ): MarkdownDocumentsInterface {
     if (!this._isValidMode(mode)) {
       throw new Error(`"mode" option must be one of "tree" or "flat"`);
     }
     if (this._isFlatMode(mode)) {
-      return new DocusaurusFlatPages(options as DocusaurusFlatPagesOptions);
+      return new MarkdownFlatDocuments(options as MarkdownFlatDocumentsOptions);
     }
     return new DocusaurusTreePages(options as DocusaurusTreePagesOptions);
   }

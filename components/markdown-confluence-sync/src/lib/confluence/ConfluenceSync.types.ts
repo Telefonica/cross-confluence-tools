@@ -105,7 +105,7 @@ export interface ConfluenceSyncPage extends ConfluenceInputPage {
   /**
    * Confluence page ancestors
    * @override
-   * @see {@link DocusaurusPage}
+   * @see {@link MarkdownDocument}
    */
   ancestors: string[];
   /** Confluence page path */

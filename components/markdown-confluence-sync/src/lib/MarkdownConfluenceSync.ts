@@ -12,10 +12,10 @@ import type {
   ConfluenceSyncInterface,
   ConfluenceSyncPage,
 } from "./confluence/ConfluenceSync.types.js";
-import { DocusaurusPages } from "./docusaurus/DocusaurusPages.js";
+import { MarkdownDocuments } from "./docusaurus/DocusaurusPages.js";
 import type {
-  DocusaurusPage,
-  DocusaurusPagesInterface,
+  MarkdownDocument,
+  MarkdownDocumentsInterface,
 } from "./docusaurus/DocusaurusPages.types.js";
 import type {
   MarkdownConfluenceSyncConstructor,
@@ -30,7 +30,7 @@ import type {
 } from "./MarkdownConfluenceSync.types.js";
 
 const MODULE_NAME = "markdown-confluence-sync";
-const DOCUSAURUS_NAMESPACE = "docusaurus";
+const MARKDOWN_NAMESPACE = "markdown";
 const CONFLUENCE_NAMESPACE = "confluence";
 
 const DEFAULT_CONFIG: Configuration["config"] = {
@@ -59,7 +59,7 @@ const filesPatternOption: FilesPatternOptionDefinition = {
 export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class MarkdownConfluenceSync
   implements MarkdownConfluenceSyncInterface
 {
-  private _docusaurusPages: DocusaurusPagesInterface;
+  private _markdownDocuments: MarkdownDocumentsInterface;
   private _confluenceSync: ConfluenceSyncInterface;
   private _configuration: customMarkdownConfluenceSyncClass;
   private _initialized = false;
@@ -85,15 +85,15 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       filesPatternOption,
     ) as FilesPatternOption;
 
-    const docusaurusLogger = this._logger.namespace(DOCUSAURUS_NAMESPACE);
+    const markdownLogger = this._logger.namespace(MARKDOWN_NAMESPACE);
 
     const confluenceConfig =
       this._configuration.addNamespace(CONFLUENCE_NAMESPACE);
     const confluenceLogger = this._logger.namespace(CONFLUENCE_NAMESPACE);
 
-    this._docusaurusPages = new DocusaurusPages({
+    this._markdownDocuments = new MarkdownDocuments({
       config: this._configuration,
-      logger: docusaurusLogger,
+      logger: markdownLogger,
       mode: this._modeOption,
       filesPattern: this._filesPatternOption,
     });
@@ -106,9 +106,9 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
 
   public async sync(): Promise<void> {
     await this._init();
-    const pages = await this._docusaurusPages.read();
+    const pages = await this._markdownDocuments.read();
     await this._confluenceSync.sync(
-      this._docusaurusPagesToConfluencePages(pages),
+      this._markdownPagesToConfluencePages(pages),
     );
   }
 
@@ -123,12 +123,12 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
     }
   }
 
-  private _docusaurusPagesToConfluencePages(
-    docusaurusPages: DocusaurusPage[],
+  private _markdownPagesToConfluencePages(
+    markdownDocuments: MarkdownDocument[],
   ): ConfluenceSyncPage[] {
     this._logger.info(
-      `Converting ${docusaurusPages.length} Docusaurus pages to Confluence pages...`,
+      `Converting ${markdownDocuments.length} markdown documents to Confluence pages...`,
     );
-    return docusaurusPages;
+    return markdownDocuments;
   }
 };
