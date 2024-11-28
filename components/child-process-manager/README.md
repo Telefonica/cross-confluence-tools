@@ -23,8 +23,12 @@ It is useful to execute shell commands from tests and check their output, for ex
 
 ## Installation
 
+First of all, you need to __get permissions to install the package__. Please follow the instructions in the [Confluence page about NPM packages](https://confluence.tid.es/display/CTO/%5BCross%5D+NPM+Packages).
+
+Then, you can install the package using npm:
+
 ```bash
-npm install @tid-cross/child-process-manager
+npm install @tid-xcut/child-process-manager
 ```
 
 ## Example
@@ -32,7 +36,7 @@ npm install @tid-cross/child-process-manager
 Import the library, create a child process and wait for it to finish. It will return the exit code and the array of logs in the resolved object.
 
 ```js title="Example"
-import { ChildProcessManager } from '@tid-cross/child-process-manager';
+import { ChildProcessManager } from '@tid-xcut/child-process-manager';
 
 const childProcess = new ChildProcessManager(["echo", 'Hello world!']);
 

@@ -3,42 +3,44 @@
 
 import type { ConfigInterface } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
-import type { SyncModes } from "@tid-cross/confluence-sync";
+import type { SyncModes } from "@tid-xcut/confluence-sync";
 
 import type { FilesPattern } from "..";
 
-import type { DocusaurusPagesInterface } from "./DocusaurusPages.types";
+import type { MarkdownDocumentsInterface } from "./DocusaurusPages.types";
 
-export interface DocusaurusPagesFactoryOptions {
+export interface MarkdownDocumentsFactoryOptions {
   /** Configuration interface */
   config: ConfigInterface;
   /** Logger */
   logger: LoggerInterface;
-  /**  Docusaurus page path */
+  /**  Markdown document path */
   path: string;
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPattern;
+  /** Working directory */
+  cwd: string;
 }
 
 /**
- * Factory for creating DocusaurusPages instances.
+ * Factory for creating MarkdownDocuments instances.
  *
  *
- * @export DocusaurusDocFactory
+ * @export MarkdownDocumentFactory
  */
-export interface DocusaurusPagesFactoryInterface {
+export interface MarkdownDocumentsFactoryInterface {
   /**
    * Creates a new page from the category index.
    *
-   * If the mode is flat {@link DocusaurusFlatPages} will be obtained pages in flat mode.
-   * Otherwise, the {@link DocusaurusTreePages} will be  obtained pages in tree mode.
+   * If the mode is flat will be obtained pages in flat mode.
+   * Otherwise, the will be  obtained pages in tree mode.
    *
-   * @param options ${DocusaurusPagesFactoryOptions} - The options to obtained docusaurus pages.
+   * @param options The options to obtained markdown documents.
    *
-   * @returns A new DocusaurusPagesInterface instance.
+   * @returns A new MarkdownDocumentsInterface instance.
    */
   fromMode(
     mode: SyncModes,
-    options: DocusaurusPagesFactoryOptions,
-  ): DocusaurusPagesInterface;
+    options: MarkdownDocumentsFactoryOptions,
+  ): MarkdownDocumentsInterface;
 }

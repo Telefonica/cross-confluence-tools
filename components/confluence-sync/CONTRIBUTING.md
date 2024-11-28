@@ -5,6 +5,7 @@ First of all, thank you for considering contributing to the this project! 🎉
 # Table of contents
 
 - [Development](#development)
+  - [Common guidelines](#common-guidelines)
   - [Installation](#installation)
   - [Monorepo tool](#monorepo-tool)
   - [Unit tests](#unit-tests)
@@ -14,6 +15,10 @@ First of all, thank you for considering contributing to the this project! 🎉
 - [Pull requests](#pull-requests)
 
 ## Development
+
+### Common guidelines
+
+Please refer to the main [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) file in this repository for general guidelines about contributing to this project. Once you have read and understood them, you can follow the specific guidelines for this component.
 
 ### Installation
 

@@ -7,7 +7,7 @@ import type {
   OptionDefinition,
 } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
-import type { ConfluenceInputPage } from "@tid-cross/confluence-sync";
+import type { ConfluenceInputPage } from "@tid-xcut/confluence-sync";
 
 import type { ModeOption } from "../MarkdownConfluenceSync.types";
 
@@ -33,6 +33,12 @@ declare global {
         spaceKey?: SpaceKeyOptionValue;
         /** Confluence root page id */
         rootPageId?: RootPageIdOptionValue;
+        /** Customize Confluence page titles by adding a prefix to all of them for improved organization and clarity */
+        rootPageName?: RootPageNameOptionValue;
+        /** Notice message to add at the beginning of the Confluence pages */
+        noticeMessage?: NoticeMessageOptionValue;
+        /** Template string to use for the notice message. */
+        noticeTemplate?: NoticeTemplateOptionValue;
         /** Confluence dry run */
         dryRun?: DryRunOptionValue;
       };
@@ -99,7 +105,7 @@ export interface ConfluenceSyncPage extends ConfluenceInputPage {
   /**
    * Confluence page ancestors
    * @override
-   * @see {@link DocusaurusPage}
+   * @see {@link MarkdownDocument}
    */
   ancestors: string[];
   /** Confluence page path */

@@ -2,20 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ConfigInterface as customMarkdownConfluenceSyncClass } from "@mocks-server/config";
+import { resolve } from "path";
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import { Logger } from "@mocks-server/logger";
-import { SyncModes } from "@tid-cross/confluence-sync";
+import { SyncModes } from "@tid-xcut/confluence-sync";
 
 import { ConfluenceSync } from "./confluence/ConfluenceSync.js";
 import type {
   ConfluenceSyncInterface,
   ConfluenceSyncPage,
 } from "./confluence/ConfluenceSync.types.js";
-import { DocusaurusPages } from "./docusaurus/DocusaurusPages.js";
+import { MarkdownDocuments } from "./docusaurus/DocusaurusPages.js";
 import type {
-  DocusaurusPage,
-  DocusaurusPagesInterface,
+  MarkdownDocument,
+  MarkdownDocumentsInterface,
 } from "./docusaurus/DocusaurusPages.types.js";
 import type {
   MarkdownConfluenceSyncConstructor,
@@ -30,7 +31,7 @@ import type {
 } from "./MarkdownConfluenceSync.types.js";
 
 const MODULE_NAME = "markdown-confluence-sync";
-const DOCUSAURUS_NAMESPACE = "docusaurus";
+const MARKDOWN_NAMESPACE = "markdown";
 const CONFLUENCE_NAMESPACE = "confluence";
 
 const DEFAULT_CONFIG: Configuration["config"] = {
@@ -59,7 +60,7 @@ const filesPatternOption: FilesPatternOptionDefinition = {
 export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class MarkdownConfluenceSync
   implements MarkdownConfluenceSyncInterface
 {
-  private _docusaurusPages: DocusaurusPagesInterface;
+  private _markdownDocuments: MarkdownDocumentsInterface;
   private _confluenceSync: ConfluenceSyncInterface;
   private _configuration: customMarkdownConfluenceSyncClass;
   private _initialized = false;
@@ -68,14 +69,20 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
   private _logLevelOption: LogLevelOption;
   private _modeOption: ModeOption;
   private _filesPatternOption: FilesPatternOption;
+  private _cwd: string;
 
   constructor(config: Configuration) {
+    const cwd = config?.cwd || process.env.MARKDOWN_CONFLUENCE_SYNC_CWD;
+    this._cwd = cwd ? resolve(process.cwd(), cwd) : process.cwd();
     this._config = config;
     if (!this._config) {
       throw new Error("Please provide configuration");
     }
 
-    this._configuration = new Config({ moduleName: MODULE_NAME });
+    this._configuration = new Config({
+      moduleName: MODULE_NAME,
+    });
+
     this._logger = new Logger(MODULE_NAME);
     this._logLevelOption = this._configuration.addOption(
       logLevelOption,
@@ -85,17 +92,18 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       filesPatternOption,
     ) as FilesPatternOption;
 
-    const docusaurusLogger = this._logger.namespace(DOCUSAURUS_NAMESPACE);
+    const markdownLogger = this._logger.namespace(MARKDOWN_NAMESPACE);
 
     const confluenceConfig =
       this._configuration.addNamespace(CONFLUENCE_NAMESPACE);
     const confluenceLogger = this._logger.namespace(CONFLUENCE_NAMESPACE);
 
-    this._docusaurusPages = new DocusaurusPages({
+    this._markdownDocuments = new MarkdownDocuments({
       config: this._configuration,
-      logger: docusaurusLogger,
+      logger: markdownLogger,
       mode: this._modeOption,
       filesPattern: this._filesPatternOption,
+      cwd: this._cwd,
     });
     this._confluenceSync = new ConfluenceSync({
       config: confluenceConfig,
@@ -106,29 +114,46 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
 
   public async sync(): Promise<void> {
     await this._init();
-    const pages = await this._docusaurusPages.read();
+    const pages = await this._markdownDocuments.read();
     await this._confluenceSync.sync(
-      this._docusaurusPagesToConfluencePages(pages),
+      this._markdownPagesToConfluencePages(pages),
     );
   }
 
   private async _init() {
     if (!this._initialized) {
-      await this._configuration.load({
-        config: { ...DEFAULT_CONFIG, ...this._config.config },
+      // NOTE: We delete the cwd property from the configuration because it can be configured only programmatically. It is not a configuration option.
+      const configToLoad = {
         ...this._config,
-      });
+        cwd: undefined,
+        config: {
+          ...DEFAULT_CONFIG,
+          ...{
+            fileSearchFrom: this._cwd,
+            fileSearchStop: this._cwd,
+          },
+          ...this._config.config,
+        },
+      };
+
+      delete configToLoad.cwd;
+
+      this._logger.debug(
+        `Initializing with config: ${JSON.stringify(configToLoad)}`,
+      );
+
+      await this._configuration.load(configToLoad);
       this._logger.setLevel(this._logLevelOption.value);
       this._initialized = true;
     }
   }
 
-  private _docusaurusPagesToConfluencePages(
-    docusaurusPages: DocusaurusPage[],
+  private _markdownPagesToConfluencePages(
+    markdownDocuments: MarkdownDocument[],
   ): ConfluenceSyncPage[] {
     this._logger.info(
-      `Converting ${docusaurusPages.length} Docusaurus pages to Confluence pages...`,
+      `Converting ${markdownDocuments.length} markdown documents to Confluence pages...`,
     );
-    return docusaurusPages;
+    return markdownDocuments;
   }
 };

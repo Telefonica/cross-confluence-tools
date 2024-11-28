@@ -4,20 +4,23 @@
 import type { FilesPattern } from "../MarkdownConfluenceSync.types";
 
 import type {
-  DocusaurusPagesInterface,
-  DocusaurusPagesModeOptions,
+  MarkdownDocumentsInterface,
+  MarkdownDocumentsModeOptions,
 } from "./DocusaurusPages.types";
 
-export interface DocusaurusFlatPagesOptions extends DocusaurusPagesModeOptions {
+export interface MarkdownFlatDocumentsOptions
+  extends MarkdownDocumentsModeOptions {
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPattern;
+  /** Working directory */
+  cwd: string;
 }
 
-/** Creates a DocusaurusFlatPagesMode interface */
-export interface DocusaurusFlatPagesConstructor {
-  /** Returns DocusaurusPagesInterface interface
-   * @param {DocusaurusFlatPagesOptions} options
-   * @returns DocusaurusPagesMode instance {@link DocusaurusPagesInterface}.
+/** Creates a MarkdownFlatDocuments interface */
+export interface MarkdownFlatDocumentsConstructor {
+  /** Returns MarkdownFlatDocuments interface
+   * @param {MarkdownFlatDocumentsOptions} options
+   * @returns MarkdownFlatDocuments instance {@link MarkdownDocumentsInterface}.
    */
-  new (options: DocusaurusFlatPagesOptions): DocusaurusPagesInterface;
+  new (options: MarkdownFlatDocumentsOptions): MarkdownDocumentsInterface;
 }

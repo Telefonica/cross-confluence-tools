@@ -4,6 +4,11 @@ Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confl
 
 ## Table of Contents
 
+<details>
+  <summary>
+    <strong>Details</strong>
+  </summary>
+
 - [Requirements](#requirements)
   - [Compatibility](#compatibility)
 - [Features](#features)
@@ -33,6 +38,8 @@ Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confl
 - [Contributing](#contributing)
 - [License](#license)
 
+</details>
+
 ## Requirements
 
 In order to be able to sync the markdown files with Confluence, you need to have the following:
@@ -44,19 +51,33 @@ In order to be able to sync the markdown files with Confluence, you need to have
 
 ### Compatibility
 
-> [!WARNING]
+> [!IMPORTANT]
 > This library has been tested only with Confluence 8.5.x. It may work with other versions, but it has not been tested.
 
 ## Features
 
 The library reads the markdown files in a given folder and create/delete/update the corresponding Confluence pages following the same hierarchical structure under a provided Confluence page depending on the [synchronization mode](#sync-modes) to use.
 
-Markdown documents to be synced __must have a `title` property, and a `sync_to_confluence` property set to `true` in the [frontmatter metadata](https://jekyllrb.com/docs/front-matter/).__
+> [!IMPORTANT]
+> Markdown documents to be synced __must have [frontmatter metadata](https://jekyllrb.com/docs/front-matter/)__ with at least next properties:
+> * `title` property, used to give a title to the page in Confluence.
+> * `sync_to_confluence` property set to `true`
+
+```markdown
+---
+title: Page title
+sync_to_confluence: true
+---
+
+# Page content
+
+Hello, world! I'm a markdown file to be synced with Confluence.
+```
 
 The library has __two modes for syncing__:
 * `tree` sync mode - Mirrors the hierarchical pages structure from given folder under a Confluence root page. Some files are used for [representing indices in the hierarchy](#index-files).
 * `flat` sync mode - Synchronize a list of markdown files matched by a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) as children page of a Confluence root page, without any hierarchy.
-  * As an extra in this mode, a Confluence id can be provided to each page using the frontmatter, and, in such case, the corresponding Confluence page will be always updated, even when it is not a children of the Confluence root page.
+  * As an extra in this mode, a Confluence id can be provided to each page using the frontmatter, and, in such case, the corresponding Confluence page will be updated. Read [per-page configuration](#configuration-per-page) for more information.
 
 Other features are:
 
@@ -75,8 +96,12 @@ Other features are:
 
 ### Installation
 
+First of all, you need to __get permissions to install the package__. Please follow the instructions in the [Confluence page about NPM packages](https://confluence.tid.es/display/CTO/%5BCross%5D+NPM+Packages).
+
+Then, you can install the package using npm:
+
 ```bash
-npm install @tid-cross/markdown-confluence-sync
+npm install @tid-xcut/markdown-confluence-sync
 ```
 
 ### Usage
@@ -89,6 +114,19 @@ The library provides an NPM binary named `markdown-confluence-sync`. To use it, 
     "sync": "markdown-confluence-sync"
   }
 }
+```
+
+All the markdown files to be synced must have frontmatter properties "title" and "sync_to_confluence" set to `true`. For example:
+
+```markdown
+---
+title: Page title
+sync_to_confluence: true
+---
+
+# Page content
+
+Hello, world! I'm a markdown file to be synced with Confluence.
 ```
 
 As a starting point, you can create a `markdown-confluence-sync.config.js` file in the root of your project with the following content (read the [Configuration](#configuration) section for more information and other configuration methods):
@@ -185,6 +223,9 @@ repository/
 └── package.json
 ```
 
+> [!TIP]
+> You can also read the [Confluence Sync package documentation](https://github.com/Telefonica/cross-confluence-tools/tree/main/components/confluence-sync) for further info about the process of syncing to Confluence.
+
 ### Flat mode
 
 The `flat` mode syncs all markdown files matching a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) just under the root Confluence page. It does not create a nested hierarchy.
@@ -233,13 +274,26 @@ The namespace for the configuration of this library is `markdown-confluence-sync
 | `config.readArguments` | `boolean` | Read configuration from arguments or not | `false` |
 | `config.readFile` | `boolean` | Read configuration from file or not | `false` |
 | `config.readEnvironment` | `boolean` | Read configuration from environment or not | `false` |
+| `cwd`* | `string` | Path from where the library resolve docsDir, filesPattern, and searches for configuration files | `process.cwd()` |
+
+> [!NOTE]
+> The `cwd` is a special property that is only settable through the `MARKDOWN_CONFLUENCE_SYNC_CWD` environment variable, or when using the library programmatically.
 
 ### Configuration file
 
-As mentioned above, the library supports defining the config in a configuration file. It supports many patterns for naming the file, as well as file formats. Read the [`@mocks-server/config` package](https://github.com/mocks-server/main/tree/master/packages/config) for further info about the supported patterns and formats. Just take into account that the namespace for the configuration is `markdown-confluence-sync`, so, a possible configuration file may be named `markdown-confluence-sync.config.js`. 
+As mentioned above, the library supports defining the config in a configuration file. It supports [many patterns for naming the file, as well as file formats](https://github.com/mocks-server/main/tree/master/packages/config#configuration-sources).
+
+Just take into account that the namespace for the configuration is `markdown-confluence-sync`, so, possible configuration files may be:
+
+* `markdown-confluence-sync.config.js`.
+* `.markdown-confluence-syncrc.yaml`.
+* `.markdown-confluence-syncrc.json`.
+
+> [!TIP]
+> Read the [`@mocks-server/config` docs](https://github.com/mocks-server/main/tree/master/packages/config#configuration-sources) for further info about all supported file names and formats of the configuration file.
 
 ```js title="markdown-confluence-sync.config.js"
-export default {
+module.exports = {
   docsDir: "docs",
   confluence: {
     url: "https://my-confluence.es",
@@ -272,7 +326,8 @@ MARKDOWN_CONFLUENCE_SYNC_DOCS_DIR=./docs MARKDOWN_CONFLUENCE_SYNC_LOG=debug npx 
 
 It is possible to set some properties for each page using the frontmatter metadata in the markdown files. The properties that can be set are:
 
-* `confluence_title` - Title of the page in Confluence. It will force the title of the page in Confluence to be the value of this property, ignoring the title of the page in the markdown file.
+* `confluence_id` - Confluence id of the page. If set, the library will always update the Confluence page with that id, even when it is not a children of the Confluence root page. __It only can be set in `flat` sync mode.__
+* `confluence_title` - Title of the page in Confluence. It will force the title of the page in Confluence to be the value of this property, ignoring the `title` property. Use it if you need to use the `title` property for other purposes (such as in Docusaurus pages), and you don't want to use the same value in Confluence.
 * `confluence_short_name` - Adding ancestors title to its children's title may produce an unnecessarily long titles. To avoid this, you can use this property to replace the title of a parent page in its children's title. It should be used only in **index files** for categories.
   For example, if the child's title is "`Page`" and the parent, with the title "`Parent Category`," has the property `confluence_short_name` set to "`Parent`," it will appear in Confluence as follows:
   ```diff
@@ -298,7 +353,7 @@ You can also use the `confluence.noticeTemplate` option to provide a custom temp
   * `{{default}}`: The default message.
 
 ```js
-/** @type {import('@tid-cross/markdown-confluence-sync').Configuration} */
+/** @type {import('@tid-xcut/markdown-confluence-sync').Configuration} */
 
 module.exports = {
   docsDir: "./docs",
@@ -391,7 +446,7 @@ You can also import the library in your code and use it programmatically. In thi
 
 ```js title="Programmatic usage"
 import path from "path";
-import { MarkdownConfluenceSync } from '@tid-cross/markdown-confluence-sync';
+import { MarkdownConfluenceSync } from '@tid-xcut/markdown-confluence-sync';
 
 const markdownConfluenceSync = new MarkdownConfluenceSync({
   docsDir: path.resolve(__dirname, "..", "docs");

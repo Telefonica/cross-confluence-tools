@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { LoggerInterface } from "@mocks-server/logger";
-import type { ConfluenceInputPage } from "@tid-cross/confluence-sync";
+import type { ConfluenceInputPage } from "@tid-xcut/confluence-sync";
 
 import type { ConfluenceSyncPage } from "../ConfluenceSync.types.js";
 
@@ -37,11 +37,11 @@ export interface ConfluencePageTransformerConstructor {
 }
 
 export interface ConfluencePageTransformerInterface {
-  /** Transform pages from Docusaurus to Confluence
-   * @param pages - Docusaurus pages
+  /** Transform pages from markdown to Confluence
+   * @param documents - Markdown documents
    * @returns Confluence pages
    */
-  transform(pages: ConfluenceSyncPage[]): Promise<ConfluenceInputPage[]>;
+  transform(documents: ConfluenceSyncPage[]): Promise<ConfluenceInputPage[]>;
 }
 
 export interface ConfluencePageTransformerTemplateData {

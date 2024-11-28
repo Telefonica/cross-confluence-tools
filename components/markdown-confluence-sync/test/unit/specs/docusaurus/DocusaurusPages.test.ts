@@ -15,12 +15,12 @@ import { TempFiles } from "@support/utils/TempFiles";
 const { dirSync, fileSync } = new TempFiles();
 
 import type {
-  DocusaurusPagesInterface,
-  DocusaurusPagesOptions,
+  MarkdownDocumentsInterface,
+  MarkdownDocumentsOptions,
   FilesPatternOption,
   ModeOption,
 } from "@src/lib";
-import { DocusaurusPages } from "@src/lib/docusaurus/DocusaurusPages";
+import { MarkdownDocuments } from "@src/lib/docusaurus/DocusaurusPages";
 import * as typesValidations from "@src/lib/support/typesValidations";
 
 const CONFIG = {
@@ -35,7 +35,7 @@ describe("docusaurusPages", () => {
   let dir: DirResult;
   let config: ConfigInterface;
   let logger: LoggerInterface;
-  let docusaurusPagesOptions: DocusaurusPagesOptions;
+  let docusaurusPagesOptions: MarkdownDocumentsOptions;
 
   beforeEach(async () => {
     dir = dirSync({ unsafeCleanup: true });
@@ -57,6 +57,7 @@ describe("docusaurusPages", () => {
       config,
       logger,
       mode: config.option("mode") as ModeOption,
+      cwd: process.cwd(),
     };
   });
 
@@ -65,13 +66,13 @@ describe("docusaurusPages", () => {
   });
 
   it("should be defined", () => {
-    expect(DocusaurusPages).toBeDefined();
+    expect(MarkdownDocuments).toBeDefined();
   });
 
   describe("read", () => {
     it("should initialized once", async () => {
       // Arrange
-      const docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+      const docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
       await config.load({
         ...CONFIG,
         docsDir: dir.name,
@@ -82,12 +83,12 @@ describe("docusaurusPages", () => {
       await docusaurusPages.read();
 
       // Assert
-      expect(docusaurusPages).toBeInstanceOf(DocusaurusPages);
+      expect(docusaurusPages).toBeInstanceOf(MarkdownDocuments);
     });
 
     it("should fail if the directory does not exist", async () => {
       // Arrange
-      const docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+      const docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
       await config.load({
         ...CONFIG,
         docsDir: "foo",
@@ -102,7 +103,7 @@ describe("docusaurusPages", () => {
 
     it("should build a tree from a directory", async () => {
       // Arrange
-      const docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+      const docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
       await config.load({
         ...CONFIG,
         docsDir: dir.name,
@@ -110,14 +111,14 @@ describe("docusaurusPages", () => {
 
       // Act
       // Assert
-      expect(docusaurusPages).toBeInstanceOf(DocusaurusPages);
+      expect(docusaurusPages).toBeInstanceOf(MarkdownDocuments);
     });
 
     describe("with valid directory", () => {
-      let docusaurusPages: DocusaurusPagesInterface;
+      let docusaurusPages: MarkdownDocumentsInterface;
 
       beforeEach(async () => {
-        docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+        docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
         await config.load({
           ...CONFIG,
           docsDir: dir.name,
@@ -415,10 +416,10 @@ describe("docusaurusPages", () => {
     });
 
     describe("when file is mdx", () => {
-      let docusaurusPages: DocusaurusPagesInterface;
+      let docusaurusPages: MarkdownDocumentsInterface;
 
       beforeEach(async () => {
-        docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+        docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
         await config.load({
           ...CONFIG,
           docsDir: dir.name,
@@ -472,10 +473,10 @@ describe("docusaurusPages", () => {
         "directory-name.md",
         "directory-name.mdx",
       ])("when index file is %s", (indexFileName) => {
-        let docusaurusPages: DocusaurusPagesInterface;
+        let docusaurusPages: MarkdownDocumentsInterface;
 
         beforeEach(async () => {
-          docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+          docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
           await config.load({
             ...CONFIG,
             docsDir: dir.name,
@@ -530,7 +531,7 @@ describe("docusaurusPages", () => {
       });
 
       describe("when there are multiple index files in the directory", () => {
-        let docusaurusPages: DocusaurusPagesInterface;
+        let docusaurusPages: MarkdownDocumentsInterface;
 
         beforeEach(async () => {
           logger = new Logger("docusaurus-pages-index-files", {
@@ -540,8 +541,9 @@ describe("docusaurusPages", () => {
             config,
             logger,
             mode: config.option("mode") as ModeOption,
+            cwd: process.cwd(),
           };
-          docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+          docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
           await config.load({
             ...CONFIG,
             docsDir: dir.name,
@@ -641,10 +643,10 @@ describe("docusaurusPages", () => {
     });
 
     describe("when flat mode is active", () => {
-      let docusaurusPages: DocusaurusPagesInterface;
+      let docusaurusPages: MarkdownDocumentsInterface;
 
       it("should throw an error when 'filesPattern' option is empty", async () => {
-        docusaurusPages = new DocusaurusPages(docusaurusPagesOptions);
+        docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
         await config.load({
           ...CONFIG,
           mode: "flat",
@@ -657,18 +659,16 @@ describe("docusaurusPages", () => {
       });
 
       it("should read the pages whose filenames match the glob pattern provided in the filesPattern option", async () => {
-        const spy = jest.spyOn(process, "cwd");
-        spy.mockReturnValue(dir.name);
-
         // Arrange
         await config.load({
           ...CONFIG,
           mode: "flat",
           filesPattern: "**/page*",
         });
-        docusaurusPages = new DocusaurusPages({
+        docusaurusPages = new MarkdownDocuments({
           ...docusaurusPagesOptions,
           filesPattern: config.option("filesPattern") as FilesPatternOption,
+          cwd: dir.name,
         });
 
         const categoryDir = dirSync({ dir: dir.name, name: "category" });
@@ -746,11 +746,7 @@ describe("docusaurusPages", () => {
         expect(pages).toHaveLength(2);
       });
 
-      it("when DocusaurusPages read method is called twice, the initial validation should be called only once", async () => {
-        // Arrange
-        const spy = jest.spyOn(process, "cwd");
-        spy.mockReturnValue(dir.name);
-
+      it("when MarkdownDocuments read method is called twice, the initial validation should be called only once", async () => {
         const spyIsStringWithLength = jest.spyOn(
           typesValidations,
           "isStringWithLength",
@@ -762,9 +758,10 @@ describe("docusaurusPages", () => {
           mode: "flat",
           filesPattern: "**/page*",
         });
-        docusaurusPages = new DocusaurusPages({
+        docusaurusPages = new MarkdownDocuments({
           ...docusaurusPagesOptions,
           filesPattern: config.option("filesPattern") as FilesPatternOption,
+          cwd: dir.name,
         });
 
         // Act
