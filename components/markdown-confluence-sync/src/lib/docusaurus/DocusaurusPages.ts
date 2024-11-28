@@ -41,14 +41,17 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   private _logger: LoggerInterface;
   private _config: ConfigInterface;
   private _filesPattern?: FilesPatternOption;
+  private _cwd: string;
 
   constructor({
     config,
     logger,
     mode,
     filesPattern,
+    cwd,
   }: MarkdownDocumentsOptions) {
     this._docsDirOption = config.addOption(docsDirOption);
+    this._cwd = cwd;
     this._modeOption = mode;
     this._filesPattern = filesPattern;
     this._config = config;
@@ -64,13 +67,14 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   private _init() {
     this._logger.debug(`mode option is ${this._modeOption.value}`);
     if (!this._initialized) {
-      const path = resolve(process.cwd(), this._docsDirOption.value);
+      const path = resolve(this._cwd, this._docsDirOption.value);
       this._path = path;
       this._pages = MarkdownDocumentsFactory.fromMode(this._modeOption.value, {
         config: this._config,
         logger: this._logger,
         path: this._path,
         filesPattern: this._filesPattern?.value as FilesPattern,
+        cwd: this._cwd,
       });
       this._initialized = true;
     }
