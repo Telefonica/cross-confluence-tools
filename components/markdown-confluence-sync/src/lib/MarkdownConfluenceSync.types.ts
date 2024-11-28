@@ -25,6 +25,8 @@ declare global {
       };
       /** Log level */
       logLevel?: LogLevel;
+      /** Working Directory */
+      cwd?: string;
       /** Mode to structure pages */
       mode?: SyncModes;
       /**

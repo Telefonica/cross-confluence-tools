@@ -274,6 +274,10 @@ The namespace for the configuration of this library is `markdown-confluence-sync
 | `config.readArguments` | `boolean` | Read configuration from arguments or not | `false` |
 | `config.readFile` | `boolean` | Read configuration from file or not | `false` |
 | `config.readEnvironment` | `boolean` | Read configuration from environment or not | `false` |
+| `cwd`* | `string` | Path from where the library resolve docsDir, filesPattern, and searches for configuration files | `process.cwd()` |
+
+> [!NOTE]
+> The `cwd` is a special property that is only settable through the `MARKDOWN_CONFLUENCE_SYNC_CWD` environment variable, or when using the library programmatically.
 
 ### Configuration file
 

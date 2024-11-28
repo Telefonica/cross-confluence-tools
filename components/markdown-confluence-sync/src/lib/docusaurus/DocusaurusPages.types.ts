@@ -46,6 +46,8 @@ export interface MarkdownDocumentsOptions {
   mode: ModeOption;
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPatternOption;
+  /** Working directory */
+  cwd: string;
 }
 
 /** Data about one markdown file */
