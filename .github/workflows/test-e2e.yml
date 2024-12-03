@@ -22,7 +22,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
       - uses: ./.github/actions/install
-      - name: Run E2E Tests
+      - name: Sync Markdown Confluence Sync Docs to Confluence
         run: pnpm nx sync:docs markdown-confluence-sync
         env:
           CONFLUENCE_URL: ${{ vars.CONFLUENCE_URL }}
