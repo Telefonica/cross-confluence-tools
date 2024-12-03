@@ -53,6 +53,18 @@
         "{projectRoot}/bin/**/*",
         "{projectRoot}/config/**/*"
       ]
+    },
+    "sync:docs": {
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
+        "default",
+        "production"
+      ],
+      "outputs": []
     }
   },
   "implicitDependencies": [

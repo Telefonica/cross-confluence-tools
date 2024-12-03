@@ -1,3 +1,9 @@
+---
+sync_to_confluence: true
+title: "[Markdown Confluence Sync] TypeScript"
+confluence_page_id: "337906335"
+---
+
 # markdown-confluence-sync
 
 Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confluence) pages based on markdown files in a directory. Supports Mermaid diagrams and per-page configuration using [frontmatter metadata](https://jekyllrb.com/docs/front-matter/). Works great with [Docusaurus](https://docusaurus.io/).
@@ -6,7 +12,7 @@ Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confl
 
 <details>
   <summary>
-    <strong>Details</strong>
+    Details
   </summary>
 
 - [Requirements](#requirements)

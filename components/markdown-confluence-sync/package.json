@@ -50,8 +50,10 @@
     "confluence:mock:ci": "mocks-server --no-plugins.inquirerCli.enabled",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "sync:docs": "./bin/markdown-confluence-sync.mjs",
     "test:component": "start-server-and-test confluence:mock:ci http-get://127.0.0.1:3110/api/about test:component:run",
     "test:component:run": "jest --config jest.component.config.cjs --runInBand",
+    "test:e2e": "jest --config jest.e2e.config.cjs",
     "test:unit": "jest --config jest.unit.config.cjs"
   },
   "nx": {
@@ -61,8 +63,10 @@
       "check:spell",
       "check:types",
       "lint",
+      "sync:docs",
       "test:unit",
-      "test:component"
+      "test:component",
+      "test:e2e"
     ]
   },
   "dependencies": {
@@ -118,7 +122,9 @@
     "@types/unist": "2.0.11",
     "@types/which": "3.0.4",
     "babel-plugin-transform-import-meta": "2.2.1",
+    "confluence.js": "1.7.4",
     "cross-fetch": "4.0.0",
+    "dotenv": "16.4.6",
     "start-server-and-test": "2.0.8",
     "tmp": "0.2.3",
     "ts-dedent": "2.2.0",

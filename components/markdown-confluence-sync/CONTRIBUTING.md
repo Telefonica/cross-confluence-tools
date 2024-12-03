@@ -10,6 +10,7 @@ First of all, thank you for considering contributing to the this project! 🎉
   - [Monorepo tool](#monorepo-tool)
   - [Unit tests](#unit-tests)
   - [Component tests](#component-tests)
+  - [E2E tests](#e2e-tests)
   - [Build](#build)
   - [NPM scripts reference](#npm-scripts-reference)
 - [License, Code of Conduct, and Contribution License Agreement](#license-code-of-conduct-and-contribution-license-agreement)
@@ -81,6 +82,31 @@ And, in a separate terminal:
 pnpm nx test:component:run markdown-confluence-sync
 ```
 
+### E2E tests
+
+This component includes end-to-end tests, consisting in a workflow that uses the library to sync the documentation of the component itself to a Confluence page, and then it checks if the page was updated correctly.
+
+To run tests locally, it requires the following environment variables to be set, which can be defined in a `.env` file:
+
+```txt .env
+CONFLUENCE_URL=https://your-confluence-url.net
+CONFLUENCE_PAT=******
+CONFLUENCE_README_PAGE_ID=page-id-of-the-readme-page
+CONFLUENCE_SPACE_KEY=confluence-space-key
+```
+
+Then, you should first run the synchronization with:
+
+```bash
+pnpm nx sync:docs markdown-confluence-sync
+```
+
+And finally, run the tests with:
+
+```bash
+pnpm nx test:e2e markdown-confluence-sync
+```
+
 ### Build
 
 This command generates the library into the `dist` directory. __Note that other components in the repository won't be able to use the library until this command is executed.__
@@ -94,6 +120,10 @@ pnpm nx build markdown-confluence-sync
 - `build` - Build the library.
 - `check:all` - Run all checks, tests, and build.
 - `test:unit` - Run unit tests.
+- `test:component` - Run component tests.
+- `confluence:mock` - Start the mock server, so you can run component tests separately in another terminal.
+- `test:component:run` - Run component tests without starting the mock server.
+- `test:e2e` - Run end-to-end tests.
 - `check:spell` - Checks spelling.
 - `check:types` - Checks the TypeScript types.
 - `lint` - Lint the code.
