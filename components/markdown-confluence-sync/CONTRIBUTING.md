@@ -104,7 +104,7 @@ pnpm nx sync:docs markdown-confluence-sync
 And finally, run the tests with:
 
 ```bash
-pnpm nx run test:e2e markdown-confluence-sync
+pnpm nx test:e2e markdown-confluence-sync
 ```
 
 ### Build
