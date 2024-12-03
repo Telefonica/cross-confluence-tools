@@ -153,7 +153,7 @@ The release process is as follows:
    * Once the PR is approved and merged, the build pipeline will run in the `main` branch, but packages will not be published yet.
    * Create a new release in GitHub for each package modified in the release, following the next instructions:
       * Tag: `package-name-vX.Y.Z` (Replace `package-name` with the name of the package and `X.Y.Z` with the version number, of course).
-      * Title: `package-name vX.Y.Z`
+      * Title: `package-name - Human readable title for the release`.
       * Description: Copy the changes from the corresponding `CHANGELOG.md` file for the version you are releasing.
    * Once the release is created, the packages will be published to the npm registry automatically. __For the moment, creating any release will trigger the publication of all the packages__. If you have to release more than one package there is no problem, next executions will do nothing if the package is already published.
       NOTE: Publishing all packages when the first release is created has been done to avoid having packages without dependencies published due to possible errors when creating releases for each package manually. In the future, we could only release the target package based on the release tag, but some extra checks should be implemented in order to ensure that the dependencies are published before the dependent packages.
