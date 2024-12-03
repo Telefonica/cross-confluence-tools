@@ -53,11 +53,22 @@ export default [
     },
   },
   {
+    ...typescriptConfig,
+    files: ["test/e2e/**/*.ts"],
+    settings: {
+      ...typescriptConfig.settings,
+      "import/resolver": {
+        ...typescriptConfig.settings["import/resolver"],
+      },
+    },
+  },
+  {
     ...jestConfig,
     files: [
       ...jestConfig.files,
       "test/unit/support/**/*.ts",
       "test/component/support/**/*.ts",
+      "test/e2e/**/*.ts",
     ],
   },
   {

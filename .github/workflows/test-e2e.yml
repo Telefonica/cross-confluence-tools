@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital and contributors
+# SPDX-License-Identifier: MIT
+
+name: Test E2E
+
+on:
+  push:
+    branches:
+      - main
+      - docs/sync-to-confluence
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-confluence-sync-sync-docs:
+    environment: production
+    name: Markdown Confluence Sync Docs to Confluence
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/install
+      - name: Run E2E Tests
+        run: pnpm nx run sync:docs markdown-confluence-sync
+        env:
+          CONFLUENCE_URL: ${{ vars.CONFLUENCE_URL }}
+          CONFLUENCE_PAT: ${{ secrets.CONFLUENCE_PAT }}
+          CONFLUENCE_ROOT_PAGE_ID: ${{ vars.CONFLUENCE_MARKDOWN_CONFLUENCE_SYNC_ROOT_PAGE_ID }}
+          CONFLUENCE_SPACE_KEY: ${{ vars.CONFLUENCE_SPACE_KEY }}
+
+  markdown-confluence-sync-test-e2e:
+    environment: production
+    name: Test E2E Markdown Confluence Sync
+    runs-on: ubuntu-latest
+    needs: markdown-confluence-sync-sync-docs
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+        
+      - name: Run E2E Tests
+        run: pnpm nx run test:e2e markdown-confluence-sync
+        env:
+          CONFLUENCE_URL: ${{ vars.CONFLUENCE_URL }}
+          CONFLUENCE_PAT: ${{ secrets.CONFLUENCE_PAT }}
+          CONFLUENCE_ROOT_PAGE_ID: ${{ vars.CONFLUENCE_MARKDOWN_CONFLUENCE_SYNC_ROOT_PAGE_ID }}
+          CONFLUENCE_SPACE_KEY: ${{ vars.CONFLUENCE_SPACE_KEY }}
