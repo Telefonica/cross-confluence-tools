@@ -1,3 +1,8 @@
+---
+sync_to_confluence: true
+title: "[Markdown Confluence Sync] [TypeScript] Releases"
+---
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
