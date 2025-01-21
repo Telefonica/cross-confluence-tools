@@ -185,7 +185,6 @@ export const flatPages: ConfluenceInputPage[] = [
   {
     title: "foo-page-3-title",
     content: "foo-page-3-content",
-    id: "foo-page-3-id",
   },
 ];
 

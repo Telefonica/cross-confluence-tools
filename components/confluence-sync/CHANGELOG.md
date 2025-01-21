@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
+## [1.0.0]
+
+### Added
+
+* feat: Add "id" mode, which only allows to update pages by its Confluence page ID. It throws when there is a page without an ID or with an ancestor, or when rootPageId is provided.
+* feat: Do not allow "flat" mode when all pages have an id. "id" mode should be used instead.
+* feat: Validate sync modes at the very beginning. It throws when a non-existing mode is provided.
+
 ## [1.0.0-beta.1]
 
 ### Added
