@@ -7,10 +7,13 @@ import type {
   DocusaurusDocPageInterface,
   DocusaurusDocPageMeta,
 } from "../pages/DocusaurusDocPage.types";
+import { FilesMetadata } from "../../MarkdownConfluenceSync.types";
 
 export interface DocusaurusDocTreeOptions {
   /** Logger */
   logger?: LoggerInterface;
+  /** Files metadata */
+  filesMetadata?: FilesMetadata;
 }
 
 /** Creates a DocusaurusDocTree interface */

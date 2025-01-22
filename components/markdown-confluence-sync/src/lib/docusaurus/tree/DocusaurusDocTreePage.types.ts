@@ -4,10 +4,13 @@
 import type { LoggerInterface } from "@mocks-server/logger";
 
 import type { DocusaurusDocTreeItem } from "./DocusaurusDocTree.types.js";
+import { FilesMetadata } from "../../MarkdownConfluenceSync.types.js";
 
 export interface DocusaurusDocTreePageOptions {
   /** Logger */
   logger?: LoggerInterface;
+  /** Files metadata */
+  filesMetadata?: FilesMetadata;
 }
 
 /** Creates DocusaurusDocTreePage interface */

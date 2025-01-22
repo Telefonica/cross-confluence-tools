@@ -14,12 +14,14 @@ import type {
   DocusaurusDocTreeItem,
   DocusaurusDocTreeOptions,
 } from "./DocusaurusDocTree.types.js";
+import { FilesMetadata } from "../../MarkdownConfluenceSync.types.js";
 
 export const DocusaurusDocTree: DocusaurusDocTreeConstructor = class DocusaurusDocTree
   implements DocusaurusDocTreeInterface
 {
   private _path: string;
   private _logger?: LoggerInterface;
+  private _filesMetadata?: FilesMetadata;
 
   constructor(path: string, options?: DocusaurusDocTreeOptions) {
     if (!existsSync(path)) {
@@ -27,6 +29,7 @@ export const DocusaurusDocTree: DocusaurusDocTreeConstructor = class DocusaurusD
     }
     this._path = path;
     this._logger = options?.logger;
+    this._filesMetadata = options?.filesMetadata;
   }
 
   public async flatten(): Promise<DocusaurusDocTreeItem[]> {
@@ -44,6 +47,7 @@ export const DocusaurusDocTree: DocusaurusDocTreeConstructor = class DocusaurusD
     const roots = rootDirs.map((path) =>
       DocusaurusDocItemFactory.fromPath(path, {
         logger: this._logger?.namespace(path.replace(this._path, "")),
+        filesMetadata: this._filesMetadata,
       }),
     );
     const rootsPages = await Promise.all(roots.map((root) => root.visit()));

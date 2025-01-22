@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
+## [1.0.0] - 2025-01-22
+
+### Added
+
+* feat: Add id mode
+
 ## [1.0.0-beta.4] - 2024-11-28
 
 ### Added

@@ -266,8 +266,8 @@ The namespace for the configuration of this library is `markdown-confluence-sync
 | Property | Type | Description | Default |
 | --- | --- | --- | --- |
 | `logLevel` | `string` | Log level. One of `silly`, `debug`, `info`, `warn`, `error`, `silent` | `info` |
-| `mode` | `string` | Mode to read the pages to send to Confluence. One of `tree`, `flat`.  | `tree` |
-| `filesPattern` | `string` | Pattern to read the pages to send to Confluence. This option is mandatory when used `flat` sync mode.  |  |
+| `mode` | `string` | Mode to read the pages to send to Confluence. One of `tree`, `flat` or `id`.  | `tree` |
+| `filesPattern` | `string` | Pattern to read the pages to send to Confluence. This option is mandatory when using `flat` or `id` sync modes.  |  |
 | `docsDir` | `string` | Path to the docs directory. | `./docs` |
 | `confluence.url` | `string` | URL of the Confluence instance. | |
 | `confluence.personalAccessToken` | `string` | Personal access token to authenticate against the Confluence instance. | |
@@ -332,7 +332,7 @@ MARKDOWN_CONFLUENCE_SYNC_DOCS_DIR=./docs MARKDOWN_CONFLUENCE_SYNC_LOG=debug npx 
 
 It is possible to set some properties for each page using the frontmatter metadata in the markdown files. The properties that can be set are:
 
-* `confluence_id` - Confluence id of the page. If set, the library will always update the Confluence page with that id, even when it is not a children of the Confluence root page. __It only can be set in `flat` sync mode.__
+* `confluence_id` - Confluence id of the page. If set, the library will always update the Confluence page with that id, even when it is not a children of the Confluence root page. __It only can be set in `flat` or `id` sync modes.__
 * `confluence_title` - Title of the page in Confluence. It will force the title of the page in Confluence to be the value of this property, ignoring the `title` property. Use it if you need to use the `title` property for other purposes (such as in Docusaurus pages), and you don't want to use the same value in Confluence.
 * `confluence_short_name` - Adding ancestors title to its children's title may produce an unnecessarily long titles. To avoid this, you can use this property to replace the title of a parent page in its children's title. It should be used only in **index files** for categories.
   For example, if the child's title is "`Page`" and the parent, with the title "`Parent Category`," has the property `confluence_short_name` set to "`Parent`," it will appear in Confluence as follows:

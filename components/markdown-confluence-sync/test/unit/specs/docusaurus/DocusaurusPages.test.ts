@@ -19,6 +19,7 @@ import type {
   MarkdownDocumentsOptions,
   FilesPatternOption,
   ModeOption,
+  FilesMetadataOption,
 } from "@src/lib";
 import { MarkdownDocuments } from "@src/lib/docusaurus/DocusaurusPages";
 import * as typesValidations from "@src/lib/support/typesValidations";
@@ -52,11 +53,19 @@ describe("docusaurusPages", () => {
       type: "string",
       default: "",
     });
+
+    config.addOption({
+      name: "filesMetadata",
+      type: "array",
+      default: [],
+    });
+
     logger = new Logger("", { level: "silent" });
     docusaurusPagesOptions = {
       config,
       logger,
       mode: config.option("mode") as ModeOption,
+      filesMetadata: config.option("filesMetadata") as FilesMetadataOption,
       cwd: process.cwd(),
     };
   });
@@ -415,6 +424,299 @@ describe("docusaurusPages", () => {
       });
     });
 
+    describe("when providing files metadata", () => {
+      let docusaurusPages: MarkdownDocumentsInterface;
+
+      beforeEach(async () => {
+        docusaurusPages = new MarkdownDocuments({
+          ...docusaurusPagesOptions,
+        });
+      });
+
+      it("should ignore index.md file in the root directory", async () => {
+        await config.load({
+          ...CONFIG,
+          docsDir: dir.name,
+          filesMetadata: [
+            {
+              path: join(dir.name, "index.md"),
+              title: "Category",
+              sync: true,
+            },
+          ],
+        });
+
+        // Arrange
+        const file = fileSync({ dir: dir.name, name: "index.md" });
+        writeFileSync(
+          file.name,
+          dedent`
+          # Hello World
+          `,
+        );
+
+        // Act
+        const flattened = await docusaurusPages.read();
+
+        // Assert
+        expect(flattened).toHaveLength(0);
+      });
+
+      it("should ignore files in the root directory that are not configured to be synced to confluence", async () => {
+        const categoryDir = dirSync({ dir: dir.name });
+        // Arrange
+        await config.load({
+          ...CONFIG,
+          docsDir: dir.name,
+          filesMetadata: [
+            {
+              path: join(categoryDir.name, "index.md"),
+              title: "Category",
+              sync: false,
+            },
+            {
+              path: join(dir.name, "page.md"),
+              title: "Page",
+              sync: false,
+            },
+          ],
+        });
+        const file = fileSync({ dir: categoryDir.name, name: "index.md" });
+        writeFileSync(
+          file.name,
+          dedent`
+          # Hello World
+          `,
+        );
+        const page = fileSync({ dir: dir.name, name: "page.md" });
+        writeFileSync(
+          page.name,
+          dedent`
+          # Hello World
+          `,
+        );
+
+        // Act
+        const flattened = await docusaurusPages.read();
+
+        // Assert
+        expect(flattened).toHaveLength(0);
+      });
+
+      it("should return a list of DocusaurusPage from the root directory files and subdirectories", async () => {
+        const categoryDir = dirSync({ dir: dir.name, name: "category" });
+        await config.load({
+          ...CONFIG,
+          docsDir: dir.name,
+          filesMetadata: [
+            {
+              path: join(categoryDir.name, "index.md"),
+              title: "Category",
+              sync: true,
+            },
+            {
+              path: join(dir.name, "page.md"),
+              title: "Page",
+              sync: true,
+            },
+          ],
+        });
+        // Arrange
+        const categoryIndex = fileSync({
+          dir: categoryDir.name,
+          name: "index.md",
+        });
+        writeFileSync(
+          categoryIndex.name,
+          dedent`
+          # Hello World Category
+          `,
+        );
+        const file = fileSync({ dir: dir.name, name: "page.md" });
+        writeFileSync(
+          file.name,
+          dedent`
+          # Hello World Page
+          `,
+        );
+
+        // Act
+        const pages = await docusaurusPages.read();
+
+        // Assert
+        expect(pages).toHaveLength(2);
+        expect(pages[0].path).toBe(join(categoryDir.name, "index.md"));
+        expect(pages[0].relativePath).toBe(join("category", "index.md"));
+        expect(pages[0].title).toBe("Category");
+        expect(pages[0].content).toContain("Hello World Category");
+        expect(pages[0].ancestors).toEqual([]);
+        expect(pages[1].path).toBe(file.name);
+        expect(pages[1].relativePath).toBe("page.md");
+        expect(pages[1].title).toBe("Page");
+        expect(pages[1].content).toContain("Hello World Page");
+        expect(pages[1].ancestors).toEqual([]);
+      });
+
+      it("should return a list of DocusaurusPage from the root directory subdirectories with ancestors", async () => {
+        // Arrange
+        const categoryDir = dirSync({ dir: dir.name, name: "category" });
+        const subcategoryDir = dirSync({
+          dir: categoryDir.name,
+          name: "subcategory",
+        });
+
+        await config.load({
+          ...CONFIG,
+          docsDir: dir.name,
+          filesMetadata: [
+            {
+              path: join(categoryDir.name, "index.md"),
+              title: "Category",
+              shortName: "Cat.",
+              sync: true,
+            },
+            {
+              path: join(categoryDir.name, "page.md"),
+              title: "Page",
+              sync: true,
+            },
+            {
+              path: join(subcategoryDir.name, "index.md"),
+              title: "Subcategory",
+              shortName: "Sub-cat.",
+              sync: true,
+            },
+            {
+              path: join(subcategoryDir.name, "page.md"),
+              title: "Page",
+              sync: true,
+            },
+          ],
+        });
+
+        const categoryIndex = fileSync({
+          dir: categoryDir.name,
+          name: "index.md",
+        });
+        writeFileSync(
+          categoryIndex.name,
+          dedent`
+          # Hello World
+          `,
+        );
+        const categoryPage = fileSync({
+          dir: categoryDir.name,
+          name: "page.md",
+        });
+        writeFileSync(
+          categoryPage.name,
+          dedent`
+          # Hello World
+          `,
+        );
+        const subcategoryIndex = fileSync({
+          dir: subcategoryDir.name,
+          name: "index.md",
+        });
+        writeFileSync(
+          subcategoryIndex.name,
+          dedent`
+          # Hello World
+          `,
+        );
+        const subcategoryPage = fileSync({
+          dir: subcategoryDir.name,
+          name: "page.md",
+        });
+        writeFileSync(
+          subcategoryPage.name,
+          dedent`
+          # Hello World
+          `,
+        );
+
+        // Act
+        const pages = await docusaurusPages.read();
+
+        // Assert
+        expect(pages).toHaveLength(4);
+
+        expect(pages[0].path).toBe(join(categoryDir.name, "index.md"));
+        expect(pages[0].relativePath).toBe(join("category", "index.md"));
+        expect(pages[0].title).toBe("Category");
+        expect(pages[0].content).toContain("Hello World");
+        expect(pages[0].ancestors).toEqual([]);
+        expect(pages[0].name).toBe("Cat.");
+
+        expect(pages[1].path).toBe(categoryPage.name);
+        expect(pages[1].relativePath).toBe(join("category", "page.md"));
+        expect(pages[1].title).toBe("Page");
+        expect(pages[1].content).toContain("Hello World");
+        expect(pages[1].ancestors).toEqual([
+          join(categoryDir.name, "index.md"),
+        ]);
+
+        expect(pages[2].path).toBe(join(subcategoryDir.name, "index.md"));
+        expect(pages[2].relativePath).toBe(
+          join("category", "subcategory", "index.md"),
+        );
+        expect(pages[2].title).toBe("Subcategory");
+        expect(pages[2].content).toContain("Hello World");
+        expect(pages[2].ancestors).toEqual([
+          join(categoryDir.name, "index.md"),
+        ]);
+        expect(pages[2].name).toBe("Sub-cat.");
+
+        expect(pages[3].path).toBe(subcategoryPage.name);
+        expect(pages[3].relativePath).toBe(
+          join("category", "subcategory", "page.md"),
+        );
+        expect(pages[3].title).toBe("Page");
+        expect(pages[3].content).toContain("Hello World");
+        expect(pages[3].ancestors).toEqual([
+          join(categoryDir.name, "index.md"),
+          join(subcategoryDir.name, "index.md"),
+        ]);
+      });
+
+      // TODO: Check that prioritizes always metadata from config over frontmatter
+      it("should prioritize the confluence_title from the metadata over titles from frontmatter", async () => {
+        // Arrange
+        const file = fileSync({ dir: dir.name, name: "page.md" });
+        writeFileSync(
+          file.name,
+          dedent`
+          ---
+          title: Page
+          confluence_title: Confluence Title
+          sync_to_confluence: true
+          ---
+          
+          # Hello World
+          `,
+        );
+
+        await config.load({
+          ...CONFIG,
+          docsDir: dir.name,
+          filesMetadata: [
+            {
+              path: join(dir.name, "page.md"),
+              title: "Foo Page",
+              sync: true,
+            },
+          ],
+        });
+
+        // Act
+        const pages = await docusaurusPages.read();
+
+        // Assert
+        expect(pages).toHaveLength(1);
+        expect(pages[0].title).toBe("Foo Page");
+      });
+    });
+
     describe("when file is mdx", () => {
       let docusaurusPages: MarkdownDocumentsInterface;
 
@@ -770,6 +1072,111 @@ describe("docusaurusPages", () => {
 
         // Assert
         expect(spyIsStringWithLength).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe("when id mode is active", () => {
+      let docusaurusPages: MarkdownDocumentsInterface;
+
+      it("should throw an error when 'filesPattern' option is empty", async () => {
+        docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
+        await config.load({
+          ...CONFIG,
+          mode: "id",
+        });
+
+        // Assert
+        await expect(async () => await docusaurusPages.read()).rejects.toThrow(
+          `File pattern can't be empty in id mode`,
+        );
+      });
+
+      it("should read the pages whose filenames match the glob pattern provided in the filesPattern option", async () => {
+        // Arrange
+        await config.load({
+          ...CONFIG,
+          mode: "id",
+          filesPattern: "**/page*",
+        });
+        docusaurusPages = new MarkdownDocuments({
+          ...docusaurusPagesOptions,
+          filesPattern: config.option("filesPattern") as FilesPatternOption,
+          cwd: dir.name,
+        });
+
+        const categoryDir = dirSync({ dir: dir.name, name: "category" });
+        const categoryIndex = fileSync({
+          dir: categoryDir.name,
+          name: "index.md",
+        });
+        writeFileSync(
+          categoryIndex.name,
+          dedent`
+            ---
+            title: Category
+            sync_to_confluence: true
+            confluence_short_name: Cat.
+            ---
+
+            # Hello World
+          `,
+        );
+        const categoryPage = fileSync({
+          dir: categoryDir.name,
+          name: "page.md",
+        });
+        writeFileSync(
+          categoryPage.name,
+          dedent`
+            ---
+            title: Page
+            sync_to_confluence: true
+            ---
+
+            # Hello World
+          `,
+        );
+        const subcategoryDir = dirSync({
+          dir: categoryDir.name,
+          name: "subcategory",
+        });
+        const subcategoryIndex = fileSync({
+          dir: subcategoryDir.name,
+          name: "index.md",
+        });
+        writeFileSync(
+          subcategoryIndex.name,
+          dedent`
+            ---
+            title: Subcategory
+            sync_to_confluence: true
+            confluence_short_name: Sub-cat.
+            ---
+
+            # Hello World
+          `,
+        );
+        const subcategoryPage = fileSync({
+          dir: subcategoryDir.name,
+          name: "page.mdx",
+        });
+        writeFileSync(
+          subcategoryPage.name,
+          dedent`
+            ---
+            title: Page
+            sync_to_confluence: true
+            ---
+
+            # Hello World
+          `,
+        );
+
+        // Act
+        const pages = await docusaurusPages.read();
+
+        // Assert
+        expect(pages).toHaveLength(2);
       });
     });
   });
