@@ -1,12 +1,13 @@
----
-sync_to_confluence: true
-title: "[Markdown Confluence Sync] TypeScript"
-confluence_page_id: "337906335"
----
-
 # markdown-confluence-sync
 
-Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confluence) pages based on markdown files in a directory. Supports Mermaid diagrams and per-page configuration using [frontmatter metadata](https://jekyllrb.com/docs/front-matter/). Works great with [Docusaurus](https://docusaurus.io/).
+Updates/creates [Confluence](https://www.atlassian.com/es/software/confluence) pages based on markdown files content.
+
+It is able to create/update/delete pages based on the markdown files structure in a directory, emulating the hierarchy in Confluence, keeping the content in sync.
+
+* Supports attaching images.
+* Supports Mermaid diagrams.
+* Supports per-page configuration using [frontmatter metadata](https://jekyllrb.com/docs/front-matter/).
+* Works great with [Docusaurus](https://docusaurus.io/).
 
 ## Table of Contents
 
@@ -34,6 +35,8 @@ Creates/updates/deletes [Confluence](https://www.atlassian.com/es/software/confl
   - [Arguments](#arguments)
   - [Environment variables](#environment-variables)
 - [Configuration per page](#configuration-per-page)
+  - [Frontmatter metadata](#frontmatter-metadata)
+  - [filesMetadata property](#filesmetadata-property)
 - [Automation notice](#automation-notice)
 - [Markdown conversion](#markdown-conversion)
   - [Supported features](#supported-features)
@@ -53,7 +56,7 @@ In order to be able to sync the markdown files with Confluence, you need to have
 * A [Confluence](https://www.atlassian.com/es/software/confluence) instance.
 * The id of the Confluence space where the pages will be created.
 * A personal access token to authenticate. You can create a personal access token following the instructions in the [Atlassian documentation](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
-* A folder containing the markdown files to be synced with Confluence. It can be a Docusaurus project docs folder.
+* Markdown file or files to be synced with Confluence. It can be as complex as a Docusaurus project docs folder, or as simple as a single README.md file.
 
 ### Compatibility
 
@@ -65,9 +68,7 @@ In order to be able to sync the markdown files with Confluence, you need to have
 The library reads the markdown files in a given folder and create/delete/update the corresponding Confluence pages following the same hierarchical structure under a provided Confluence page depending on the [synchronization mode](#sync-modes) to use.
 
 > [!IMPORTANT]
-> Markdown documents to be synced __must have [frontmatter metadata](https://jekyllrb.com/docs/front-matter/)__ with at least next properties:
-> * `title` property, used to give a title to the page in Confluence.
-> * `sync_to_confluence` property set to `true`
+> You must provide the configuration for each file to be synced, or using the [configuration file](#configuration-file), or the [frontmatter metadata](#configuration-per-page), or a combination of both.
 
 ```markdown
 ---
@@ -80,16 +81,16 @@ sync_to_confluence: true
 Hello, world! I'm a markdown file to be synced with Confluence.
 ```
 
-The library has __two modes for syncing__:
+The library has __three modes for syncing__:
 * `tree` sync mode - Mirrors the hierarchical pages structure from given folder under a Confluence root page. Some files are used for [representing indices in the hierarchy](#index-files).
-* `flat` sync mode - Synchronize a list of markdown files matched by a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) as children page of a Confluence root page, without any hierarchy.
-  * As an extra in this mode, a Confluence id can be provided to each page using the frontmatter, and, in such case, the corresponding Confluence page will be updated. Read [per-page configuration](#configuration-per-page) for more information.
+* `id` sync mode - Synchronize a list of markdown files matched by a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) directly to specific Confluence pages using the Confluence id provided in the frontmatter metadata or in the configuration file.
+* `flat` sync mode - Synchronize a list of markdown files matched by a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) as children page of a Confluence root page, without any hierarchy. It is also possible to provide a Confluence id to some pages to update them directly, as in the `id` mode.
 
 Other features are:
 
 * The library adds a __notice message at the beginning of every pages content__ indicating that it has been generated automatically. Read [Automation notice](#automation-notice) for more information.
 * Converts Mermaid diagrams to images.
-* Supports __configuration per page using [frontmatter metadata](https://jekyllrb.com/docs/front-matter/).__ Some of the things you can configure are:
+* Supports __configuration per page using [frontmatter metadata](https://jekyllrb.com/docs/front-matter/) or the config file.__ Some of the things you can configure are:
   * Title of the page in Confluence.
   * Adding ancestors title to every page title.
 
@@ -122,7 +123,7 @@ The library provides an NPM binary named `markdown-confluence-sync`. To use it, 
 }
 ```
 
-All the markdown files to be synced must have frontmatter properties "title" and "sync_to_confluence" set to `true`. For example:
+All the markdown files to be synced must have frontmatter properties "title" and "sync_to_confluence" set to `true` (unless you are using the `filesMetadata` option in the configuration file). For example:
 
 ```markdown
 ---
@@ -157,7 +158,7 @@ npm run sync
 
 ## Sync modes
 
-The library has two modes for reading markdown files, `tree` and `flat`:
+The library has three modes for reading markdown files, `tree`, `flat` and `id`.
 
 ### Tree mode
 
@@ -236,18 +237,20 @@ repository/
 
 The `flat` mode syncs all markdown files matching a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) just under the root Confluence page. It does not create a nested hierarchy.
 
-It also supports defining a Confluence id in the frontmatter metadata of the markdown files. In this case, the library will always update the Confluence page with that id, even when it is not a children of the Confluence root page.
+It also supports defining a Confluence id to some pages. In this case, the library will always update the Confluence page with that id, even when it is not a children of the Confluence root page.
 
 To enable it, you have to set the `mode` property to `flat` in the configuration file, and provide a [glob pattern](https://github.com/isaacs/node-glob#glob-primer) to filter the files to sync using the `filesPattern` property.
 
 > [!WARNING]
 > The `filePattern` option searches all files in the directory but filters the pattern results and ignores all files that do not have one of the following extensions: `md` or `mdx`.
 
-For example, with the provided configuration, `flat` synchronization mode will get all files starting with the "check" word, and having the extensions `md` or `mdx`:
+For example, with the next configuration, `flat` synchronization mode will get all files starting with the "check" word, and having the extensions `md` or `mdx`:
 
 ```js title="markdown-confluence-sync.config.js"
 module.exports = {
   docsDir: "docs",
+  mode: "flat",
+  filesPattern: "check*.{md,mdx}",
   confluence: {
     url: "https://my-confluence.es",
     personalAccessToken: "*******",
@@ -268,6 +271,7 @@ The namespace for the configuration of this library is `markdown-confluence-sync
 | `logLevel` | `string` | Log level. One of `silly`, `debug`, `info`, `warn`, `error`, `silent` | `info` |
 | `mode` | `string` | Mode to read the pages to send to Confluence. One of `tree`, `flat` or `id`.  | `tree` |
 | `filesPattern` | `string` | Pattern to read the pages to send to Confluence. This option is mandatory when using `flat` or `id` sync modes.  |  |
+| `filesMetadata` | `array` | Array of objects with the metadata of the files to sync. Each object must have the `path` property with the path of the file. For the rest of properties read the [Configuration per page](#configuration-per-page) section |  |
 | `docsDir` | `string` | Path to the docs directory. | `./docs` |
 | `confluence.url` | `string` | URL of the Confluence instance. | |
 | `confluence.personalAccessToken` | `string` | Personal access token to authenticate against the Confluence instance. | |
@@ -330,16 +334,61 @@ MARKDOWN_CONFLUENCE_SYNC_DOCS_DIR=./docs MARKDOWN_CONFLUENCE_SYNC_LOG=debug npx 
 
 ## Configuration per page
 
-It is possible to set some properties for each page using the frontmatter metadata in the markdown files. The properties that can be set are:
+It is possible to set some properties for each page using the frontmatter metadata in the markdown files or in the `filesMetadata` property in the configuration file. You can use one method or another, or a combination of both. __When using both methods, the properties set in the `filesMetadata` property will overwrite the ones set in the frontmatter metadata.__
+
+### Frontmatter metadata
 
 * `confluence_id` - Confluence id of the page. If set, the library will always update the Confluence page with that id, even when it is not a children of the Confluence root page. __It only can be set in `flat` or `id` sync modes.__
 * `confluence_title` - Title of the page in Confluence. It will force the title of the page in Confluence to be the value of this property, ignoring the `title` property. Use it if you need to use the `title` property for other purposes (such as in Docusaurus pages), and you don't want to use the same value in Confluence.
-* `confluence_short_name` - Adding ancestors title to its children's title may produce an unnecessarily long titles. To avoid this, you can use this property to replace the title of a parent page in its children's title. It should be used only in **index files** for categories.
+* `confluence_short_name` - Adding ancestors title to its children's title may produce long titles. To avoid this, you can use this property to replace the title of a parent page in its children's title. It should be used only in **index files** for categories.
   For example, if the child's title is "`Page`" and the parent, with the title "`Parent Category`," has the property `confluence_short_name` set to "`Parent`," it will appear in Confluence as follows:
   ```diff
   - [Parent Category] Page
   + [Parent] Page
   ```
+* `sync_to_confluence` - Boolean to indicate if the file should be synced with Confluence. If set to `false`, the file will be ignored.
+
+```markdown
+---
+confluence_id: "123456789"
+confluence_title: "Confluence title"
+confluence_short_name: "Short name"
+sync_to_confluence: true
+---
+```
+
+### filesMetadata property
+
+The `filesMetadata` property in the configuration file allows you to set the metadata of the files to sync without having to modify the file itself to add the frontmatter metadata. So, it is less intrusive.
+
+It must be an array of objects, and each one must have the `path` property with the path of the file. The rest of the properties are the same as the ones that can be set in the frontmatter metadata, but with next naming convention:
+
+* `path` - Path of the file to assign the metadata to.
+* `id` - Confluence id of the page. If set, the library will always update the Confluence page with that id, even when it is not a children of the Confluence root page. __It only can be set in `flat` or `id` sync modes.__
+* `title` - Title of the page in Confluence. It will force the title of the page in Confluence to be the value of this property.
+* `shortName` - Adding ancestors title to its children's title may produce long titles. To avoid this, you can use this property to replace the title of a parent page in its children's title. It should be used only in **index files** for categories.
+* `sync` - Boolean to indicate if the file should be synced with Confluence. If set to `false`, the file will be ignored.
+
+```js
+/** @type {import('@tid-xcut/markdown-confluence-sync').Configuration} */
+module.exports = {
+  docsDir: "./docs",
+  filesMetadata: [
+    {
+      path: "./docs/page-a.md",
+      id: "123456789",
+      title: "My Awesome Page",
+      shortName: "MAwP",
+      sync: true,
+    },
+  ],
+  confluence: {
+    url: "https://my.confluence.es",
+    personalAccessToken: "*******",
+    spaceKey: "MY-SPACE",
+  },
+};
+```
 
 ## Automation notice
 

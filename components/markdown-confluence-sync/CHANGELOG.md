@@ -1,8 +1,3 @@
----
-sync_to_confluence: true
-title: "[Markdown Confluence Sync] [TypeScript] Releases"
----
-
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -20,7 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* feat: Add id mode
+* feat: Add id mode. Upgrade confluence-sync to 1.0.0.
+* feat: Add filesMetadata option, enabling to defined the metadata of the files using the configuration file.
+
+### Changed
+
+* chore: Remove frontmatter properties from docs. Use filesMetadata instead to define the metadata of the files when syncing them to Confluence.
 
 ## [1.0.0-beta.4] - 2024-11-28
 

@@ -1189,7 +1189,6 @@ describe("markdown-confluence-sync binary", () => {
       });
     });
 
-
     describe("when dryRun option is true", () => {
       beforeAll(async () => {
         await changeMockCollection("empty-root");
