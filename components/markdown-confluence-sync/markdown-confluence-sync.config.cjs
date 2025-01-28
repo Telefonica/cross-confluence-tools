@@ -15,6 +15,19 @@ module.exports = {
   mode: "flat",
   docsDir: ".",
   filesPattern: "*(README.md|CHANGELOG.md)",
+  filesMetadata: [
+    {
+      path: "README.md",
+      title: "[Markdown Confluence Sync] TypeScript",
+      id: "337906335",
+      sync: true,
+    },
+    {
+      path: "CHANGELOG.md",
+      title: "[Markdown Confluence Sync] [TypeScript] Releases",
+      sync: true,
+    },
+  ],
   confluence: {
     url: process.env.CONFLUENCE_URL,
     personalAccessToken: process.env.CONFLUENCE_PAT,

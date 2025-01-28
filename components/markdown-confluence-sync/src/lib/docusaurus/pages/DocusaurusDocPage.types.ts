@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { LoggerInterface } from "@mocks-server/logger";
+import { FilesMetadata } from "../../MarkdownConfluenceSync.types";
 
 /** Docusaurus file metadata */
 export interface DocusaurusDocPageMeta {
@@ -44,6 +45,8 @@ export interface DocusaurusDocPageInterface {
 export interface DocusaurusDocPageOptions {
   /** Logger */
   logger?: LoggerInterface;
+  /** Files metadata */
+  filesMetadata?: FilesMetadata;
 }
 
 /** Creates DocusaurusDocPage interface */

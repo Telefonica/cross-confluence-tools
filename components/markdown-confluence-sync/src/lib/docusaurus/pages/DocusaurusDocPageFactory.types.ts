@@ -4,10 +4,13 @@
 import type { LoggerInterface } from "@mocks-server/logger";
 
 import type { DocusaurusDocPageInterface } from "./DocusaurusDocPage.types";
+import { FilesMetadata } from "../../MarkdownConfluenceSync.types";
 
 export interface DocusaurusDocPageFactoryFromPathOptions {
   /** Logger */
   logger?: LoggerInterface;
+  /** Files metadata */
+  filesMetadata?: FilesMetadata;
 }
 
 /**

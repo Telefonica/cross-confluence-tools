@@ -19,6 +19,10 @@ const remarkValidateFrontmatter: UnifiedPlugin<
 > = function remarkRemoveAdmonitions(schema) {
   return function (_tree, file) {
     try {
+      if (!file.data.frontmatter) {
+        file.data.frontmatter = {};
+        return;
+      }
       file.data.frontmatter = schema.parse(file.data.frontmatter);
     } catch (e) {
       if (e instanceof ZodError) {

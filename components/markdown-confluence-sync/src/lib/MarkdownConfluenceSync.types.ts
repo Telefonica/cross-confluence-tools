@@ -10,6 +10,21 @@ import type { SyncModes } from "@tid-xcut/confluence-sync";
 
 export type FilesPattern = string | string[];
 
+export interface FileMetadata {
+  /** Path to the file */
+  path: string;
+  /** Confluence page id */
+  id?: string;
+  /** Confluence page title */
+  title?: string;
+  /** Short name of the page to be used in the names of the child pages, when assigning namespacing */
+  shortName?: string;
+  /** Whether to sync or not the page */
+  sync?: boolean;
+}
+
+export type FilesMetadata = FileMetadata[];
+
 declare global {
   //eslint-disable-next-line @typescript-eslint/no-namespace
   namespace MarkdownConfluenceSync {
@@ -30,11 +45,14 @@ declare global {
       /** Mode to structure pages */
       mode?: SyncModes;
       /**
-       * Pattern to search files when flat mode is active
+       * Pattern to search files when flat or id mode are active
        * @see {@link https://github.com/isaacs/node-glob#globpattern-string--string-options-globoptions--promisestring--path | Node Glob Pattern}
        * @see {@link https://github.com/isaacs/node-glob#glob-primer}
        * */
       filesPattern?: FilesPattern;
+
+      /** Metadata for specific files */
+      filesMetadata?: FilesMetadata;
     }
   }
 }
@@ -62,6 +80,10 @@ export type ModeOption = OptionInterfaceOfType<SyncModes, { hasDefault: true }>;
 export type FilesPatternOptionDefinition = OptionDefinition<FilesPattern>;
 
 export type FilesPatternOption = OptionInterfaceOfType<FilesPattern>;
+
+export type FilesMetadataOptionDefinition = OptionDefinition<FilesMetadata>;
+
+export type FilesMetadataOption = OptionInterfaceOfType<FilesMetadata>;
 
 /** Creates a MarkdownConfluenceSync interface */
 export interface MarkdownConfluenceSyncConstructor {

@@ -6,7 +6,10 @@ import { relative } from "node:path";
 import type { LoggerInterface } from "@mocks-server/logger";
 import { glob } from "glob";
 
-import type { FilesPattern } from "../MarkdownConfluenceSync.types.js";
+import type {
+  FilesMetadata,
+  FilesPattern,
+} from "../MarkdownConfluenceSync.types.js";
 import { isStringWithLength } from "../support/typesValidations.js";
 
 import type {
@@ -18,6 +21,7 @@ import type {
   MarkdownDocumentsInterface,
 } from "./DocusaurusPages.types.js";
 import { MarkdownDocFactory } from "./pages/DocusaurusDocPageFactory.js";
+import { SyncModes } from "@tid-xcut/confluence-sync";
 
 export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class MarkdownFlatDocuments
   implements MarkdownDocumentsInterface
@@ -26,10 +30,20 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
   private _logger: LoggerInterface;
   private _initialized = false;
   private _filesPattern: FilesPattern;
+  private _filesMetadata?: FilesMetadata;
+  private _mode: SyncModes.FLAT | SyncModes.ID;
 
-  constructor({ logger, filesPattern, cwd }: MarkdownFlatDocumentsOptions) {
+  constructor({
+    logger,
+    filesPattern,
+    filesMetadata,
+    cwd,
+    mode,
+  }: MarkdownFlatDocumentsOptions) {
+    this._mode = mode;
     this._path = cwd;
     this._filesPattern = filesPattern as FilesPattern;
+    this._filesMetadata = filesMetadata;
     this._logger = logger.namespace("doc-flat");
   }
 
@@ -56,7 +70,10 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
     filesPaths: string[],
   ): Promise<MarkdownDocument[]> {
     const files = filesPaths.map((filePath) =>
-      MarkdownDocFactory.fromPath(filePath, { logger: this._logger }),
+      MarkdownDocFactory.fromPath(filePath, {
+        logger: this._logger,
+        filesMetadata: this._filesMetadata,
+      }),
     );
     const pages = files.map<MarkdownDocument>((item) => ({
       title: item.meta.confluenceTitle || item.meta.title,
@@ -74,7 +91,7 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
   private _init() {
     if (!this._initialized) {
       if (!isStringWithLength(this._filesPattern as string)) {
-        throw new Error("File pattern can't be empty in flat mode");
+        throw new Error(`File pattern can't be empty in ${this._mode} mode`);
       }
       this._filesPattern = this._filesPattern as FilesPattern;
       this._initialized = true;

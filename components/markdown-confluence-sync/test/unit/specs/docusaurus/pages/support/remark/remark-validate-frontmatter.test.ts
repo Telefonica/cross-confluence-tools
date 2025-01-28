@@ -17,7 +17,7 @@ describe("remark-validate-frontmatter", () => {
     expect(remarkValidateFrontmatter).toBeDefined();
   });
 
-  it("should fail if the file fails FrontMatter validation", () => {
+  it("should not fail if the file does not have FrontMatter data", () => {
     // Arrange
     const invalidMarkdown = dedent`
       ---
@@ -36,13 +36,14 @@ describe("remark-validate-frontmatter", () => {
         .use(remarkParseFrontmatter)
         .use(remarkValidateFrontmatter, FrontMatterValidator)
         .processSync(new VFile(invalidMarkdown)),
-    ).toThrow();
+    ).not.toThrow();
   });
 
-  it("should fail if it does not include a FrontMatter validation", () => {
+  it("should fail if it has frontmatter data and does not include a FrontMatter validation", () => {
     // Arrange
     const invalidMarkdown = dedent`
       ---
+      title: My Title
       ---
 
       # My Title

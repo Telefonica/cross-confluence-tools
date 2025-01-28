@@ -564,73 +564,71 @@ describe("confluence-sync-pages library", () => {
     });
 
     describe("when flat mode is enabled", () => {
-      beforeAll(async () => {
-        confluenceSyncPages = new ConfluenceSyncPages({
-          personalAccessToken: "foo-token",
-          spaceId: "foo-space-id",
-          syncMode: SyncModes.FLAT,
-          url: "http://127.0.0.1:3100",
-          logLevel: "debug",
+      describe("when passing two pages with id", () => {
+        beforeAll(async () => {
+          confluenceSyncPages = new ConfluenceSyncPages({
+            personalAccessToken: "foo-token",
+            spaceId: "foo-space-id",
+            syncMode: SyncModes.FLAT,
+            url: "http://127.0.0.1:3100",
+            logLevel: "debug",
+            rootPageId: "foo-root-id",
+          });
+
+          await changeMockCollection("flat-mode");
+          await confluenceSyncPages.sync(flatPages);
+          updateRequests = await getRequestsByRouteId("confluence-update-page");
         });
 
-        await changeMockCollection("flat-mode");
-        await confluenceSyncPages.sync(flatPages);
-        updateRequests = await getRequestsByRouteId("confluence-update-page");
-      });
+        it("should have updated 2 pages", async () => {
+          expect(updateRequests).toHaveLength(2);
+        });
 
-      it("should have updated 3 pages", async () => {
-        expect(updateRequests).toHaveLength(3);
-      });
+        it("should have updated page foo-page-1-title", async () => {
+          const pageRequest = findRequestById("foo-page-1-id", updateRequests);
 
-      it("should have updated page foo-page-1-title", async () => {
-        const pageRequest = findRequestById("foo-page-1-id", updateRequests);
-
-        expect(pageRequest?.url).toBe("/rest/api/content/foo-page-1-id");
-        expect(pageRequest?.method).toBe("PUT");
-        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
-        expect(pageRequest?.body).toEqual({
-          type: "page",
-          title: "foo-page-1-title",
-          version: {
-            number: 2,
-          },
-          body: {
-            storage: {
-              value: "foo-page-1-content",
-              representation: "storage",
+          expect(pageRequest?.url).toBe("/rest/api/content/foo-page-1-id");
+          expect(pageRequest?.method).toBe("PUT");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "foo-page-1-title",
+            version: {
+              number: 2,
             },
-          },
+            body: {
+              storage: {
+                value: "foo-page-1-content",
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        describe("when a page does not exist in confluence", () => {
+          it("should throw an error", async () => {
+            const wrongPage = {
+              id: "foo-wrongPage-id",
+              title: "foo-wrongPage-title",
+              content: "foo-wrongPage-content",
+            };
+
+            await expect(
+              confluenceSyncPages.sync([
+                wrongPage,
+                {
+                  title: "foo-page-1-title",
+                  content: "foo-page-1-content",
+                },
+              ]),
+            ).rejects.toThrow(
+              `Error getting page with id ${wrongPage.id}: AxiosError: Request failed with status code 404`,
+            );
+          });
         });
       });
 
-      describe("when a page does not exist in confluence", () => {
-        it("should throw an error", async () => {
-          const wrongPage = {
-            id: "foo-wrongPage-id",
-            title: "foo-wrongPage-title",
-            content: "foo-wrongPage-content",
-          };
-
-          await expect(confluenceSyncPages.sync([wrongPage])).rejects.toThrow(
-            `Error getting page with id ${wrongPage.id}: AxiosError: Request failed with status code 404`,
-          );
-        });
-      });
-
-      describe("when a page has no id", () => {
-        it("should throw an error", async () => {
-          const wrongPage = {
-            title: "foo-wrongPage-title",
-            content: "foo-wrongPage-content",
-          };
-
-          await expect(confluenceSyncPages.sync([wrongPage])).rejects.toThrow(
-            `rootPageId is required for FLAT sync mode when there are pages without id: ${wrongPage.title}`,
-          );
-        });
-      });
-
-      describe("when root page is provided", () => {
+      describe("when passing one page with id", () => {
         beforeAll(async () => {
           confluenceSyncPages = new ConfluenceSyncPages({
             personalAccessToken: "foo-token",

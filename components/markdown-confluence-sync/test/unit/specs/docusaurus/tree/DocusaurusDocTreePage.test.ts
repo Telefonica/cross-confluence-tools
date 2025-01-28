@@ -11,10 +11,10 @@ import { dedent } from "ts-dedent";
 import { TempFiles } from "@support/utils/TempFiles";
 const { dirSync, fileSync } = new TempFiles();
 
-import { InvalidMarkdownFormatException } from "@src/lib/docusaurus/pages/errors/InvalidMarkdownFormatException";
 import { InvalidPathException } from "@src/lib/docusaurus/pages/errors/InvalidPathException";
 import { PathNotExistException } from "@src/lib/docusaurus/pages/errors/PathNotExistException";
 import { DocusaurusDocTreePage } from "@src/lib/docusaurus/tree/DocusaurusDocTreePage";
+import { TitleRequiredException } from "@src/lib/docusaurus/pages/errors/TitleRequiredException";
 
 describe("docusaurusDocTreePage", () => {
   let dir: DirResult;
@@ -61,7 +61,7 @@ describe("docusaurusDocTreePage", () => {
     );
   });
 
-  it("should fail if the file does not contain frontmatter metadata", () => {
+  it("should fail if the file does not contain frontmatter metadata nor config metadata", () => {
     // Arrange
     const mdFile = fileSync({ dir: dir.name, postfix: ".md" });
     writeFileSync(mdFile.name, "# Hello World");
@@ -69,11 +69,11 @@ describe("docusaurusDocTreePage", () => {
     // Act
     // Assert
     expect(() => new DocusaurusDocTreePage(mdFile.name)).toThrow(
-      InvalidMarkdownFormatException,
+      TitleRequiredException,
     );
   });
 
-  it("should fail if the file does not contain title in frontmatter metadata", () => {
+  it("should fail if the file does not contain title in frontmatter metadata nor in config metadata", () => {
     // Arrange
     const mdFile = fileSync({ dir: dir.name, postfix: ".md" });
     writeFileSync(
@@ -90,8 +90,52 @@ describe("docusaurusDocTreePage", () => {
     // Act
     // Assert
     expect(() => new DocusaurusDocTreePage(mdFile.name)).toThrow(
-      InvalidMarkdownFormatException,
+      TitleRequiredException,
     );
+  });
+
+  it("should not fail if the file contains title in frontmatter metadata", () => {
+    // Arrange
+    const mdFile = fileSync({ dir: dir.name, postfix: ".md" });
+    writeFileSync(
+      mdFile.name,
+      dedent`
+      ---
+      title: Test
+      ---
+
+      # Hello World
+      `,
+    );
+
+    // Act
+    // Assert
+    expect(() => new DocusaurusDocTreePage(mdFile.name)).not.toThrow();
+  });
+
+  it("should not fail if the file contains title in config metadata", () => {
+    // Arrange
+    const mdFile = fileSync({ dir: dir.name, postfix: ".md" });
+    writeFileSync(
+      mdFile.name,
+      dedent`
+      # Hello World
+      `,
+    );
+
+    // Act
+    // Assert
+    expect(
+      () =>
+        new DocusaurusDocTreePage(mdFile.name, {
+          filesMetadata: [
+            {
+              path: mdFile.name,
+              title: "Test",
+            },
+          ],
+        }),
+    ).not.toThrow();
   });
 
   it("should build a page from a file", () => {
@@ -110,6 +154,35 @@ describe("docusaurusDocTreePage", () => {
 
     // Act
     const page = new DocusaurusDocTreePage(file.name);
+
+    // Assert
+    expect(page.isCategory).toBe(false);
+    expect(page.path).toBe(file.name);
+    expect(page.content).toContain("Hello World");
+    expect(page.meta).toBeDefined();
+    expect(page.meta.title).toBe("Test");
+    expect(page.meta.syncToConfluence).toBe(true);
+  });
+
+  it("should build a page from a file with metadata in config", () => {
+    // Arrange
+    writeFileSync(
+      file.name,
+      dedent`
+      # Hello World
+      `,
+    );
+
+    // Act
+    const page = new DocusaurusDocTreePage(file.name, {
+      filesMetadata: [
+        {
+          path: file.name,
+          title: "Test",
+          sync: true,
+        },
+      ],
+    });
 
     // Assert
     expect(page.isCategory).toBe(false);

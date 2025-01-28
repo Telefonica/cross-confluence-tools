@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { FilesPattern } from "../MarkdownConfluenceSync.types";
+import { SyncModes } from "@tid-xcut/confluence-sync";
 
 import type {
   MarkdownDocumentsInterface,
@@ -14,6 +15,8 @@ export interface MarkdownFlatDocumentsOptions
   filesPattern?: FilesPattern;
   /** Working directory */
   cwd: string;
+  /** Mode */
+  mode: SyncModes.FLAT | SyncModes.ID;
 }
 
 /** Creates a MarkdownFlatDocuments interface */

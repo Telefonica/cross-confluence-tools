@@ -103,6 +103,22 @@ describe("confluenceSyncPages", () => {
     jest.clearAllMocks();
   });
 
+  describe("constructor", () => {
+    it("should throw an error if sync mode is not valid", () => {
+      expect(
+        () =>
+          new ConfluenceSyncPages({
+            personalAccessToken: "foo-token",
+            spaceId: "foo-space-id",
+            rootPageId: "foo-root-id",
+            url: "foo-url",
+            // @ts-expect-error Testing invalid sync mode
+            syncMode: "foo",
+          }),
+      ).toThrow("Invalid sync mode");
+    });
+  });
+
   describe("sync method", () => {
     describe("when root page has children", () => {
       it("should call confluence client to get the root page and all its children to create the tree", async () => {
@@ -455,7 +471,7 @@ describe("confluenceSyncPages", () => {
       });
     });
 
-    describe("when root page children as undefined", () => {
+    describe("when root page children is undefined", () => {
       beforeEach(() => {
         customClient.getPage.mockImplementation((id) => {
           if (id === rootPage.id) {
@@ -490,14 +506,14 @@ describe("confluenceSyncPages", () => {
       expect(confluenceSynchronizer2.logger.store).toHaveLength(0);
     });
 
-    describe("when flat mode is enabled and root page is not provided", () => {
+    describe("when id mode is enabled", () => {
       let pagesToUpdate: ConfluenceInputPage[];
 
       beforeEach(() => {
         confluenceSynchronizer = new ConfluenceSyncPages({
           personalAccessToken: "foo-token",
           spaceId: "foo-space-id",
-          syncMode: SyncModes.FLAT,
+          syncMode: SyncModes.ID,
           url: "foo-url",
         });
         pagesToUpdate = [
@@ -528,13 +544,43 @@ describe("confluenceSyncPages", () => {
         });
       });
 
+      it("should fail if rootPageId is provided", async () => {
+        confluenceSynchronizer = new ConfluenceSyncPages({
+          personalAccessToken: "foo-token",
+          spaceId: "foo-space-id",
+          syncMode: SyncModes.ID,
+          url: "foo-url",
+          rootPageId: "foo-root-id",
+        });
+
+        await expect(
+          confluenceSynchronizer.sync(pagesToUpdate),
+        ).rejects.toThrow(`rootPageId option is not allowed in ID mode`);
+      });
+
       it("should fail if any of the pages has no id", async () => {
         const wrongPage = createInputPage({ name: "wrongPage" });
 
         await expect(
           confluenceSynchronizer.sync([...pagesToUpdate, wrongPage]),
         ).rejects.toThrow(
-          `rootPageId is required for FLAT sync mode when there are pages without id: ${wrongPage.title}`,
+          `You are using ID mode and there are pages without id: ${wrongPage.title}`,
+        );
+      });
+
+      it("should fail if any of the pages has an ancestor", async () => {
+        const wrongPage = createInputPage({
+          name: "wrongPage",
+          ancestors: ["ancestor"],
+        });
+
+        await expect(
+          confluenceSynchronizer.sync([
+            ...pagesToUpdate,
+            { ...wrongPage, id: "foo-id" },
+          ]),
+        ).rejects.toThrow(
+          `Pages with ancestors are not supported in FLAT sync mode: foo-wrongPage-title`,
         );
       });
 
@@ -551,7 +597,7 @@ describe("confluenceSyncPages", () => {
       });
     });
 
-    describe("when flat mode is enabled and root page is provided", () => {
+    describe("when flat mode is enabled", () => {
       let pagesToSync: ConfluenceInputPage[];
       let pagesToCreate: ConfluenceInputPage[];
       let pagesToUpdateWithId: ConfluenceInputPage[];
@@ -624,6 +670,27 @@ describe("confluenceSyncPages", () => {
           ...pagesToUpdateWithId[1],
           version: 2,
         });
+      });
+
+      it("should fail if all pages have an id", async () => {
+        await expect(
+          confluenceSynchronizer.sync(pagesToUpdateWithId),
+        ).rejects.toThrow(
+          `There are no pages without id. You should use ID mode instead of FLAT mode`,
+        );
+      });
+
+      it("should fail if rootPageId is not provided", async () => {
+        confluenceSynchronizer = new ConfluenceSyncPages({
+          personalAccessToken: "foo-token",
+          spaceId: "foo-space-id",
+          syncMode: SyncModes.FLAT,
+          url: "foo-url",
+        });
+
+        await expect(confluenceSynchronizer.sync(pagesToSync)).rejects.toThrow(
+          `rootPageId is required for FLAT sync mode`,
+        );
       });
 
       it("should create the pages without id, that are not under root page", async () => {

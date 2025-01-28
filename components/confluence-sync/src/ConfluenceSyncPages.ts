@@ -28,6 +28,10 @@ import { CompoundError } from "./errors/CompoundError";
 import { NotAncestorsExpectedValidationError } from "./errors/NotAncestorsExpectedValidationError";
 import { PendingPagesToSyncError } from "./errors/PendingPagesToSyncError";
 import { RootPageRequiredException } from "./errors/RootPageRequiredException";
+import { ShouldUseIdModeException } from "./errors/ShouldUseIdModeException";
+import { RootPageForbiddenException } from "./errors/RootPageForbiddenException";
+import { PagesWithoutIdException } from "./errors/PagesWithoutIdException";
+import { InvalidSyncModeException } from "./errors/InvalidSyncModeException";
 import { getPagesTitles } from "./support/Pages";
 import type {
   ConfluenceClientInterface,
@@ -66,6 +70,13 @@ export const ConfluenceSyncPages: ConfluenceSyncPagesConstructor = class Conflue
       dryRun,
     });
     this._syncMode = syncMode ?? SyncModes.TREE;
+
+    if (
+      ![SyncModes.FLAT, SyncModes.ID, SyncModes.TREE].includes(this._syncMode)
+    ) {
+      throw new InvalidSyncModeException(this._syncMode);
+    }
+
     if (this._syncMode === SyncModes.TREE && rootPageId === undefined) {
       throw new RootPageRequiredException(SyncModes.TREE);
     }
@@ -125,6 +136,7 @@ export const ConfluenceSyncPages: ConfluenceSyncPagesConstructor = class Conflue
       }
       return pages.filter((page) => page.ancestors?.at(-1) === ancestor);
     }
+
     queue.error((e, job) => {
       if (e) {
         errors.push(e);
@@ -133,6 +145,7 @@ export const ConfluenceSyncPages: ConfluenceSyncPagesConstructor = class Conflue
       const task = job.task;
       tasksDone.push(task);
     });
+
     if (this._syncMode === SyncModes.FLAT) {
       this._validateFlatMode(pages);
       pages
@@ -141,9 +154,19 @@ export const ConfluenceSyncPages: ConfluenceSyncPagesConstructor = class Conflue
           enqueueTask({ type: "update", pageId: page.id as string, page });
         });
     }
+
+    if (this._syncMode === SyncModes.ID) {
+      this._validateIdMode(pages);
+      pages.forEach((page) => {
+        enqueueTask({ type: "update", pageId: page.id as string, page });
+      });
+    }
+
     if (this._rootPageId !== undefined)
       enqueueTask({ type: "init", pageId: this._rootPageId });
+
     await queue.drained();
+
     if (errors.length > 0) {
       const e = new CompoundError(...errors);
       this._logger.error(`Error occurs during sync: ${e}`);
@@ -153,10 +176,31 @@ export const ConfluenceSyncPages: ConfluenceSyncPagesConstructor = class Conflue
     this._reportTasks(tasksDone);
   }
 
+  private _validateIdMode(pages: ConfluenceInputPage[]): void {
+    const pagesWithoutId = pages.filter((page) => page.id === undefined);
+    if (pagesWithoutId.length > 0) {
+      throw new PagesWithoutIdException(pagesWithoutId);
+    }
+    if (this._rootPageId !== undefined) {
+      throw new RootPageForbiddenException();
+    }
+    const pagesWithAncestors = pages.filter(
+      (page) => page.ancestors !== undefined && page.ancestors.length > 0,
+    );
+    if (pagesWithAncestors.length > 0) {
+      throw new NotAncestorsExpectedValidationError(pagesWithAncestors);
+    }
+  }
+
   private _validateFlatMode(pages: ConfluenceInputPage[]): void {
     const pagesWithoutId = pages.filter((page) => page.id === undefined);
-    if (pagesWithoutId.length > 0 && this._rootPageId === undefined) {
-      throw new RootPageRequiredException(SyncModes.FLAT, pagesWithoutId);
+    if (pagesWithoutId.length === 0) {
+      throw new ShouldUseIdModeException(
+        `There are no pages without id. You should use ID mode instead of FLAT mode`,
+      );
+    }
+    if (this._rootPageId === undefined) {
+      throw new RootPageRequiredException(SyncModes.FLAT);
     }
     const pagesWithAncestors = pages.filter(
       (page) => page.ancestors !== undefined && page.ancestors.length > 0,

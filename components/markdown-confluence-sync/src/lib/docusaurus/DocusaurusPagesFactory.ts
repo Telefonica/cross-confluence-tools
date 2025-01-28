@@ -4,14 +4,12 @@
 import { SyncModes } from "@tid-xcut/confluence-sync";
 
 import { MarkdownFlatDocuments } from "./DocusaurusFlatPages.js";
-import type { MarkdownFlatDocumentsOptions } from "./DocusaurusFlatPages.types.js";
 import type { MarkdownDocumentsInterface } from "./DocusaurusPages.types.js";
 import type {
   MarkdownDocumentsFactoryInterface,
   MarkdownDocumentsFactoryOptions,
 } from "./DocusaurusPagesFactory.types.js";
 import { DocusaurusTreePages } from "./DocusaurusTreePages.js";
-import type { DocusaurusTreePagesOptions } from "./DocusaurusTreePages.types.js";
 
 export const MarkdownDocumentsFactory: MarkdownDocumentsFactoryInterface = class MarkdownDocumentsFactory {
   public static fromMode(
@@ -19,12 +17,19 @@ export const MarkdownDocumentsFactory: MarkdownDocumentsFactoryInterface = class
     options: MarkdownDocumentsFactoryOptions,
   ): MarkdownDocumentsInterface {
     if (!this._isValidMode(mode)) {
-      throw new Error(`"mode" option must be one of "tree" or "flat"`);
+      throw new Error(`"mode" option must be one of "tree", "flat" or "id"`);
     }
-    if (this._isFlatMode(mode)) {
-      return new MarkdownFlatDocuments(options as MarkdownFlatDocumentsOptions);
+    if (this._isFlatMode(mode) || this._isIdMode(mode)) {
+      return new MarkdownFlatDocuments({
+        ...options,
+        mode: mode as SyncModes.FLAT | SyncModes.ID,
+      });
     }
-    return new DocusaurusTreePages(options as DocusaurusTreePagesOptions);
+    return new DocusaurusTreePages(options);
+  }
+
+  private static _isIdMode(mode: string): boolean {
+    return mode === SyncModes.ID;
   }
 
   private static _isFlatMode(mode: string): boolean {
@@ -32,6 +37,10 @@ export const MarkdownDocumentsFactory: MarkdownDocumentsFactoryInterface = class
   }
 
   private static _isValidMode(mode: string): boolean {
-    return mode === SyncModes.FLAT || mode === SyncModes.TREE;
+    return (
+      mode === SyncModes.FLAT ||
+      mode === SyncModes.TREE ||
+      mode === SyncModes.ID
+    );
   }
 };
