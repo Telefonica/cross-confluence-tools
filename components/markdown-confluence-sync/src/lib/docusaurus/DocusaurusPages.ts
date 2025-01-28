@@ -7,6 +7,8 @@ import type { ConfigInterface } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 
 import type {
+  FilesMetadata,
+  FilesMetadataOption,
   FilesPattern,
   FilesPatternOption,
   ModeOption,
@@ -41,6 +43,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   private _logger: LoggerInterface;
   private _config: ConfigInterface;
   private _filesPattern?: FilesPatternOption;
+  private _filesMetadata?: FilesMetadataOption;
   private _cwd: string;
 
   constructor({
@@ -48,12 +51,14 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     logger,
     mode,
     filesPattern,
+    filesMetadata,
     cwd,
   }: MarkdownDocumentsOptions) {
     this._docsDirOption = config.addOption(docsDirOption);
     this._cwd = cwd;
     this._modeOption = mode;
     this._filesPattern = filesPattern;
+    this._filesMetadata = filesMetadata;
     this._config = config;
     this._logger = logger;
   }
@@ -68,12 +73,21 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     this._logger.debug(`mode option is ${this._modeOption.value}`);
     if (!this._initialized) {
       const path = resolve(this._cwd, this._docsDirOption.value);
+
+      const filesMetadata: FilesMetadata = (
+        this._filesMetadata?.value || []
+      ).map((metadata) => ({
+        ...metadata,
+        path: resolve(this._cwd, metadata.path),
+      }));
+
       this._path = path;
       this._pages = MarkdownDocumentsFactory.fromMode(this._modeOption.value, {
         config: this._config,
         logger: this._logger,
         path: this._path,
         filesPattern: this._filesPattern?.value as FilesPattern,
+        filesMetadata,
         cwd: this._cwd,
       });
       this._initialized = true;

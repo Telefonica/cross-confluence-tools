@@ -28,6 +28,8 @@ import type {
   FilesPatternOptionDefinition,
   ModeOption,
   FilesPatternOption,
+  FilesMetadataOptionDefinition,
+  FilesMetadataOption,
 } from "./MarkdownConfluenceSync.types.js";
 
 const MODULE_NAME = "markdown-confluence-sync";
@@ -57,6 +59,11 @@ const filesPatternOption: FilesPatternOptionDefinition = {
   type: "string",
 };
 
+const filesMetadataOption: FilesMetadataOptionDefinition = {
+  name: "filesMetadata",
+  type: "array",
+};
+
 export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class MarkdownConfluenceSync
   implements MarkdownConfluenceSyncInterface
 {
@@ -69,6 +76,7 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
   private _logLevelOption: LogLevelOption;
   private _modeOption: ModeOption;
   private _filesPatternOption: FilesPatternOption;
+  private _filesMetadataOption: FilesMetadataOption;
   private _cwd: string;
 
   constructor(config: Configuration) {
@@ -92,6 +100,10 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       filesPatternOption,
     ) as FilesPatternOption;
 
+    this._filesMetadataOption = this._configuration.addOption(
+      filesMetadataOption,
+    ) as FilesMetadataOption;
+
     const markdownLogger = this._logger.namespace(MARKDOWN_NAMESPACE);
 
     const confluenceConfig =
@@ -103,6 +115,7 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       logger: markdownLogger,
       mode: this._modeOption,
       filesPattern: this._filesPatternOption,
+      filesMetadata: this._filesMetadataOption,
       cwd: this._cwd,
     });
     this._confluenceSync = new ConfluenceSync({

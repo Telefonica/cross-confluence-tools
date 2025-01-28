@@ -46,7 +46,7 @@ describe("markdown-confluence-sync binary", () => {
 
         cli = new ChildProcessManager([getBinaryPathFromFixtureFolder()], {
           cwd: getFixtureFolder("mock-server-empty-root"),
-          silent: true,
+          silent: false,
           env: {
             MARKDOWN_CONFLUENCE_SYNC_LOG_LEVEL: "debug",
           },
@@ -63,510 +63,369 @@ describe("markdown-confluence-sync binary", () => {
         await cli.kill();
       });
 
-      it("should have exit code 0", async () => {
-        expect(exitCode).toBe(0);
-      });
-
-      it("should have logged pages to sync", async () => {
-        expect(cleanLogs(logs)).toContain(
-          `Converting 19 markdown documents to Confluence pages...`,
-        );
-      });
-
-      it("should have debug log level", async () => {
-        expect(cleanLogs(logs)).toContain(
-          `Found 19 pages in ${resolve(getFixtureFolder("mock-server-empty-root"), "docs")}`,
-        );
-      });
-
-      it("should have created 19 pages", async () => {
-        expect(createRequests).toHaveLength(19);
-      });
-
-      it("should have sent data of page with title foo-parent-title", async () => {
-        const pageRequest = findRequestByTitle(
-          "foo-parent-title",
-          createRequests,
-        );
-
-        expect(pageRequest).toBeDefined();
-        expect(pageRequest?.url).toBe("/rest/api/content");
-        expect(pageRequest?.method).toBe("POST");
-        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
-        expect(pageRequest?.body).toEqual({
-          type: "page",
-          title: "foo-parent-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-root-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <p><strong>AUTOMATION NOTICE: This page is synced automatically, changes made manually will be lost</strong></p><h1>Title</h1>
-                <blockquote>
-                <p><strong>Note:</strong></p>
-                <p>⭐ this is an admonition</p>
-                </blockquote>
-                <h2>External Link</h2>
-                <p>This is a link:</p>
-                <p><a href="https://httpbin.org">External link</a></p>
-                <h2>Internal Link</h2>
-                <p>This is a link:</p>
-                <p><ac:link><ri:page ri:content-title="[foo-parent-title] foo-child1-title" ri:space-key="foo-space-id"></ri:page><ac:plain-text-link-body><![CDATA[Internal link]]></ac:plain-text-link-body></ac:link></p>
-                <h2>Mdx Code Block</h2>
-                <p>This is a mdx code block:</p>
-                <h2>Details</h2>
-                <!-- eslint-disable-next-line markdown/no-html -->
-                <ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">Details</ac:parameter><ac:rich-text-body><pre><code class="language-markdown">    :::caution Status
-                    Proposed
-                    :::
-                </code></pre></ac:rich-text-body></ac:structured-macro>
-                <h2>Footnotes</h2>
-                <p>This is a paragraph with a footnote.</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-
-      it("when file contains mdx code blocks should have removed the mdx code blocks", async () => {
-        const pageRequest = findRequestByTitle(
-          "foo-parent-title",
-          createRequests,
-        );
-
-        expect(pageRequest?.body?.body).toEqual({
-          storage: expect.objectContaining({
-            value: expect.not.stringContaining(
-              dedent`
-                <h2>Mdx Code Block</h2>
-                <p>This is a mdx code block:</p>
-                <pre><code class="language-mdx-code-block">Mdx code block test
-                </code></pre>
-              `,
-            ),
-          }),
-        });
-      });
-
-      it("should have sent data of page with title foo-child1-title", async () => {
-        const pageRequest = findRequestByTitle(
-          "[foo-parent-title] foo-child1-title",
-          createRequests,
-        );
-
-        expect(pageRequest).toBeDefined();
-        expect(pageRequest?.url).toBe("/rest/api/content");
-        expect(pageRequest?.method).toBe("POST");
-        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
-        expect(pageRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title] foo-child1-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-parent-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the child1 title</h1>
-                <p>This is the child1 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-
-      it("should have sent data of page with title foo-child2-title", async () => {
-        const pageRequest = findRequestByTitle(
-          "[foo-parent-title] foo-child2-title",
-          createRequests,
-        );
-
-        expect(pageRequest).toBeDefined();
-        expect(pageRequest?.url).toBe("/rest/api/content");
-        expect(pageRequest?.method).toBe("POST");
-        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
-        expect(pageRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title] foo-child2-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-parent-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the child2 title</h1>
-                <p>This is the child2 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-
-      it("should have sent data of page with title foo-grandChild1-title", async () => {
-        const pageRequest = findRequestByTitle(
-          "[foo-parent-title][foo-child1-title] foo-grandChild1-title",
-          createRequests,
-        );
-
-        expect(pageRequest).toBeDefined();
-        expect(pageRequest?.url).toBe("/rest/api/content");
-        expect(pageRequest?.method).toBe("POST");
-        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
-        expect(pageRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title][foo-child1-title] foo-grandChild1-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-child1-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the grandChild1 title</h1>
-                <p>This is the grandChild1 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-
-      it("should have sent data of page with title foo-grandChild3-title", async () => {
-        const pageRequest = findRequestByTitle(
-          "[foo-parent-title][foo-child2-title] foo-grandChild3-title",
-          createRequests,
-        );
-
-        expect(pageRequest).toBeDefined();
-        expect(pageRequest?.url).toBe("/rest/api/content");
-        expect(pageRequest?.method).toBe("POST");
-        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
-        expect(pageRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title][foo-child2-title] foo-grandChild3-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-child2-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the grandChild3 title</h1>
-                <p>This is the grandChild3 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-
-      it("should create pages where the category does not have index.md", async () => {
-        const emptyCategoryRequest = findRequestByTitle(
-          "[foo-parent-title] foo-child3-title",
-          createRequests,
-        );
-
-        expect(emptyCategoryRequest?.url).toBe("/rest/api/content");
-        expect(emptyCategoryRequest?.method).toBe("POST");
-        expect(emptyCategoryRequest?.headers?.authorization).toBe(
-          "Bearer foo-token",
-        );
-        expect(emptyCategoryRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title] foo-child3-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-parent-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.any(String),
-              representation: "storage",
-            },
-          },
+      describe("when creating pages", () => {
+        it("should have exit code 0", async () => {
+          expect(exitCode).toBe(0);
         });
 
-        const pageRequest = findRequestByTitle(
-          "[foo-parent-title][foo-child3-title] foo-grandChild5-title",
-          createRequests,
-        );
-
-        expect(pageRequest).toBeDefined();
-        expect(pageRequest?.url).toBe("/rest/api/content");
-        expect(pageRequest?.method).toBe("POST");
-        expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
-        expect(pageRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title][foo-child3-title] foo-grandChild5-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-child3-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the grandChild5 title</h1>
-                <p>This is the grandChild5 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-    });
-
-    describe("when creating pages with name", () => {
-      it("should create category propagate name to children's titles", async () => {
-        const categoryWithSlug = findRequestByTitle(
-          "[foo-parent-title] foo-child4-title",
-          createRequests,
-        );
-
-        expect(categoryWithSlug?.url).toBe("/rest/api/content");
-        expect(categoryWithSlug?.method).toBe("POST");
-        expect(categoryWithSlug?.headers?.authorization).toBe(
-          "Bearer foo-token",
-        );
-        expect(categoryWithSlug?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title] foo-child4-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-parent-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-            <h1>Here goes the child4 title</h1>
-            <p>This is the child4 content</p>
-            `),
-              ),
-              representation: "storage",
-            },
-          },
+        it("should have logged pages to sync", async () => {
+          expect(cleanLogs(logs)).toContain(
+            `Converting 19 markdown documents to Confluence pages...`,
+          );
         });
 
-        const subCategoryWithSlugRequest = findRequestByTitle(
-          "[foo-parent-title][child4] foo-grandChild6-title",
-          createRequests,
-        );
-
-        expect(subCategoryWithSlugRequest?.url).toBe("/rest/api/content");
-        expect(subCategoryWithSlugRequest?.method).toBe("POST");
-        expect(subCategoryWithSlugRequest?.headers?.authorization).toBe(
-          "Bearer foo-token",
-        );
-        expect(subCategoryWithSlugRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title][child4] foo-grandChild6-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-child4-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the grandChild6 title</h1>
-                <p>This is the grandChild6 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
+        it("should have debug log level", async () => {
+          expect(cleanLogs(logs)).toContain(
+            `Found 19 pages in ${resolve(getFixtureFolder("mock-server-empty-root"), "docs")}`,
+          );
         });
 
-        const pageWithSlugRequest = findRequestByTitle(
-          "[foo-parent-title][child4] foo-grandChild7-title",
-          createRequests,
-        );
-
-        expect(pageWithSlugRequest?.url).toBe("/rest/api/content");
-        expect(pageWithSlugRequest?.method).toBe("POST");
-        expect(pageWithSlugRequest?.headers?.authorization).toBe(
-          "Bearer foo-token",
-        );
-        expect(pageWithSlugRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title][child4] foo-grandChild7-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-child4-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the grandChild7 title</h1>
-                <p>This is the grandChild7 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-
-      it("should create category propagate name to children's titles when category metadata is present", async () => {
-        const categoryWithSlug = findRequestByTitle(
-          "[foo-parent-title] foo-child5-title",
-          createRequests,
-        );
-
-        expect(categoryWithSlug?.url).toBe("/rest/api/content");
-        expect(categoryWithSlug?.method).toBe("POST");
-        expect(categoryWithSlug?.headers?.authorization).toBe(
-          "Bearer foo-token",
-        );
-        expect(categoryWithSlug?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title] foo-child5-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-parent-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the child5 title</h1>
-                <p>This is the child5 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
+        it("should have created 19 pages", async () => {
+          expect(createRequests).toHaveLength(19);
         });
 
-        const pageWithoutSlugRequest = findRequestByTitle(
-          "[foo-parent-title][child5] foo-grandChild8-title",
-          createRequests,
-        );
-
-        expect(pageWithoutSlugRequest?.url).toBe("/rest/api/content");
-        expect(pageWithoutSlugRequest?.method).toBe("POST");
-        expect(pageWithoutSlugRequest?.headers?.authorization).toBe(
-          "Bearer foo-token",
-        );
-        expect(pageWithoutSlugRequest?.body).toEqual({
-          type: "page",
-          title: "[foo-parent-title][child5] foo-grandChild8-title",
-          space: {
-            key: "foo-space-id",
-          },
-          ancestors: [
-            {
-              id: "foo-child5-id",
-            },
-          ],
-          body: {
-            storage: {
-              value: expect.stringContaining(
-                dedent(`
-                <h1>Here goes the grandChild8 title</h1>
-                <p>This is the grandChild8 content</p>
-                `),
-              ),
-              representation: "storage",
-            },
-          },
-        });
-      });
-
-      describe("great grand children with same title", () => {
-        it("should create pages with same title", async () => {
-          const firstPageWithSameTitle = findRequestByTitle(
-            "[foo-parent-title][foo-child6-title][foo-grandChild9-title] foo-greatGrandChild-title",
+        it("should have sent data of page with title foo-parent-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "foo-parent-title",
             createRequests,
           );
 
-          expect(firstPageWithSameTitle?.url).toBe("/rest/api/content");
-          expect(firstPageWithSameTitle?.method).toBe("POST");
-          expect(firstPageWithSameTitle?.headers?.authorization).toBe(
-            "Bearer foo-token",
-          );
-          expect(firstPageWithSameTitle?.body).toEqual({
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
             type: "page",
-            title:
-              "[foo-parent-title][foo-child6-title][foo-grandChild9-title] foo-greatGrandChild-title",
+            title: "foo-parent-title",
             space: {
               key: "foo-space-id",
             },
             ancestors: [
               {
-                id: "foo-grandChild9-id",
+                id: "foo-root-id",
               },
             ],
             body: {
               storage: {
                 value: expect.stringContaining(
                   dedent(`
-                  <h1>Here goes the greatGrandChild1 title</h1>
-                  <p>This is the greatGrandChild1 content</p>
+                  <p><strong>AUTOMATION NOTICE: This page is synced automatically, changes made manually will be lost</strong></p><h1>Title</h1>
+                  <blockquote>
+                  <p><strong>Note:</strong></p>
+                  <p>⭐ this is an admonition</p>
+                  </blockquote>
+                  <h2>External Link</h2>
+                  <p>This is a link:</p>
+                  <p><a href="https://httpbin.org">External link</a></p>
+                  <h2>Internal Link</h2>
+                  <p>This is a link:</p>
+                  <p><ac:link><ri:page ri:content-title="[foo-parent-title] foo-child1-title" ri:space-key="foo-space-id"></ri:page><ac:plain-text-link-body><![CDATA[Internal link]]></ac:plain-text-link-body></ac:link></p>
+                  <h2>Mdx Code Block</h2>
+                  <p>This is a mdx code block:</p>
+                  <h2>Details</h2>
+                  <!-- eslint-disable-next-line markdown/no-html -->
+                  <ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">Details</ac:parameter><ac:rich-text-body><pre><code class="language-markdown">    :::caution Status
+                      Proposed
+                      :::
+                  </code></pre></ac:rich-text-body></ac:structured-macro>
+                  <h2>Footnotes</h2>
+                  <p>This is a paragraph with a footnote.</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("when file contains mdx code blocks should have removed the mdx code blocks", async () => {
+          const pageRequest = findRequestByTitle(
+            "foo-parent-title",
+            createRequests,
+          );
+
+          expect(pageRequest?.body?.body).toEqual({
+            storage: expect.objectContaining({
+              value: expect.not.stringContaining(
+                dedent`
+                  <h2>Mdx Code Block</h2>
+                  <p>This is a mdx code block:</p>
+                  <pre><code class="language-mdx-code-block">Mdx code block test
+                  </code></pre>
+                `,
+              ),
+            }),
+          });
+        });
+
+        it("should have sent data of page with title foo-child1-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title] foo-child1-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child1-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the child1 title</h1>
+                  <p>This is the child1 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should have sent data of page with title foo-child2-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title] foo-child2-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child2-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the child2 title</h1>
+                  <p>This is the child2 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should have sent data of page with title foo-grandChild1-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title][foo-child1-title] foo-grandChild1-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][foo-child1-title] foo-grandChild1-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child1-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild1 title</h1>
+                  <p>This is the grandChild1 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should have sent data of page with title foo-grandChild3-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title][foo-child2-title] foo-grandChild3-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][foo-child2-title] foo-grandChild3-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child2-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild3 title</h1>
+                  <p>This is the grandChild3 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should create pages where the category does not have index.md", async () => {
+          const emptyCategoryRequest = findRequestByTitle(
+            "[foo-parent-title] foo-child3-title",
+            createRequests,
+          );
+
+          expect(emptyCategoryRequest?.url).toBe("/rest/api/content");
+          expect(emptyCategoryRequest?.method).toBe("POST");
+          expect(emptyCategoryRequest?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(emptyCategoryRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child3-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.any(String),
+                representation: "storage",
+              },
+            },
+          });
+
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title][foo-child3-title] foo-grandChild5-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][foo-child3-title] foo-grandChild5-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child3-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild5 title</h1>
+                  <p>This is the grandChild5 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+      });
+
+      describe("when creating pages with name", () => {
+        it("should create category propagate name to children's titles", async () => {
+          const categoryWithSlug = findRequestByTitle(
+            "[foo-parent-title] foo-child4-title",
+            createRequests,
+          );
+
+          expect(categoryWithSlug?.url).toBe("/rest/api/content");
+          expect(categoryWithSlug?.method).toBe("POST");
+          expect(categoryWithSlug?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(categoryWithSlug?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child4-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+              <h1>Here goes the child4 title</h1>
+              <p>This is the child4 content</p>
+              `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+
+          const subCategoryWithSlugRequest = findRequestByTitle(
+            "[foo-parent-title][child4] foo-grandChild6-title",
+            createRequests,
+          );
+
+          expect(subCategoryWithSlugRequest?.url).toBe("/rest/api/content");
+          expect(subCategoryWithSlugRequest?.method).toBe("POST");
+          expect(subCategoryWithSlugRequest?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(subCategoryWithSlugRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][child4] foo-grandChild6-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child4-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild6 title</h1>
+                  <p>This is the grandChild6 content</p>
                   `),
                 ),
                 representation: "storage",
@@ -574,39 +433,757 @@ describe("markdown-confluence-sync binary", () => {
             },
           });
 
-          const secondPageWithSameTitle = findRequestByTitle(
-            "[foo-parent-title][foo-child6-title][foo-grandChild10-title] foo-greatGrandChild-title",
+          const pageWithSlugRequest = findRequestByTitle(
+            "[foo-parent-title][child4] foo-grandChild7-title",
             createRequests,
           );
 
-          expect(secondPageWithSameTitle?.url).toBe("/rest/api/content");
-          expect(secondPageWithSameTitle?.method).toBe("POST");
-          expect(secondPageWithSameTitle?.headers?.authorization).toBe(
+          expect(pageWithSlugRequest?.url).toBe("/rest/api/content");
+          expect(pageWithSlugRequest?.method).toBe("POST");
+          expect(pageWithSlugRequest?.headers?.authorization).toBe(
             "Bearer foo-token",
           );
-          expect(secondPageWithSameTitle?.body).toEqual({
+          expect(pageWithSlugRequest?.body).toEqual({
             type: "page",
-            title:
-              "[foo-parent-title][foo-child6-title][foo-grandChild10-title] foo-greatGrandChild-title",
+            title: "[foo-parent-title][child4] foo-grandChild7-title",
             space: {
               key: "foo-space-id",
             },
             ancestors: [
               {
-                id: "foo-grandChild10-id",
+                id: "foo-child4-id",
               },
             ],
             body: {
               storage: {
                 value: expect.stringContaining(
                   dedent(`
-                  <h1>Here goes the greatGrandChild2 title</h1>
-                  <p>This is the greatGrandChild2 content</p>
+                  <h1>Here goes the grandChild7 title</h1>
+                  <p>This is the grandChild7 content</p>
                   `),
                 ),
                 representation: "storage",
               },
             },
+          });
+        });
+
+        it("should create category propagate name to children's titles when category metadata is present", async () => {
+          const categoryWithSlug = findRequestByTitle(
+            "[foo-parent-title] foo-child5-title",
+            createRequests,
+          );
+
+          expect(categoryWithSlug?.url).toBe("/rest/api/content");
+          expect(categoryWithSlug?.method).toBe("POST");
+          expect(categoryWithSlug?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(categoryWithSlug?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child5-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the child5 title</h1>
+                  <p>This is the child5 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+
+          const pageWithoutSlugRequest = findRequestByTitle(
+            "[foo-parent-title][child5] foo-grandChild8-title",
+            createRequests,
+          );
+
+          expect(pageWithoutSlugRequest?.url).toBe("/rest/api/content");
+          expect(pageWithoutSlugRequest?.method).toBe("POST");
+          expect(pageWithoutSlugRequest?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(pageWithoutSlugRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][child5] foo-grandChild8-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child5-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild8 title</h1>
+                  <p>This is the grandChild8 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        describe("great grand children with same title", () => {
+          it("should create pages with same title", async () => {
+            const firstPageWithSameTitle = findRequestByTitle(
+              "[foo-parent-title][foo-child6-title][foo-grandChild9-title] foo-greatGrandChild-title",
+              createRequests,
+            );
+
+            expect(firstPageWithSameTitle?.url).toBe("/rest/api/content");
+            expect(firstPageWithSameTitle?.method).toBe("POST");
+            expect(firstPageWithSameTitle?.headers?.authorization).toBe(
+              "Bearer foo-token",
+            );
+            expect(firstPageWithSameTitle?.body).toEqual({
+              type: "page",
+              title:
+                "[foo-parent-title][foo-child6-title][foo-grandChild9-title] foo-greatGrandChild-title",
+              space: {
+                key: "foo-space-id",
+              },
+              ancestors: [
+                {
+                  id: "foo-grandChild9-id",
+                },
+              ],
+              body: {
+                storage: {
+                  value: expect.stringContaining(
+                    dedent(`
+                    <h1>Here goes the greatGrandChild1 title</h1>
+                    <p>This is the greatGrandChild1 content</p>
+                    `),
+                  ),
+                  representation: "storage",
+                },
+              },
+            });
+
+            const secondPageWithSameTitle = findRequestByTitle(
+              "[foo-parent-title][foo-child6-title][foo-grandChild10-title] foo-greatGrandChild-title",
+              createRequests,
+            );
+
+            expect(secondPageWithSameTitle?.url).toBe("/rest/api/content");
+            expect(secondPageWithSameTitle?.method).toBe("POST");
+            expect(secondPageWithSameTitle?.headers?.authorization).toBe(
+              "Bearer foo-token",
+            );
+            expect(secondPageWithSameTitle?.body).toEqual({
+              type: "page",
+              title:
+                "[foo-parent-title][foo-child6-title][foo-grandChild10-title] foo-greatGrandChild-title",
+              space: {
+                key: "foo-space-id",
+              },
+              ancestors: [
+                {
+                  id: "foo-grandChild10-id",
+                },
+              ],
+              body: {
+                storage: {
+                  value: expect.stringContaining(
+                    dedent(`
+                    <h1>Here goes the greatGrandChild2 title</h1>
+                    <p>This is the greatGrandChild2 content</p>
+                    `),
+                  ),
+                  representation: "storage",
+                },
+              },
+            });
+          });
+        });
+      });
+    });
+
+    describe("when passing files metadata in config", () => {
+      beforeAll(async () => {
+        await changeMockCollection("empty-root");
+        await resetRequests();
+
+        cli = new ChildProcessManager([getBinaryPathFromFixtureFolder()], {
+          cwd: getFixtureFolder("mock-server-empty-root-files-metadata"),
+          silent: false,
+          env: {
+            MARKDOWN_CONFLUENCE_SYNC_LOG_LEVEL: "debug",
+          },
+        });
+
+        const result = await cli.run();
+        exitCode = result.exitCode;
+        logs = result.logs;
+
+        createRequests = await getRequestsByRouteId("confluence-create-page");
+      });
+
+      afterAll(async () => {
+        await cli.kill();
+      });
+
+      describe("when creating pages", () => {
+        it("should have exit code 0", async () => {
+          expect(exitCode).toBe(0);
+        });
+
+        it("should have logged pages to sync", async () => {
+          expect(cleanLogs(logs)).toContain(
+            `Converting 19 markdown documents to Confluence pages...`,
+          );
+        });
+
+        it("should have debug log level", async () => {
+          expect(cleanLogs(logs)).toContain(
+            `Found 19 pages in ${resolve(getFixtureFolder("mock-server-empty-root-files-metadata"), "docs")}`,
+          );
+        });
+
+        it("should have created 19 pages", async () => {
+          expect(createRequests).toHaveLength(19);
+        });
+
+        it("should have sent data of page with title foo-parent-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "foo-parent-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "foo-parent-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-root-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <p><strong>AUTOMATION NOTICE: This page is synced automatically, changes made manually will be lost</strong></p><h1>Title</h1>
+                  <blockquote>
+                  <p><strong>Note:</strong></p>
+                  <p>⭐ this is an admonition</p>
+                  </blockquote>
+                  <h2>External Link</h2>
+                  <p>This is a link:</p>
+                  <p><a href="https://httpbin.org">External link</a></p>
+                  <h2>Internal Link</h2>
+                  <p>This is a link:</p>
+                  <p><ac:link><ri:page ri:content-title="[foo-parent-title] foo-child1-title" ri:space-key="foo-space-id"></ri:page><ac:plain-text-link-body><![CDATA[Internal link]]></ac:plain-text-link-body></ac:link></p>
+                  <h2>Mdx Code Block</h2>
+                  <p>This is a mdx code block:</p>
+                  <h2>Details</h2>
+                  <!-- eslint-disable-next-line markdown/no-html -->
+                  <ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">Details</ac:parameter><ac:rich-text-body><pre><code class="language-markdown">    :::caution Status
+                      Proposed
+                      :::
+                  </code></pre></ac:rich-text-body></ac:structured-macro>
+                  <h2>Footnotes</h2>
+                  <p>This is a paragraph with a footnote.</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("when file contains mdx code blocks should have removed the mdx code blocks", async () => {
+          const pageRequest = findRequestByTitle(
+            "foo-parent-title",
+            createRequests,
+          );
+
+          expect(pageRequest?.body?.body).toEqual({
+            storage: expect.objectContaining({
+              value: expect.not.stringContaining(
+                dedent`
+                  <h2>Mdx Code Block</h2>
+                  <p>This is a mdx code block:</p>
+                  <pre><code class="language-mdx-code-block">Mdx code block test
+                  </code></pre>
+                `,
+              ),
+            }),
+          });
+        });
+
+        it("should have sent data of page with title foo-child1-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title] foo-child1-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child1-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the child1 title</h1>
+                  <p>This is the child1 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should have sent data of page with title foo-child2-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title] foo-child2-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child2-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the child2 title</h1>
+                  <p>This is the child2 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should have sent data of page with title foo-grandChild1-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title][foo-child1-title] foo-grandChild1-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][foo-child1-title] foo-grandChild1-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child1-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild1 title</h1>
+                  <p>This is the grandChild1 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should have sent data of page with title foo-grandChild3-title", async () => {
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title][foo-child2-title] foo-grandChild3-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][foo-child2-title] foo-grandChild3-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child2-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild3 title</h1>
+                  <p>This is the grandChild3 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should create pages where the category does not have index.md", async () => {
+          const emptyCategoryRequest = findRequestByTitle(
+            "[foo-parent-title] foo-child3-title",
+            createRequests,
+          );
+
+          expect(emptyCategoryRequest?.url).toBe("/rest/api/content");
+          expect(emptyCategoryRequest?.method).toBe("POST");
+          expect(emptyCategoryRequest?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(emptyCategoryRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child3-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.any(String),
+                representation: "storage",
+              },
+            },
+          });
+
+          const pageRequest = findRequestByTitle(
+            "[foo-parent-title][foo-child3-title] foo-grandChild5-title",
+            createRequests,
+          );
+
+          expect(pageRequest).toBeDefined();
+          expect(pageRequest?.url).toBe("/rest/api/content");
+          expect(pageRequest?.method).toBe("POST");
+          expect(pageRequest?.headers?.authorization).toBe("Bearer foo-token");
+          expect(pageRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][foo-child3-title] foo-grandChild5-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child3-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild5 title</h1>
+                  <p>This is the grandChild5 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+      });
+
+      describe("when creating pages with name", () => {
+        it("should create category propagate name to children's titles", async () => {
+          const categoryWithSlug = findRequestByTitle(
+            "[foo-parent-title] foo-child4-title",
+            createRequests,
+          );
+
+          expect(categoryWithSlug?.url).toBe("/rest/api/content");
+          expect(categoryWithSlug?.method).toBe("POST");
+          expect(categoryWithSlug?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(categoryWithSlug?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child4-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+              <h1>Here goes the child4 title</h1>
+              <p>This is the child4 content</p>
+              `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+
+          const subCategoryWithSlugRequest = findRequestByTitle(
+            "[foo-parent-title][child4] foo-grandChild6-title",
+            createRequests,
+          );
+
+          expect(subCategoryWithSlugRequest?.url).toBe("/rest/api/content");
+          expect(subCategoryWithSlugRequest?.method).toBe("POST");
+          expect(subCategoryWithSlugRequest?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(subCategoryWithSlugRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][child4] foo-grandChild6-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child4-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild6 title</h1>
+                  <p>This is the grandChild6 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+
+          const pageWithSlugRequest = findRequestByTitle(
+            "[foo-parent-title][child4] foo-grandChild7-title",
+            createRequests,
+          );
+
+          expect(pageWithSlugRequest?.url).toBe("/rest/api/content");
+          expect(pageWithSlugRequest?.method).toBe("POST");
+          expect(pageWithSlugRequest?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(pageWithSlugRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][child4] foo-grandChild7-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child4-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild7 title</h1>
+                  <p>This is the grandChild7 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        it("should create category propagate name to children's titles when category metadata is present", async () => {
+          const categoryWithSlug = findRequestByTitle(
+            "[foo-parent-title] foo-child5-title",
+            createRequests,
+          );
+
+          expect(categoryWithSlug?.url).toBe("/rest/api/content");
+          expect(categoryWithSlug?.method).toBe("POST");
+          expect(categoryWithSlug?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(categoryWithSlug?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title] foo-child5-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-parent-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the child5 title</h1>
+                  <p>This is the child5 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+
+          const pageWithoutSlugRequest = findRequestByTitle(
+            "[foo-parent-title][child5] foo-grandChild8-title",
+            createRequests,
+          );
+
+          expect(pageWithoutSlugRequest?.url).toBe("/rest/api/content");
+          expect(pageWithoutSlugRequest?.method).toBe("POST");
+          expect(pageWithoutSlugRequest?.headers?.authorization).toBe(
+            "Bearer foo-token",
+          );
+          expect(pageWithoutSlugRequest?.body).toEqual({
+            type: "page",
+            title: "[foo-parent-title][child5] foo-grandChild8-title",
+            space: {
+              key: "foo-space-id",
+            },
+            ancestors: [
+              {
+                id: "foo-child5-id",
+              },
+            ],
+            body: {
+              storage: {
+                value: expect.stringContaining(
+                  dedent(`
+                  <h1>Here goes the grandChild8 title</h1>
+                  <p>This is the grandChild8 content</p>
+                  `),
+                ),
+                representation: "storage",
+              },
+            },
+          });
+        });
+
+        describe("great grand children with same title", () => {
+          it("should create pages with same title", async () => {
+            const firstPageWithSameTitle = findRequestByTitle(
+              "[foo-parent-title][foo-child6-title][foo-grandChild9-title] foo-greatGrandChild-title",
+              createRequests,
+            );
+
+            expect(firstPageWithSameTitle?.url).toBe("/rest/api/content");
+            expect(firstPageWithSameTitle?.method).toBe("POST");
+            expect(firstPageWithSameTitle?.headers?.authorization).toBe(
+              "Bearer foo-token",
+            );
+            expect(firstPageWithSameTitle?.body).toEqual({
+              type: "page",
+              title:
+                "[foo-parent-title][foo-child6-title][foo-grandChild9-title] foo-greatGrandChild-title",
+              space: {
+                key: "foo-space-id",
+              },
+              ancestors: [
+                {
+                  id: "foo-grandChild9-id",
+                },
+              ],
+              body: {
+                storage: {
+                  value: expect.stringContaining(
+                    dedent(`
+                    <h1>Here goes the greatGrandChild1 title</h1>
+                    <p>This is the greatGrandChild1 content</p>
+                    `),
+                  ),
+                  representation: "storage",
+                },
+              },
+            });
+
+            const secondPageWithSameTitle = findRequestByTitle(
+              "[foo-parent-title][foo-child6-title][foo-grandChild10-title] foo-greatGrandChild-title",
+              createRequests,
+            );
+
+            expect(secondPageWithSameTitle?.url).toBe("/rest/api/content");
+            expect(secondPageWithSameTitle?.method).toBe("POST");
+            expect(secondPageWithSameTitle?.headers?.authorization).toBe(
+              "Bearer foo-token",
+            );
+            expect(secondPageWithSameTitle?.body).toEqual({
+              type: "page",
+              title:
+                "[foo-parent-title][foo-child6-title][foo-grandChild10-title] foo-greatGrandChild-title",
+              space: {
+                key: "foo-space-id",
+              },
+              ancestors: [
+                {
+                  id: "foo-grandChild10-id",
+                },
+              ],
+              body: {
+                storage: {
+                  value: expect.stringContaining(
+                    dedent(`
+                    <h1>Here goes the greatGrandChild2 title</h1>
+                    <p>This is the greatGrandChild2 content</p>
+                    `),
+                  ),
+                  representation: "storage",
+                },
+              },
+            });
           });
         });
       });

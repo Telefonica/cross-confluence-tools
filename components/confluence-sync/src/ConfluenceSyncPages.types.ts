@@ -12,6 +12,7 @@ import type {
 export enum SyncModes {
   TREE = "tree",
   FLAT = "flat",
+  ID = "id",
 }
 
 /** Type for dictionary values */

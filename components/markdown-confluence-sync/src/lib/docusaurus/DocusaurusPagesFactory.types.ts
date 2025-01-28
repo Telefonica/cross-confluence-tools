@@ -5,7 +5,7 @@ import type { ConfigInterface } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import type { SyncModes } from "@tid-xcut/confluence-sync";
 
-import type { FilesPattern } from "..";
+import type { FilesMetadata, FilesPattern } from "..";
 
 import type { MarkdownDocumentsInterface } from "./DocusaurusPages.types";
 
@@ -18,6 +18,8 @@ export interface MarkdownDocumentsFactoryOptions {
   path: string;
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPattern;
+  /** Metadata for specific files */
+  filesMetadata?: FilesMetadata;
   /** Working directory */
   cwd: string;
 }

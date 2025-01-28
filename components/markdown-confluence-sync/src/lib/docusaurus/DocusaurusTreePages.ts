@@ -16,6 +16,7 @@ import type {
 import { DocusaurusDocTree } from "./tree/DocusaurusDocTree.js";
 import type { DocusaurusDocTreeInterface } from "./tree/DocusaurusDocTree.types.js";
 import { buildIndexFileRegExp, getIndexFileFromPaths } from "./util/files.js";
+import { FilesMetadata } from "../MarkdownConfluenceSync.types.js";
 
 export const DocusaurusTreePages: DocusaurusTreePagesConstructor = class DocusaurusTreePages
   implements MarkdownDocumentsInterface
@@ -23,12 +24,15 @@ export const DocusaurusTreePages: DocusaurusTreePagesConstructor = class Docusau
   private _path: string;
   private _tree: DocusaurusDocTreeInterface;
   private _logger: LoggerInterface;
+  private _filesMetadata?: FilesMetadata;
 
-  constructor({ logger, path }: DocusaurusTreePagesOptions) {
+  constructor({ logger, path, filesMetadata }: DocusaurusTreePagesOptions) {
     this._path = path as string;
     this._logger = logger;
+    this._filesMetadata = filesMetadata;
     this._tree = new DocusaurusDocTree(this._path, {
       logger: this._logger.namespace("doc-tree"),
+      filesMetadata: this._filesMetadata,
     });
   }
 

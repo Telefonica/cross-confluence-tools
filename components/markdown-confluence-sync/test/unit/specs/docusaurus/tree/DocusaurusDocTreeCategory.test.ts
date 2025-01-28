@@ -11,10 +11,10 @@ import { dedent } from "ts-dedent";
 import { TempFiles } from "@support/utils/TempFiles";
 const { dirSync, fileSync } = new TempFiles();
 
-import { InvalidMarkdownFormatException } from "@src/lib/docusaurus/pages/errors/InvalidMarkdownFormatException";
 import { InvalidPathException } from "@src/lib/docusaurus/pages/errors/InvalidPathException";
 import { PathNotExistException } from "@src/lib/docusaurus/pages/errors/PathNotExistException";
 import { DocusaurusDocTreeCategory } from "@src/lib/docusaurus/tree/DocusaurusDocTreeCategory";
+import { TitleRequiredException } from "@src/lib/docusaurus/pages/errors/TitleRequiredException";
 
 describe("docusaurusDocTreeCategory", () => {
   let dir: DirResult;
@@ -48,7 +48,7 @@ describe("docusaurusDocTreeCategory", () => {
     );
   });
 
-  it("should fail if the path index.md file does not have a valid format", () => {
+  it("should fail if the path index.md file does not have title defined", () => {
     // Arrange
     const categoryDir = dirSync({ dir: dir.name });
     const categoryIndex = fileSync({ dir: categoryDir.name, name: "index.md" });
@@ -57,7 +57,7 @@ describe("docusaurusDocTreeCategory", () => {
     // Act
     // Assert
     expect(() => new DocusaurusDocTreeCategory(categoryDir.name)).toThrow(
-      InvalidMarkdownFormatException,
+      TitleRequiredException,
     );
   });
 

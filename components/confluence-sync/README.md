@@ -4,7 +4,7 @@ Creates/updates/deletes Confluence pages based on a list of objects containing t
 
 Also supports updating specific pages directly by providing their id.
 
-Read [Features](#features) for more information about the two sync modes available, "tree" and "flat".
+Read [Features](#features) for more information about the two sync modes available, "tree", "flat" and "id".
 
 ## Table of Contents
 
@@ -20,13 +20,13 @@ Read [Features](#features) for more information about the two sync modes availab
 - [Features](#features)
   - [Tree mode](#tree-mode)
   - [Flat mode](#flat-mode)
-  - [Updating specific pages](#updating-specific-pages)
+  - [Id mode](#id-mode)
 - [Attachments](#attachments)
-- [How to get the root page id](#how-to-get-the-root-page-id)
+- [How to get a page id in Confluence](#how-to-get-a-page-id-in-confluence)
 - [Sync modes in detail](#sync-modes-in-detail)
   - [Tree](#tree-mode-1)
   - [Flat](#flat-mode-1)
-  - [Updating specific pages](#updating-specific-pages-1)
+  - [Id](#id-mode-1)
 - [API](#api)
   - [`ConfluenceSyncPages`](#confluencesyncpages)
   - [`sync`](#sync)
@@ -97,7 +97,7 @@ await confluenceSyncPages.sync([
 
 ## Features
 
-It is possible to use two different sync modes, `tree` and `flat`. And it also supports updating specific pages using their id in Confluence.
+It is possible to use three different sync modes, `tree`, `flat` and `id`.
 
 Every mode supports uploading attachments to the pages. The main differences between them are:
 
@@ -122,13 +122,11 @@ It is also possible to use a flat mode, where all pages will be always created u
 
 * Creates Confluence pages from a list of pages __always under the root page.__
 * It __does not support nested pages__. So, all pages without id will be created/updated under the root page. So, the `ancestors` property is not supported in this mode.
+* It is also possible to provide a Confluence id for each page. In this case, the library will always update the corresponding Confluence page with the id provided, as in the [id mode](#id-mode).
 
-### Updating specific pages
+### Id mode
 
-In flat mode, it is also possible to provide a Confluence id for each page. In this case, the library will always update the corresponding Confluence page with the id provided. __It may be under the root page or not__.
-
-* The page must exist in Confluence before running the sync process.
-* Passing an id __is only supported in flat mode.__
+If you want to update only specific pages directly by providing their id, you can use the `id` mode. In this mode, you don't need to provide a root page id. Each page in the list must have an id, and the library will update the corresponding Confluence page having the id provided. Note that __the pages to update must exist in Confluence before running the sync process__.
 
 ## Attachments
 
@@ -139,9 +137,9 @@ When defining the attachments, you can use paths relative to the `process.cwd()`
 > [!NOTE]
 > Deleting attachments that already exist in Confluence without uploading a new one to replace it is not supported.
 
-## How to get the root page id
+## How to get a page id in Confluence
 
-To get the ID of the root page, you can use the [Confluence REST API](https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get) or follow the next steps:
+To get a page ID in Confluence, you can use the [Confluence REST API](https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get) or follow the next steps:
 
 * Enter to Confluence.
 * Go to the page of the space where you want to create the pages. 
@@ -172,16 +170,22 @@ To enable the flat mode, you have to set the `syncMode` property of the configur
 
 * Creates Confluence pages from a list of pages __always under the root page.__
 * It __does not support nested pages__. So, all pages without id will be created/updated under the root page. The `ancestors` property is not supported in this mode.
-* It supports to pass specific ids for the pages. Read [Updating specific pages](#updating-specific-pages) for more information.
-
-### Updating specific pages
-
-As mentioned in the [features](#features) section, it is possible to update specific pages by using their Confluence id. This is __only supported in flat mode__.
+* It supports to pass specific ids for the pages. In such case, those pages will be updated directly in Confluence as in the [id mode](#id-mode-1).
 
 > [!CAUTION]
-> If all pages in the list have an id, __you should not provide a root page id__. If you provide it, the library will consider that you don't want any page under it, and, therefore, __it will delete all root page children.__
+> If all pages in the list have an id, __you should use the [id mode](#id-mode-1) instead of the flat mode__.
 
-```js title="Example updating specific pages"
+### Id mode
+
+Use the "id" mode if you want to update only specific pages directly by providing their id. In this mode:
+
+* Each page in the list must have an id, and the library will update the corresponding Confluence page having the id provided.
+* You don't have to provide a root page id. If you provide it, it will throw an error.
+* Pages can't have ancestors.
+
+Note that __the pages to update must exist in Confluence before running the sync process__.
+
+```js title="Example using the id mode"
 import { ConfluenceSyncPages, SyncModes } from '@tid-xcut/confluence-sync';
 
 const confluenceSyncPages = new ConfluenceSyncPages({
@@ -190,34 +194,21 @@ const confluenceSyncPages = new ConfluenceSyncPages({
   spaceId: "MY-SPACE",
   logLevel: "debug",
   dryRun: false,
-  syncMode: SyncModes.FLAT,
+  syncMode: SyncModes.ID,
 });
 
 await confluenceSyncPages.sync([
   {
-    id: '12345678',
+    id: '34567890',
     title: 'Welcome to the documentation',
     content: 'This is the content of the page',
   },
-  {
-    id: '23456789',
-    title: 'Introduction to the documentation',
-    content: 'This is the content of the page',
-  },
-  {
-    id: '34567890',
-    title: 'How to get started',
-    content: 'This is the content of the page',
-    attachments: {
-      'image.png': '/path/to/image.png',
-    },
-  }
 ]);
 ```
 
-### API
+## API
 
-#### `ConfluenceSyncPages`
+### `ConfluenceSyncPages`
 
 The main class of the library. It receives a configuration object with the following properties:
 
@@ -227,11 +218,11 @@ The main class of the library. It receives a configuration object with the follo
 * `rootPageId`: ID of the root page under the pages will be created. It only can be missing if the sync mode is `flat` and all the pages provided have an id.
 * `logLevel`: One of `silly`, `debug`, `info`, `warn`, `error` or `silent`. Default is `silent`.
 * `dryRun`: If `true`, the pages will not be created/updated/deleted, but the library will log the actions that would be performed. Default is `false`.
-* `syncMode`: One of `tree` or `flat`. If `tree`, the pages will be created/updated/deleted under the root page, following the hierarchy provided in the list of pages. If `flat`, the sync method will update the confluence pages that correspond to the ids provided in the pages passed as input, and pages without confluence id will be created/updated under confluence root page corresponding to the rootPageId. Default is `tree`.
+* `syncMode`: One of [`tree`](#tree-mode-1), [`flat`](#flat-mode-1) or [`id`](#id-mode-1).
 
 When an instance is created, it expose next methods:
 
-#### `sync`
+### `sync`
 
 This method receives a list of pages to sync, and it creates/deletes/updates the corresponding Confluence pages. All the pages are created under a root page, which must be also provided. Note that the root page must exist before running the sync process, and that all pages not present in the list will be deleted.
 
@@ -240,7 +231,7 @@ The list of pages to sync is an array of objects with the following properties:
 * `id`: _(optional)_ ID of the page. Only used if the sync mode is `flat`.
 * `title`: Title of the page.
 * `content`: Content of the page.
-* `ancestors`: List of ancestors of the page. It must be an array of page ids. **If the sync mode is `flat`, this property is not supported and any page without id will be created under the root page.**
+* `ancestors`: List of ancestors of the page. It must be an array of page ids. Not supported in `id` mode. **If the sync mode is `flat`, this property is not supported and any page without id will be created under the root page.**
 * `attachments`: Record of images to attach to the page. The key is the name of the image, and the value is the path to the image. The image will be attached to the page with the name provided in the key. The path to the image should be absolute.
 
 ### get `logger`

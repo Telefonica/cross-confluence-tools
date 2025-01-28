@@ -9,7 +9,9 @@ import type {
 import type { LoggerInterface } from "@mocks-server/logger";
 
 import type {
+  FilesMetadataOption,
   FilesPatternOption,
+  FilesMetadata,
   ModeOption,
 } from "../MarkdownConfluenceSync.types.js";
 
@@ -46,6 +48,8 @@ export interface MarkdownDocumentsOptions {
   mode: ModeOption;
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPatternOption;
+  /** Metadata for specific files */
+  filesMetadata?: FilesMetadataOption;
   /** Working directory */
   cwd: string;
 }
@@ -84,6 +88,8 @@ export interface MarkdownDocumentsInterface {
 }
 
 export interface MarkdownDocumentsModeOptions {
+  /** Metadata for specific files */
+  filesMetadata?: FilesMetadata;
   /** Configuration interface */
   config: ConfigInterface;
   /** Logger */

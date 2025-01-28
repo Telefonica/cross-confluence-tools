@@ -110,7 +110,7 @@ describe("configuration", () => {
       expect(exitCode).toBe(1);
       expect(cleanLogs(logs)).toEqual(
         expect.arrayContaining([
-          expect.stringContaining(`must be one of "tree" or "flat"`),
+          expect.stringContaining(`must be one of "tree", "flat" or "id"`),
         ]),
       );
     });
@@ -129,6 +129,24 @@ describe("configuration", () => {
       expect(cleanLogs(logs)).toEqual(
         expect.arrayContaining([
           expect.stringContaining(`File pattern can't be empty in flat mode`),
+        ]),
+      );
+    });
+
+    it("should fail and throw log error when mode is id and filesPattern is empty", async () => {
+      cli = new ChildProcessManager(
+        [getBinaryPathFromFixtureFolder(), "--mode=id"],
+        {
+          cwd: getFixtureFolder("basic"),
+          silent: true,
+        },
+      );
+      const { exitCode, logs } = await cli.run();
+
+      expect(exitCode).toBe(1);
+      expect(cleanLogs(logs)).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining(`File pattern can't be empty in id mode`),
         ]),
       );
     });

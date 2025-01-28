@@ -30,17 +30,23 @@ import remarkReplaceAdmonitions from "./support/remark/remark-replace-admonition
 import remarkValidateFrontmatter from "./support/remark/remark-validate-frontmatter.js";
 import type { FrontMatter } from "./support/validators/FrontMatterValidator.js";
 import { FrontMatterValidator } from "./support/validators/FrontMatterValidator.js";
+import { FileMetadata } from "../../MarkdownConfluenceSync.types.js";
+import { TitleRequiredException } from "./errors/TitleRequiredException.js";
 
 export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusDocPage
   implements DocusaurusDocPageInterface
 {
   protected _vFile: VFile;
   protected _logger?: LoggerInterface;
+  protected _metadata?: FileMetadata;
+  private _meta: DocusaurusDocPageMeta;
 
   constructor(path: string, options?: DocusaurusDocPageOptions) {
     this._logger = options?.logger;
 
-    if (!existsSync(join(path))) {
+    const absolutePath = join(path);
+
+    if (!existsSync(absolutePath)) {
       throw new PathNotExistException(`Path ${path} does not exist`);
     }
     if (!lstatSync(path).isFile()) {
@@ -49,6 +55,11 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
     if (!isSupportedFile(path)) {
       throw new InvalidPathException(`Path ${path} is not a markdown file`);
     }
+
+    this._metadata = options?.filesMetadata?.find(
+      (file) => file.path === absolutePath,
+    );
+
     try {
       this._vFile = this._parseFile(path, options);
     } catch (e) {
@@ -58,6 +69,8 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
         { cause: e },
       );
     }
+
+    this._getMeta();
   }
 
   public get isCategory(): boolean {
@@ -69,18 +82,38 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
   }
 
   public get meta(): DocusaurusDocPageMeta {
-    const frontmatter = this._vFile.data.frontmatter as FrontMatter;
-    return {
-      title: frontmatter.title,
-      syncToConfluence: frontmatter.sync_to_confluence,
-      confluenceShortName: frontmatter.confluence_short_name,
-      confluenceTitle: frontmatter.confluence_title,
-      confluencePageId: frontmatter.confluence_page_id,
-    };
+    return this._meta;
   }
 
   public get content(): string {
     return this._vFile.toString();
+  }
+
+  private _getMeta() {
+    const frontmatter = this._vFile.data.frontmatter as FrontMatter;
+    const title = this._metadata?.title || frontmatter.title;
+    const syncToConfluence =
+      this._metadata?.sync !== undefined
+        ? this._metadata.sync
+        : frontmatter.sync_to_confluence;
+    const confluenceShortName =
+      this._metadata?.shortName || frontmatter.confluence_short_name;
+    const confluenceTitle =
+      this._metadata?.title || frontmatter.confluence_title;
+    const confluencePageId =
+      this._metadata?.id || frontmatter.confluence_page_id;
+
+    if (!title) {
+      throw new TitleRequiredException(this.path);
+    }
+
+    this._meta = {
+      title,
+      syncToConfluence,
+      confluenceShortName,
+      confluenceTitle,
+      confluencePageId,
+    };
   }
 
   protected _parseFile(
