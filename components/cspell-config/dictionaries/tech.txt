@@ -3,4 +3,5 @@ cacheable
 excalidraw
 frontmatter
 nrwl
+opensource
 syncrc
