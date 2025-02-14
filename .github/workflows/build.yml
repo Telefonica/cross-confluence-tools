@@ -86,7 +86,7 @@ jobs:
         with:
           target: test:unit
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: unit-test-coverage
           path: components/*/coverage
