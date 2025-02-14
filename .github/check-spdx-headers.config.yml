@@ -24,6 +24,11 @@ rules:
         license:
           - "MIT"
           - "Apache-2.0"
+        ignore:
+          - "**/README.md"
+          - "**/LICENSE"
+          - "**/*.json"
+          - "components/cspell-config/**/*.txt"
   - name: "Copyright"
     headers:
       - files:
