@@ -172,18 +172,18 @@ This project adheres to the [Software Package Data Exchange (SPDX)](https://spdx
 This license must be used for all new code, unless the containing project, module or externally-imported codebase uses a different license. If you can't put a header in the file due to its structure, please put it in a LICENSE file in the same directory.
 
 ```
-// SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors. All rights reserved
+// SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
 // SPDX-License-Identifier: Apache-2.0
 
-# SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors. All rights reserved
+# SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
 # SPDX-License-Identifier: Apache-2.0
 
 <!--
-   SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors. All rights reserved
+   SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
    SPDX-License-Identifier: Apache-2.0
 -->
 
-SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors. All rights reserved
+SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
 SPDX-License-Identifier: Apache-2.0
 ```
 
@@ -195,18 +195,18 @@ SPDX-License-Identifier: Apache-2.0
 This license can be used for test scripts and other short code snippets, at the discretion of the author.
 
 ```
-// SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors
+// SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
 // SPDX-License-Identifier: MIT
 
-# SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors
+# SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
 # SPDX-License-Identifier: MIT
 
 <!--
-   SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors
+   SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
    SPDX-License-Identifier: MIT
 -->
 
-SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital and contributors
+SPDX-FileCopyrightText: {{ year }} Telefónica Innovación Digital
 SPDX-License-Identifier: MIT
 ```
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Telefónica Innovación Digital and contributors
+// SPDX-FileCopyrightText: 2025 Telefónica Innovación Digital
 // SPDX-License-Identifier: Apache-2.0
 
 import { SyncModes } from "../ConfluenceSyncPages.types";
