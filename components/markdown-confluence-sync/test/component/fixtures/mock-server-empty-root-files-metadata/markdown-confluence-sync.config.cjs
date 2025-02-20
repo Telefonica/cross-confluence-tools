@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Telefónica Innovación Digital and contributors
+// SPDX-FileCopyrightText: 2025 Telefónica Innovación Digital
 // SPDX-License-Identifier: MIT
 
 module.exports = {
@@ -8,13 +8,13 @@ module.exports = {
       path: "docs/parent/index.md",
       id: "foo-parent",
       title: "foo-parent-title",
-      sync: true
+      sync: true,
     },
     {
       path: "docs/parent/child1/grandChild1.md",
       id: "foo-grandChild1",
       title: "foo-grandChild1-title",
-      sync: true
+      sync: true,
     },
     {
       path: "docs/parent/child1/grandChild2.md",
