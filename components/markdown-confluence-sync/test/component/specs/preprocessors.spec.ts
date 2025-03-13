@@ -18,8 +18,8 @@ import {
 } from "../support/Paths";
 import { join } from "path";
 
-describe("preprocessors", () => {
-  describe("should change content and title", () => {
+describe("preprocessor", () => {
+  describe("should change content", () => {
     let createRequests: SpyRequest[];
     let cli: ChildProcessManagerInterface;
     let exitCode: number | null;
