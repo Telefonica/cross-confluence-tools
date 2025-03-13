@@ -20,6 +20,7 @@ import type {
   FilesPatternOption,
   ModeOption,
   FilesMetadataOption,
+  ContentPreprocessorOption,
 } from "@src/lib";
 import { MarkdownDocuments } from "@src/lib/docusaurus/DocusaurusPages";
 import * as typesValidations from "@src/lib/support/typesValidations";
@@ -60,12 +61,20 @@ describe("docusaurusPages", () => {
       default: [],
     });
 
+    config.addOption({
+      name: "contentPreprocessor",
+      type: "unknown",
+    });
+
     logger = new Logger("", { level: "silent" });
     docusaurusPagesOptions = {
       config,
       logger,
       mode: config.option("mode") as ModeOption,
       filesMetadata: config.option("filesMetadata") as FilesMetadataOption,
+      contentPreprocessor: config.option(
+        "contentPreprocessor",
+      ) as ContentPreprocessorOption,
       cwd: process.cwd(),
     };
   });
@@ -420,6 +429,53 @@ describe("docusaurusPages", () => {
             name: "Error",
             message: expect.stringContaining("Invalid markdown format: "),
           }),
+        );
+      });
+    });
+
+    describe("when providing content preprocessor", () => {
+      let docusaurusPages: MarkdownDocumentsInterface;
+
+      beforeEach(async () => {
+        docusaurusPages = new MarkdownDocuments({
+          ...docusaurusPagesOptions,
+        });
+      });
+
+      it("should return content returned by preprocessor", async () => {
+        // Arrange
+        const file = fileSync({ dir: dir.name, name: "page.md" });
+        writeFileSync(
+          file.name,
+          dedent`
+          ---
+          title: Page
+          sync_to_confluence: true
+          ---
+
+          # Hello World
+          `,
+        );
+
+        await config.load({
+          ...CONFIG,
+          docsDir: dir.name,
+          contentPreprocessor: (content: string, path: string) => {
+            return content.replace(
+              "Hello World",
+              `Hello Universe. Path: ${path}`,
+            );
+          },
+        });
+
+        // Act
+        const pages = await docusaurusPages.read();
+
+        // Assert
+        expect(pages).toHaveLength(1);
+        expect(pages[0].title).toBe("Page");
+        expect(pages[0].content).toContain(
+          `# Hello Universe. Path: ${file.name.replace(/_/gim, "\\_")}`,
         );
       });
     });
@@ -842,6 +898,9 @@ describe("docusaurusPages", () => {
           docusaurusPagesOptions = {
             config,
             logger,
+            contentPreprocessor: config.option(
+              "contentPreprocessor",
+            ) as ContentPreprocessorOption,
             mode: config.option("mode") as ModeOption,
             cwd: process.cwd(),
           };

@@ -11,6 +11,7 @@ import type { VFile } from "vfile";
 import { PathNotExistException } from "../pages/errors/PathNotExistException.js";
 
 import type { GetIndexFileOptions } from "./files.types.js";
+import { ContentPreprocessor } from "../../MarkdownConfluenceSync.types.js";
 /**
  * Checked if file is valid in docusaurus
  * @param path - Page path
@@ -55,21 +56,30 @@ export function isNotIndexFile(path: string): boolean {
  */
 export function readMarkdownAndPatchDocusaurusAdmonitions(
   path: string,
-  options?: { logger?: LoggerInterface },
+  options?: {
+    logger?: LoggerInterface;
+    contentPreprocessor?: ContentPreprocessor;
+  },
 ): VFile {
   const file = toVFile(readSync(path));
   // HACK: fix docusaurus directive syntax
   //  Docusaurus directive syntax is not compatible with remark-directive.
   //  Docusaurus allows title following directive type, but remark-directive does not.
   //  So, we replace `:::type title` to `:::type[title]` here.
-  file.value = file.value
-    .toString()
-    .replace(/^:::([a-z]+) +(.+)$/gm, (_match, type, title) => {
+  const fileContent = file.value.toString();
+  const processedContent = options?.contentPreprocessor
+    ? options.contentPreprocessor(fileContent, path)
+    : fileContent;
+
+  file.value = processedContent.replace(
+    /^:::([a-z]+) +(.+)$/gm,
+    (_match, type, title) => {
       options?.logger?.debug(
         `Fix docusaurus directive syntax: "${_match}" => ":::${type}[${title}]"`,
       );
       return `:::${type}[${title}]`;
-    });
+    },
+  );
   return file;
 }
 
