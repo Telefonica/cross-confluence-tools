@@ -12,6 +12,10 @@ import type {
   FilesPattern,
   FilesPatternOption,
   ModeOption,
+  TitlePreprocessorOption,
+  ContentPreprocessorOption,
+  TitlePreprocessor,
+  ContentPreprocessor,
 } from "../MarkdownConfluenceSync.types.js";
 
 import type {
@@ -44,6 +48,10 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   private _config: ConfigInterface;
   private _filesPattern?: FilesPatternOption;
   private _filesMetadata?: FilesMetadataOption;
+  private _titlePreprocessorOption: TitlePreprocessorOption;
+  private _contentPreprocessorOption: ContentPreprocessorOption;
+  private _titlePreprocessor?: TitlePreprocessor;
+  private _contentPreprocessor?: ContentPreprocessor;
   private _cwd: string;
 
   constructor({
@@ -52,6 +60,8 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     mode,
     filesPattern,
     filesMetadata,
+    titlePreprocessor,
+    contentPreprocessor,
     cwd,
   }: MarkdownDocumentsOptions) {
     this._docsDirOption = config.addOption(docsDirOption);
@@ -59,6 +69,8 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     this._modeOption = mode;
     this._filesPattern = filesPattern;
     this._filesMetadata = filesMetadata;
+    this._titlePreprocessorOption = titlePreprocessor;
+    this._contentPreprocessorOption = contentPreprocessor;
     this._config = config;
     this._logger = logger;
   }
@@ -66,13 +78,52 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   public async read(): Promise<MarkdownDocument[]> {
     await this._init();
     this._logger.debug(`docsDir option is ${this._docsDirOption.value}`);
-    return await this._pages.read();
+    const pages = await this._pages.read();
+    return this._preprocessContent(await this._preprocessTitles(pages));
+  }
+
+  private async _preprocessTitles(
+    pages: MarkdownDocument[],
+  ): Promise<MarkdownDocument[]> {
+    const preprocessor = this._titlePreprocessor;
+    if (!preprocessor) {
+      return pages;
+    }
+    return Promise.all(
+      pages.map(async (page) => ({
+        ...page,
+        title: await preprocessor(page.title, {
+          path: page.path,
+          relativePath: page.relativePath,
+        }),
+      })),
+    );
+  }
+
+  private async _preprocessContent(
+    pages: MarkdownDocument[],
+  ): Promise<MarkdownDocument[]> {
+    const preprocessor = this._contentPreprocessor;
+    if (!preprocessor) {
+      return pages;
+    }
+    return Promise.all(
+      pages.map(async (page) => ({
+        ...page,
+        content: await preprocessor(page.content, {
+          path: page.path,
+          relativePath: page.relativePath,
+        }),
+      })),
+    );
   }
 
   private _init() {
     this._logger.debug(`mode option is ${this._modeOption.value}`);
     if (!this._initialized) {
       const path = resolve(this._cwd, this._docsDirOption.value);
+      this._contentPreprocessor = this._contentPreprocessorOption.value;
+      this._titlePreprocessor = this._titlePreprocessorOption.value;
 
       const filesMetadata: FilesMetadata = (
         this._filesMetadata?.value || []

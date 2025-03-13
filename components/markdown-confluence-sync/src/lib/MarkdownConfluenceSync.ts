@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ConfigInterface as customMarkdownConfluenceSyncClass } from "@mocks-server/config";
+import type {
+  ConfigNamespaceInterface,
+  ConfigInterface as customMarkdownConfluenceSyncClass,
+} from "@mocks-server/config";
 import { resolve } from "path";
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
@@ -30,11 +33,16 @@ import type {
   FilesPatternOption,
   FilesMetadataOptionDefinition,
   FilesMetadataOption,
+  ContentPreprocessorOptionDefinition,
+  TitlePreprocessorOptionDefinition,
+  TitlePreprocessorOption,
+  ContentPreprocessorOption,
 } from "./MarkdownConfluenceSync.types.js";
 
 const MODULE_NAME = "markdown-confluence-sync";
 const MARKDOWN_NAMESPACE = "markdown";
 const CONFLUENCE_NAMESPACE = "confluence";
+const PREPROCESSORS_NAMESPACE = "preprocessors";
 
 const DEFAULT_CONFIG: Configuration["config"] = {
   readArguments: false,
@@ -64,6 +72,16 @@ const filesMetadataOption: FilesMetadataOptionDefinition = {
   type: "array",
 };
 
+const contentPreprocessorOption: ContentPreprocessorOptionDefinition = {
+  name: "content",
+  type: "unknown",
+};
+
+const titlePreprocessorOption: TitlePreprocessorOptionDefinition = {
+  name: "title",
+  type: "unknown",
+};
+
 export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class MarkdownConfluenceSync
   implements MarkdownConfluenceSyncInterface
 {
@@ -77,6 +95,9 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
   private _modeOption: ModeOption;
   private _filesPatternOption: FilesPatternOption;
   private _filesMetadataOption: FilesMetadataOption;
+  private _preprocessorsConfig: ConfigNamespaceInterface;
+  private _titlePreprocessorOption: TitlePreprocessorOption;
+  private _contentPreprocessorOption: ContentPreprocessorOption;
   private _cwd: string;
 
   constructor(config: Configuration) {
@@ -104,6 +125,18 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       filesMetadataOption,
     ) as FilesMetadataOption;
 
+    this._preprocessorsConfig = this._configuration.addNamespace(
+      PREPROCESSORS_NAMESPACE,
+    );
+
+    this._contentPreprocessorOption = this._preprocessorsConfig.addOption(
+      contentPreprocessorOption as ContentPreprocessorOptionDefinition,
+    ) as unknown as ContentPreprocessorOption;
+
+    this._titlePreprocessorOption = this._preprocessorsConfig.addOption(
+      titlePreprocessorOption as TitlePreprocessorOptionDefinition,
+    ) as unknown as TitlePreprocessorOption;
+
     const markdownLogger = this._logger.namespace(MARKDOWN_NAMESPACE);
 
     const confluenceConfig =
@@ -116,6 +149,8 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       mode: this._modeOption,
       filesPattern: this._filesPatternOption,
       filesMetadata: this._filesMetadataOption,
+      titlePreprocessor: this._titlePreprocessorOption,
+      contentPreprocessor: this._contentPreprocessorOption,
       cwd: this._cwd,
     });
     this._confluenceSync = new ConfluenceSync({

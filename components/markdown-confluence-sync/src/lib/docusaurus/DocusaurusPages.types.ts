@@ -13,6 +13,8 @@ import type {
   FilesPatternOption,
   FilesMetadata,
   ModeOption,
+  TitlePreprocessorOption,
+  ContentPreprocessorOption,
 } from "../MarkdownConfluenceSync.types.js";
 
 export type MarkdownPageId = string;
@@ -50,6 +52,10 @@ export interface MarkdownDocumentsOptions {
   filesPattern?: FilesPatternOption;
   /** Metadata for specific files */
   filesMetadata?: FilesMetadataOption;
+  /** Preprocessor for titles */
+  titlePreprocessor: TitlePreprocessorOption;
+  /** Preprocessor for content */
+  contentPreprocessor: ContentPreprocessorOption;
   /** Working directory */
   cwd: string;
 }

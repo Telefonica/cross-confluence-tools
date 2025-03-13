@@ -25,6 +25,28 @@ export interface FileMetadata {
 
 export type FilesMetadata = FileMetadata[];
 
+export interface PreprocessorsOptions {
+  /** Path to the file */
+  path: string;
+  /** Relative path to the file */
+  relativePath: string;
+}
+
+export type ContentPreprocessor = (
+  content: string,
+  options: PreprocessorsOptions,
+) => Promise<string> | string;
+
+export type TitlePreprocessor = (
+  title: string,
+  options: PreprocessorsOptions,
+) => Promise<string> | string;
+
+export type Preprocessors = {
+  content?: ContentPreprocessor;
+  title?: TitlePreprocessor;
+};
+
 declare global {
   //eslint-disable-next-line @typescript-eslint/no-namespace
   namespace MarkdownConfluenceSync {
@@ -53,6 +75,8 @@ declare global {
 
       /** Metadata for specific files */
       filesMetadata?: FilesMetadata;
+
+      preprocessors?: Preprocessors;
     }
   }
 }
@@ -84,6 +108,17 @@ export type FilesPatternOption = OptionInterfaceOfType<FilesPattern>;
 export type FilesMetadataOptionDefinition = OptionDefinition<FilesMetadata>;
 
 export type FilesMetadataOption = OptionInterfaceOfType<FilesMetadata>;
+
+export type ContentPreprocessorOptionDefinition =
+  OptionDefinition<ContentPreprocessor>;
+
+export type TitlePreprocessorOptionDefinition =
+  OptionDefinition<TitlePreprocessor>;
+
+export type ContentPreprocessorOption =
+  OptionInterfaceOfType<ContentPreprocessor>;
+
+export type TitlePreprocessorOption = OptionInterfaceOfType<TitlePreprocessor>;
 
 /** Creates a MarkdownConfluenceSync interface */
 export interface MarkdownConfluenceSyncConstructor {
