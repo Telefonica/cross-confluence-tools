@@ -23,6 +23,7 @@ import remarkReplaceTabs from "./support/remark/remark-replace-tabs.js";
 import remarkTransformDetails from "./support/remark/remark-transform-details.js";
 import remarkValidateFrontmatter from "./support/remark/remark-validate-frontmatter.js";
 import { FrontMatterValidator } from "./support/validators/FrontMatterValidator.js";
+import { ContentPreprocessor } from "../../MarkdownConfluenceSync.types.js";
 
 export const DocusaurusDocPageMdx: DocusaurusDocPageConstructor = class DocusaurusDocPageMdx extends DocusaurusDocPage {
   constructor(path: string, options?: DocusaurusDocPageOptions) {
@@ -31,7 +32,10 @@ export const DocusaurusDocPageMdx: DocusaurusDocPageConstructor = class Docusaur
 
   protected _parseFile(
     path: string,
-    options?: { logger?: LoggerInterface },
+    options?: {
+      logger?: LoggerInterface;
+      contentPreprocessor?: ContentPreprocessor;
+    },
   ): VFile {
     return remark()
       .use(remarkMdx)
@@ -47,6 +51,7 @@ export const DocusaurusDocPageMdx: DocusaurusDocPageConstructor = class Docusaur
       .processSync(
         readMarkdownAndPatchDocusaurusAdmonitions(path, {
           logger: options?.logger,
+          contentPreprocessor: options?.contentPreprocessor,
         }),
       );
   }

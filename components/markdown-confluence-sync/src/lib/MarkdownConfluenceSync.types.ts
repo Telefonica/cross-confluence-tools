@@ -25,26 +25,10 @@ export interface FileMetadata {
 
 export type FilesMetadata = FileMetadata[];
 
-export interface PreprocessorsOptions {
-  /** Path to the file */
-  path: string;
-  /** Relative path to the file */
-  relativePath: string;
-}
-
-export type ContentPreprocessor = (
-  content: string,
-  options: PreprocessorsOptions,
-) => Promise<string> | string;
-
-export type TitlePreprocessor = (
-  title: string,
-  options: PreprocessorsOptions,
-) => Promise<string> | string;
+export type ContentPreprocessor = (content: string, path: string) => string;
 
 export type Preprocessors = {
   content?: ContentPreprocessor;
-  title?: TitlePreprocessor;
 };
 
 declare global {
@@ -112,13 +96,8 @@ export type FilesMetadataOption = OptionInterfaceOfType<FilesMetadata>;
 export type ContentPreprocessorOptionDefinition =
   OptionDefinition<ContentPreprocessor>;
 
-export type TitlePreprocessorOptionDefinition =
-  OptionDefinition<TitlePreprocessor>;
-
 export type ContentPreprocessorOption =
   OptionInterfaceOfType<ContentPreprocessor>;
-
-export type TitlePreprocessorOption = OptionInterfaceOfType<TitlePreprocessor>;
 
 /** Creates a MarkdownConfluenceSync interface */
 export interface MarkdownConfluenceSyncConstructor {

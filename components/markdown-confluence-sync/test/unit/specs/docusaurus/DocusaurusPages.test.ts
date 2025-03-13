@@ -20,7 +20,6 @@ import type {
   FilesPatternOption,
   ModeOption,
   FilesMetadataOption,
-  TitlePreprocessorOption,
   ContentPreprocessorOption,
 } from "@src/lib";
 import { MarkdownDocuments } from "@src/lib/docusaurus/DocusaurusPages";
@@ -63,11 +62,6 @@ describe("docusaurusPages", () => {
     });
 
     config.addOption({
-      name: "titlePreprocessor",
-      type: "unknown",
-    });
-
-    config.addOption({
       name: "contentPreprocessor",
       type: "unknown",
     });
@@ -78,9 +72,6 @@ describe("docusaurusPages", () => {
       logger,
       mode: config.option("mode") as ModeOption,
       filesMetadata: config.option("filesMetadata") as FilesMetadataOption,
-      titlePreprocessor: config.option(
-        "titlePreprocessor",
-      ) as TitlePreprocessorOption,
       contentPreprocessor: config.option(
         "contentPreprocessor",
       ) as ContentPreprocessorOption,
@@ -469,13 +460,10 @@ describe("docusaurusPages", () => {
         await config.load({
           ...CONFIG,
           docsDir: dir.name,
-          contentPreprocessor: async (
-            content: string,
-            { path, relativePath }: { path: string; relativePath: string },
-          ) => {
+          contentPreprocessor: (content: string, path: string) => {
             return content.replace(
               "Hello World",
-              `Hello Universe. Path: ${path}. Relative path: ${relativePath}`,
+              `Hello Universe. Path: ${path}`,
             );
           },
         });
@@ -487,56 +475,7 @@ describe("docusaurusPages", () => {
         expect(pages).toHaveLength(1);
         expect(pages[0].title).toBe("Page");
         expect(pages[0].content).toContain(
-          `# Hello Universe. Path: ${file.name}. Relative path: page.md`,
-        );
-      });
-    });
-
-    describe("when providing title preprocessor", () => {
-      let docusaurusPages: MarkdownDocumentsInterface;
-
-      beforeEach(async () => {
-        docusaurusPages = new MarkdownDocuments({
-          ...docusaurusPagesOptions,
-        });
-      });
-
-      it("should return title returned by preprocessor", async () => {
-        // Arrange
-        const file = fileSync({ dir: dir.name, name: "page.md" });
-        writeFileSync(
-          file.name,
-          dedent`
-          ---
-          title: Page
-          sync_to_confluence: true
-          ---
-
-          # Hello World
-          `,
-        );
-
-        await config.load({
-          ...CONFIG,
-          docsDir: dir.name,
-          titlePreprocessor: async (
-            title: string,
-            { path, relativePath }: { path: string; relativePath: string },
-          ) => {
-            return title.replace(
-              "Page",
-              `Custom Page in path: ${path}. Relative path: ${relativePath}`,
-            );
-          },
-        });
-
-        // Act
-        const pages = await docusaurusPages.read();
-
-        // Assert
-        expect(pages).toHaveLength(1);
-        expect(pages[0].title).toBe(
-          `Custom Page in path: ${file.name}. Relative path: page.md`,
+          `# Hello Universe. Path: ${file.name.replace(/_/gim, "\\_")}`,
         );
       });
     });
@@ -959,9 +898,6 @@ describe("docusaurusPages", () => {
           docusaurusPagesOptions = {
             config,
             logger,
-            titlePreprocessor: config.option(
-              "titlePreprocessor",
-            ) as TitlePreprocessorOption,
             contentPreprocessor: config.option(
               "contentPreprocessor",
             ) as ContentPreprocessorOption,

@@ -34,8 +34,6 @@ import type {
   FilesMetadataOptionDefinition,
   FilesMetadataOption,
   ContentPreprocessorOptionDefinition,
-  TitlePreprocessorOptionDefinition,
-  TitlePreprocessorOption,
   ContentPreprocessorOption,
 } from "./MarkdownConfluenceSync.types.js";
 
@@ -77,11 +75,6 @@ const contentPreprocessorOption: ContentPreprocessorOptionDefinition = {
   type: "unknown",
 };
 
-const titlePreprocessorOption: TitlePreprocessorOptionDefinition = {
-  name: "title",
-  type: "unknown",
-};
-
 export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class MarkdownConfluenceSync
   implements MarkdownConfluenceSyncInterface
 {
@@ -96,7 +89,6 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
   private _filesPatternOption: FilesPatternOption;
   private _filesMetadataOption: FilesMetadataOption;
   private _preprocessorsConfig: ConfigNamespaceInterface;
-  private _titlePreprocessorOption: TitlePreprocessorOption;
   private _contentPreprocessorOption: ContentPreprocessorOption;
   private _cwd: string;
 
@@ -133,10 +125,6 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       contentPreprocessorOption as ContentPreprocessorOptionDefinition,
     ) as unknown as ContentPreprocessorOption;
 
-    this._titlePreprocessorOption = this._preprocessorsConfig.addOption(
-      titlePreprocessorOption as TitlePreprocessorOptionDefinition,
-    ) as unknown as TitlePreprocessorOption;
-
     const markdownLogger = this._logger.namespace(MARKDOWN_NAMESPACE);
 
     const confluenceConfig =
@@ -149,7 +137,6 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       mode: this._modeOption,
       filesPattern: this._filesPatternOption,
       filesMetadata: this._filesMetadataOption,
-      titlePreprocessor: this._titlePreprocessorOption,
       contentPreprocessor: this._contentPreprocessorOption,
       cwd: this._cwd,
     });
