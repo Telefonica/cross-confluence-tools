@@ -30,7 +30,10 @@ import remarkReplaceAdmonitions from "./support/remark/remark-replace-admonition
 import remarkValidateFrontmatter from "./support/remark/remark-validate-frontmatter.js";
 import type { FrontMatter } from "./support/validators/FrontMatterValidator.js";
 import { FrontMatterValidator } from "./support/validators/FrontMatterValidator.js";
-import { FileMetadata } from "../../MarkdownConfluenceSync.types.js";
+import {
+  ContentPreprocessor,
+  FileMetadata,
+} from "../../MarkdownConfluenceSync.types.js";
 import { TitleRequiredException } from "./errors/TitleRequiredException.js";
 
 export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusDocPage
@@ -40,9 +43,11 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
   protected _logger?: LoggerInterface;
   protected _metadata?: FileMetadata;
   private _meta: DocusaurusDocPageMeta;
+  private _contentPreprocessor?: ContentPreprocessor;
 
   constructor(path: string, options?: DocusaurusDocPageOptions) {
     this._logger = options?.logger;
+    this._contentPreprocessor = options?.contentPreprocessor;
 
     const absolutePath = join(path);
 
@@ -130,6 +135,7 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
       .processSync(
         readMarkdownAndPatchDocusaurusAdmonitions(path, {
           logger: options?.logger,
+          contentPreprocessor: this._contentPreprocessor,
         }),
       );
   }

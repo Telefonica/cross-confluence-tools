@@ -14,7 +14,10 @@ import type {
   DocusaurusDocTreeItem,
   DocusaurusDocTreeOptions,
 } from "./DocusaurusDocTree.types.js";
-import { FilesMetadata } from "../../MarkdownConfluenceSync.types.js";
+import {
+  ContentPreprocessor,
+  FilesMetadata,
+} from "../../MarkdownConfluenceSync.types.js";
 
 export const DocusaurusDocTree: DocusaurusDocTreeConstructor = class DocusaurusDocTree
   implements DocusaurusDocTreeInterface
@@ -22,6 +25,7 @@ export const DocusaurusDocTree: DocusaurusDocTreeConstructor = class DocusaurusD
   private _path: string;
   private _logger?: LoggerInterface;
   private _filesMetadata?: FilesMetadata;
+  private _contentPreprocessor?: ContentPreprocessor;
 
   constructor(path: string, options?: DocusaurusDocTreeOptions) {
     if (!existsSync(path)) {
@@ -30,6 +34,7 @@ export const DocusaurusDocTree: DocusaurusDocTreeConstructor = class DocusaurusD
     this._path = path;
     this._logger = options?.logger;
     this._filesMetadata = options?.filesMetadata;
+    this._contentPreprocessor = options?.contentPreprocessor;
   }
 
   public async flatten(): Promise<DocusaurusDocTreeItem[]> {
@@ -48,6 +53,7 @@ export const DocusaurusDocTree: DocusaurusDocTreeConstructor = class DocusaurusD
       DocusaurusDocItemFactory.fromPath(path, {
         logger: this._logger?.namespace(path.replace(this._path, "")),
         filesMetadata: this._filesMetadata,
+        contentPreprocessor: this._contentPreprocessor,
       }),
     );
     const rootsPages = await Promise.all(roots.map((root) => root.visit()));

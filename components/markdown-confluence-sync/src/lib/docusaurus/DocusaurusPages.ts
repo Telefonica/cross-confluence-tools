@@ -12,6 +12,8 @@ import type {
   FilesPattern,
   FilesPatternOption,
   ModeOption,
+  ContentPreprocessorOption,
+  ContentPreprocessor,
 } from "../MarkdownConfluenceSync.types.js";
 
 import type {
@@ -44,6 +46,8 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   private _config: ConfigInterface;
   private _filesPattern?: FilesPatternOption;
   private _filesMetadata?: FilesMetadataOption;
+  private _contentPreprocessorOption: ContentPreprocessorOption;
+  private _contentPreprocessor?: ContentPreprocessor;
   private _cwd: string;
 
   constructor({
@@ -52,6 +56,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     mode,
     filesPattern,
     filesMetadata,
+    contentPreprocessor,
     cwd,
   }: MarkdownDocumentsOptions) {
     this._docsDirOption = config.addOption(docsDirOption);
@@ -59,6 +64,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     this._modeOption = mode;
     this._filesPattern = filesPattern;
     this._filesMetadata = filesMetadata;
+    this._contentPreprocessorOption = contentPreprocessor;
     this._config = config;
     this._logger = logger;
   }
@@ -66,13 +72,14 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   public async read(): Promise<MarkdownDocument[]> {
     await this._init();
     this._logger.debug(`docsDir option is ${this._docsDirOption.value}`);
-    return await this._pages.read();
+    return this._pages.read();
   }
 
   private _init() {
     this._logger.debug(`mode option is ${this._modeOption.value}`);
     if (!this._initialized) {
       const path = resolve(this._cwd, this._docsDirOption.value);
+      this._contentPreprocessor = this._contentPreprocessorOption.value;
 
       const filesMetadata: FilesMetadata = (
         this._filesMetadata?.value || []
@@ -83,6 +90,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
 
       this._path = path;
       this._pages = MarkdownDocumentsFactory.fromMode(this._modeOption.value, {
+        contentPreprocessor: this._contentPreprocessor,
         config: this._config,
         logger: this._logger,
         path: this._path,

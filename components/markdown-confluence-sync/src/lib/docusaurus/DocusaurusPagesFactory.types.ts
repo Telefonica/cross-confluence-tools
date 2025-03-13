@@ -5,11 +5,13 @@ import type { ConfigInterface } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
 import type { SyncModes } from "@tid-xcut/confluence-sync";
 
-import type { FilesMetadata, FilesPattern } from "..";
+import type { ContentPreprocessor, FilesMetadata, FilesPattern } from "..";
 
 import type { MarkdownDocumentsInterface } from "./DocusaurusPages.types";
 
 export interface MarkdownDocumentsFactoryOptions {
+  /** Content preprocessor */
+  contentPreprocessor?: ContentPreprocessor;
   /** Configuration interface */
   config: ConfigInterface;
   /** Logger */

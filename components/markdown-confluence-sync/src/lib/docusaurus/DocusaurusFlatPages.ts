@@ -7,6 +7,7 @@ import type { LoggerInterface } from "@mocks-server/logger";
 import { glob } from "glob";
 
 import type {
+  ContentPreprocessor,
   FilesMetadata,
   FilesPattern,
 } from "../MarkdownConfluenceSync.types.js";
@@ -32,6 +33,7 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
   private _filesPattern: FilesPattern;
   private _filesMetadata?: FilesMetadata;
   private _mode: SyncModes.FLAT | SyncModes.ID;
+  private _contentPreprocessor?: ContentPreprocessor;
 
   constructor({
     logger,
@@ -39,11 +41,13 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
     filesMetadata,
     cwd,
     mode,
+    contentPreprocessor,
   }: MarkdownFlatDocumentsOptions) {
     this._mode = mode;
     this._path = cwd;
     this._filesPattern = filesPattern as FilesPattern;
     this._filesMetadata = filesMetadata;
+    this._contentPreprocessor = contentPreprocessor;
     this._logger = logger.namespace("doc-flat");
   }
 
@@ -73,6 +77,7 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
       MarkdownDocFactory.fromPath(filePath, {
         logger: this._logger,
         filesMetadata: this._filesMetadata,
+        contentPreprocessor: this._contentPreprocessor,
       }),
     );
     const pages = files.map<MarkdownDocument>((item) => ({
