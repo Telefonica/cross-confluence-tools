@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
+## [1.1.0] - 2025-03-13
+
+### Added
+
+* feat: Add `preprocessor` option, enabling to define a function that preprocesses the file content before converting it to Confluence content.
+
 ## [1.0.1] - 2025-02-20
 
 ### Changed

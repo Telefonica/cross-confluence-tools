@@ -262,7 +262,7 @@ module.exports = {
 
 ## Configuration
 
-All of the configuration properties can be provided through a configuration file, CLI arguments, or environment variables (Read the [`@mocks-server/config` package](https://github.com/mocks-server/main/tree/master/packages/config) for further info, which is used under the hood).
+All of the serializable configuration properties can be provided through a configuration file, CLI arguments, or environment variables (Read the [`@mocks-server/config` package](https://github.com/mocks-server/main/tree/master/packages/config) for further info, which is used under the hood).
 
 The namespace for the configuration of this library is `markdown-confluence-sync`, so, for example, to set environment variables you have to prefix the variable name with `MARKDOWN_CONFLUENCE_SYNC_`.
 
@@ -284,6 +284,7 @@ The namespace for the configuration of this library is `markdown-confluence-sync
 | `config.readArguments` | `boolean` | Read configuration from arguments or not | `false` |
 | `config.readFile` | `boolean` | Read configuration from file or not | `false` |
 | `config.readEnvironment` | `boolean` | Read configuration from environment or not | `false` |
+| `preprocessor` | `function` | Hook enabling to change the content of files before processing the markdown content to send it to Confluence. It receives the content as first argument and the file path as second argument, and must return the new file content | |
 | `cwd`* | `string` | Path from where the library resolve docsDir, filesPattern, and searches for configuration files | `process.cwd()` |
 
 > [!NOTE]
@@ -510,6 +511,10 @@ const markdownConfluenceSync = new MarkdownConfluenceSync({
     personalAccessToken: "*******",
     spaceKey: "MY-SPACE",
     rootPageId: "my-root-page-id"
+  },
+  preprocessor: (content, filePath) => {
+    // Modify the content of the file before processing the markdown content
+    return content.replace(/foo/g, "bar");
   }
 });
 
