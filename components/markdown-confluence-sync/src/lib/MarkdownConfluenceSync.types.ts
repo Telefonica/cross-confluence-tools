@@ -27,10 +27,6 @@ export type FilesMetadata = FileMetadata[];
 
 export type ContentPreprocessor = (content: string, path: string) => string;
 
-export type Preprocessors = {
-  content?: ContentPreprocessor;
-};
-
 declare global {
   //eslint-disable-next-line @typescript-eslint/no-namespace
   namespace MarkdownConfluenceSync {
@@ -60,7 +56,7 @@ declare global {
       /** Metadata for specific files */
       filesMetadata?: FilesMetadata;
 
-      preprocessors?: Preprocessors;
+      preprocessor?: ContentPreprocessor;
     }
   }
 }

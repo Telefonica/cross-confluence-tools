@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2024 Telefónica Innovación Digital
 // SPDX-License-Identifier: Apache-2.0
 
-import type {
-  ConfigNamespaceInterface,
-  ConfigInterface as customMarkdownConfluenceSyncClass,
-} from "@mocks-server/config";
+import type { ConfigInterface as customMarkdownConfluenceSyncClass } from "@mocks-server/config";
 import { resolve } from "path";
 import { Config } from "@mocks-server/config";
 import type { LoggerInterface } from "@mocks-server/logger";
@@ -40,7 +37,6 @@ import type {
 const MODULE_NAME = "markdown-confluence-sync";
 const MARKDOWN_NAMESPACE = "markdown";
 const CONFLUENCE_NAMESPACE = "confluence";
-const PREPROCESSORS_NAMESPACE = "preprocessors";
 
 const DEFAULT_CONFIG: Configuration["config"] = {
   readArguments: false,
@@ -71,7 +67,7 @@ const filesMetadataOption: FilesMetadataOptionDefinition = {
 };
 
 const contentPreprocessorOption: ContentPreprocessorOptionDefinition = {
-  name: "content",
+  name: "preprocessor",
   type: "unknown",
 };
 
@@ -88,7 +84,6 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
   private _modeOption: ModeOption;
   private _filesPatternOption: FilesPatternOption;
   private _filesMetadataOption: FilesMetadataOption;
-  private _preprocessorsConfig: ConfigNamespaceInterface;
   private _contentPreprocessorOption: ContentPreprocessorOption;
   private _cwd: string;
 
@@ -117,11 +112,7 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       filesMetadataOption,
     ) as FilesMetadataOption;
 
-    this._preprocessorsConfig = this._configuration.addNamespace(
-      PREPROCESSORS_NAMESPACE,
-    );
-
-    this._contentPreprocessorOption = this._preprocessorsConfig.addOption(
+    this._contentPreprocessorOption = this._configuration.addOption(
       contentPreprocessorOption as ContentPreprocessorOptionDefinition,
     ) as unknown as ContentPreprocessorOption;
 
