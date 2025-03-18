@@ -42,8 +42,8 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
   protected _vFile: VFile;
   protected _logger?: LoggerInterface;
   protected _metadata?: FileMetadata;
+  protected _contentPreprocessor?: ContentPreprocessor;
   private _meta: DocusaurusDocPageMeta;
-  private _contentPreprocessor?: ContentPreprocessor;
 
   constructor(path: string, options?: DocusaurusDocPageOptions) {
     this._logger = options?.logger;
@@ -66,7 +66,7 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
     );
 
     try {
-      this._vFile = this._parseFile(path, options);
+      this._vFile = this._parseFile(path);
     } catch (e) {
       this._logger?.error((e as Error).toString());
       throw new InvalidMarkdownFormatException(
@@ -121,10 +121,7 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
     };
   }
 
-  protected _parseFile(
-    path: string,
-    options?: { logger?: LoggerInterface },
-  ): VFile {
+  protected _parseFile(path: string): VFile {
     return remark()
       .use(remarkGfm)
       .use(remarkFrontmatter)
@@ -134,7 +131,7 @@ export const DocusaurusDocPage: DocusaurusDocPageConstructor = class DocusaurusD
       .use(remarkReplaceAdmonitions)
       .processSync(
         readMarkdownAndPatchDocusaurusAdmonitions(path, {
-          logger: options?.logger,
+          logger: this._logger,
           contentPreprocessor: this._contentPreprocessor,
         }),
       );

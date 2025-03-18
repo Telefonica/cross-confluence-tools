@@ -442,7 +442,7 @@ describe("docusaurusPages", () => {
         });
       });
 
-      it("should return content returned by preprocessor", async () => {
+      it("should return content returned by preprocessor in all pages", async () => {
         // Arrange
         const file = fileSync({ dir: dir.name, name: "page.md" });
         writeFileSync(
@@ -450,6 +450,23 @@ describe("docusaurusPages", () => {
           dedent`
           ---
           title: Page
+          sync_to_confluence: true
+          ---
+
+          # Hello World
+          `,
+        );
+
+        const subDir = dirSync({ dir: dir.name, name: "files" });
+        const subDirFile = fileSync({
+          dir: subDir.name,
+          name: "index.md",
+        });
+        writeFileSync(
+          subDirFile.name,
+          dedent`
+          ---
+          title: SubPage
           sync_to_confluence: true
           ---
 
@@ -472,10 +489,78 @@ describe("docusaurusPages", () => {
         const pages = await docusaurusPages.read();
 
         // Assert
-        expect(pages).toHaveLength(1);
-        expect(pages[0].title).toBe("Page");
-        expect(pages[0].content).toContain(
+        expect(pages).toHaveLength(2);
+        expect(pages[1].title).toBe("Page");
+        expect(pages[1].content).toContain(
           `# Hello Universe. Path: ${file.name.replace(/_/gim, "\\_")}`,
+        );
+        expect(pages[0].title).toBe("SubPage");
+        expect(pages[0].content).toContain(
+          `# Hello Universe. Path: ${subDirFile.name.replace(/_/gim, "\\_")}`,
+        );
+      });
+    });
+
+    describe("when providing content preprocessor in mdx files", () => {
+      let docusaurusPages: MarkdownDocumentsInterface;
+
+      beforeEach(async () => {
+        docusaurusPages = new MarkdownDocuments(docusaurusPagesOptions);
+      });
+
+      it("should return content returned by preprocessor", async () => {
+        await config.load({
+          ...CONFIG,
+          docsDir: dir.name,
+          contentPreprocessor: (content: string, path: string) => {
+            return content.replace(
+              "Hello World",
+              `Hello Universe. Path: ${path}`,
+            );
+          },
+        });
+        
+        // Arrange
+        const mdxFileDir = dirSync({ dir: dir.name, name: "mdx-files" });
+        const indexFile = fileSync({ dir: mdxFileDir.name, name: "index.mdx" });
+        writeFileSync(
+          indexFile.name,
+          dedent`
+          ---
+          title: File Mdx
+          sync_to_confluence: true
+          ---
+          
+          # Hello World
+        `,
+        );
+
+        const mdxPageDir = fileSync({
+          dir: mdxFileDir.name,
+          name: "mdxPage.mdx",
+        });
+        writeFileSync(
+          mdxPageDir.name,
+          dedent`
+          ---
+          title: Mdx Page
+          sync_to_confluence: true
+          ---
+
+          # Hello World
+          `,
+        );
+
+        // Act
+        const pages = await docusaurusPages.read();
+
+        // Assert
+        expect(pages).toHaveLength(2);
+        expect(pages[0].content).toContain(
+          `# Hello Universe. Path: ${indexFile.name.replace(/_/gim, "\\_")}`,
+        );
+        expect(pages[1].content).toContain(
+          `# Hello Universe. Path: ${mdxPageDir.name.replace(/_/gim, "\\_")}`,
         );
       });
     });
