@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
+## [1.1.1] - 2025-03-18
+
+### Fixed
+
+* fix: `preprocessor` option was not being applied to the full hierarchy in tree mode. It was working only in pages at first level.
+
 ## [1.1.0] - 2025-03-13
 
 ### Added

@@ -26,7 +26,10 @@ import type {
 import type { DocusaurusDocTreePageInterface } from "./DocusaurusDocTreePage.types.js";
 import { DocusaurusDocTreePageFactory } from "./DocusaurusDocTreePageFactory.js";
 import { CategoryItemMetadataValidator } from "./support/validators/CategoryItemMetadata.js";
-import { FilesMetadata } from "../../MarkdownConfluenceSync.types.js";
+import {
+  FilesMetadata,
+  ContentPreprocessor,
+} from "../../MarkdownConfluenceSync.types.js";
 
 export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = class DocusaurusDocTreeCategory
   implements DocusaurusDocTreeCategoryInterface
@@ -36,6 +39,7 @@ export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = c
   private _meta: DocusaurusDocTreeCategoryMeta | undefined;
   private _logger: LoggerInterface | undefined;
   private _filesMetadata: FilesMetadata | undefined;
+  private _contentPreprocessor: ContentPreprocessor | undefined;
 
   constructor(path: string, options?: DocusaurusDocTreeCategoryOptions) {
     if (!existsSync(path)) {
@@ -60,6 +64,7 @@ export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = c
     this._meta = DocusaurusDocTreeCategory._processCategoryItemMetadata(path);
     this._logger = options?.logger;
     this._filesMetadata = options?.filesMetadata;
+    this._contentPreprocessor = options?.contentPreprocessor;
   }
 
   public get isCategory(): boolean {
@@ -139,6 +144,7 @@ export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = c
         DocusaurusDocItemFactory.fromPath(path, {
           logger: this._logger?.namespace(path.replace(this._path, "")),
           filesMetadata: this._filesMetadata,
+          contentPreprocessor: this._contentPreprocessor,
         }),
       ),
     );
