@@ -519,7 +519,7 @@ describe("docusaurusPages", () => {
             );
           },
         });
-        
+
         // Arrange
         const mdxFileDir = dirSync({ dir: dir.name, name: "mdx-files" });
         const indexFile = fileSync({ dir: mdxFileDir.name, name: "index.mdx" });
