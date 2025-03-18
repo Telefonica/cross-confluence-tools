@@ -26,17 +26,14 @@ import { FrontMatterValidator } from "./support/validators/FrontMatterValidator.
 import { ContentPreprocessor } from "../../MarkdownConfluenceSync.types.js";
 
 export const DocusaurusDocPageMdx: DocusaurusDocPageConstructor = class DocusaurusDocPageMdx extends DocusaurusDocPage {
+  protected _logger?: LoggerInterface;
+  protected _contentPreprocessor?: ContentPreprocessor;
+
   constructor(path: string, options?: DocusaurusDocPageOptions) {
     super(path, options);
   }
 
-  protected _parseFile(
-    path: string,
-    options?: {
-      logger?: LoggerInterface;
-      contentPreprocessor?: ContentPreprocessor;
-    },
-  ): VFile {
+  protected _parseFile(path: string): VFile {
     return remark()
       .use(remarkMdx)
       .use(remarkGfm)
@@ -50,8 +47,8 @@ export const DocusaurusDocPageMdx: DocusaurusDocPageConstructor = class Docusaur
       .use(remarkReplaceAdmonitions)
       .processSync(
         readMarkdownAndPatchDocusaurusAdmonitions(path, {
-          logger: options?.logger,
-          contentPreprocessor: options?.contentPreprocessor,
+          logger: this._logger,
+          contentPreprocessor: this._contentPreprocessor,
         }),
       );
   }
