@@ -34,6 +34,8 @@ const rehypeReplaceImgTags: UnifiedPlugin<[], Root> =
           return node;
         }
         if (src.startsWith("http")) {
+          // eslint-disable-next-line no-console
+          console.log("Image source is a URL!", src);
           return {
             type: "element" as const,
             tagName: "ac:image",
