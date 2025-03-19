@@ -29,7 +29,7 @@ const rehypeReplaceImgTags: UnifiedPlugin<[], Root> =
   function rehypeReplaceImgTags() {
     return function transformer(tree) {
       replace(tree, { type: "element", tagName: "img" }, (node) => {
-        console.log("Image node", node.properties?.src);
+        console.log("Image node", node.properties);
         const src = node.properties?.src;
         if (typeof src !== "string" || src.toString().length === 0) {
           return node;
