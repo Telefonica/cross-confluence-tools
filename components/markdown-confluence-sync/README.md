@@ -537,6 +537,10 @@ This method starts the sync process. It returns a promise that resolves when the
 
 [![image](https://download.logo.wine/logo/Markdown/Markdown-Logo.wine.png)](https://download.logo.wine/logo/Markdown/Markdown-Logo.wine.png)
 
+### Testing local image
+
+![image](./test-image.png)
+
 ## Contributing
 
 Please read our [Contributing Guidelines](./CONTRIBUTING.md) for details on how to contribute to this project before submitting a pull request.
