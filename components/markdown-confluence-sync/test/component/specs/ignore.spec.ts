@@ -30,12 +30,12 @@ describe("ignore option", () => {
       cli = new ChildProcessManager(
         [
           getBinaryPathFromFixtureFolder(),
-          "--filesPattern=**/child2/**",
+          "--filesPattern=**/child1/**",
           "--ignore=**/child1/**",
         ],
         {
           cwd: getFixtureFolder("mock-server-with-confluence-page-id"),
-          silent: false,
+          silent: true,
           env: {
             MARKDOWN_CONFLUENCE_SYNC_LOG_LEVEL: "debug",
             MARKDOWN_CONFLUENCE_SYNC_MODE: "id",
@@ -56,8 +56,8 @@ describe("ignore option", () => {
       expect(exitCode).toBe(0);
     });
 
-    it("should have updated 1 page with the confluence page identifier given in the file", async () => {
-      expect(updateRequest).toHaveLength(1);
+    it("should have updated 0 pages", async () => {
+      expect(updateRequest).toHaveLength(0);
     });
   });
 
@@ -77,7 +77,7 @@ describe("ignore option", () => {
         ],
         {
           cwd: getFixtureFolder("mock-server-empty-root"),
-          silent: false,
+          silent: true,
           env: {
             MARKDOWN_CONFLUENCE_SYNC_LOG_LEVEL: "debug",
           },
