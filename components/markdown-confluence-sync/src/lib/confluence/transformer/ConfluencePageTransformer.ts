@@ -102,8 +102,8 @@ export const ConfluencePageTransformer: ConfluencePageTransformerConstructor = c
         .use(rehypeReplaceDetails)
         .use(rehypeReplaceStrikethrough)
         .use(rehypeReplaceTaskList)
-        .use(rehypeAddAttachmentsImages)
         .use(rehypeReplaceImgTags)
+        .use(rehypeAddAttachmentsImages)
         .use(rehypeReplaceInternalReferences, {
           spaceKey: this._spaceKey,
           pages,
