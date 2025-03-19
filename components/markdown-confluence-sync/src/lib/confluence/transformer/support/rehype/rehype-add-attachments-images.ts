@@ -9,11 +9,13 @@ import { visit } from "unist-util-visit";
 
 import type { ImagesMetadata } from "./rehype-add-attachments-images.types.js";
 
-function isImage(node: HastElement): boolean {
+function isLocalImage(node: HastElement): boolean {
   return (
     node.tagName.toLowerCase() === "img" &&
     node.properties != null &&
-    "src" in node.properties
+    "src" in node.properties &&
+    typeof node.properties.src === "string" &&
+    !node.properties.src.startsWith("http")
   );
 }
 
@@ -26,7 +28,7 @@ const rehypeAddAttachmentsImages: UnifiedPlugin<[], Root> =
       const images: ImagesMetadata = {};
 
       visit(tree, "element", function (node) {
-        if (isImage(node)) {
+        if (isLocalImage(node)) {
           const base = file.dirname
             ? path.resolve(file.cwd, file.dirname)
             : file.cwd;

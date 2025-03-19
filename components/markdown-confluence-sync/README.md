@@ -535,6 +535,8 @@ This method starts the sync process. It returns a promise that resolves when the
 
 ### Testing images with absolute urls
 
+[![image](https://download.logo.wine/logo/Markdown/Markdown-Logo.wine.png)](https://download.logo.wine/logo/Markdown/Markdown-Logo.wine.png)
+
 ### Testing local image
 
 ![image](./test-image.png)
