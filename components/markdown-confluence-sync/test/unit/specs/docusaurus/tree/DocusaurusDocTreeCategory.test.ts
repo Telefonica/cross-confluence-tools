@@ -18,9 +18,13 @@ import { TitleRequiredException } from "@src/lib/docusaurus/pages/errors/TitleRe
 
 describe("docusaurusDocTreeCategory", () => {
   let dir: DirResult;
+  let options: { cwd: string };
 
   beforeEach(() => {
     dir = dirSync({ unsafeCleanup: true });
+    options = {
+      cwd: process.cwd(),
+    };
   });
 
   afterEach(() => {
@@ -32,9 +36,9 @@ describe("docusaurusDocTreeCategory", () => {
   });
 
   it("should fail if the path does not exist", () => {
-    expect(() => new DocusaurusDocTreeCategory(`/tmp/${randomUUID()}`)).toThrow(
-      PathNotExistException,
-    );
+    expect(
+      () => new DocusaurusDocTreeCategory(`/tmp/${randomUUID()}`, options),
+    ).toThrow(PathNotExistException);
   });
 
   it("should fail if the path is not a directory", () => {
@@ -43,7 +47,7 @@ describe("docusaurusDocTreeCategory", () => {
 
     // Act
     // Assert
-    expect(() => new DocusaurusDocTreeCategory(file.name)).toThrow(
+    expect(() => new DocusaurusDocTreeCategory(file.name, options)).toThrow(
       InvalidPathException,
     );
   });
@@ -56,9 +60,9 @@ describe("docusaurusDocTreeCategory", () => {
 
     // Act
     // Assert
-    expect(() => new DocusaurusDocTreeCategory(categoryDir.name)).toThrow(
-      TitleRequiredException,
-    );
+    expect(
+      () => new DocusaurusDocTreeCategory(categoryDir.name, options),
+    ).toThrow(TitleRequiredException);
   });
 
   it("should build a category if the path does not have an index.md file", () => {
@@ -66,7 +70,7 @@ describe("docusaurusDocTreeCategory", () => {
     const emptyDir = dirSync({ dir: dir.name });
 
     // Act
-    const category = new DocusaurusDocTreeCategory(emptyDir.name);
+    const category = new DocusaurusDocTreeCategory(emptyDir.name, options);
 
     // Assert
     expect(category).toBeDefined();
@@ -93,7 +97,7 @@ describe("docusaurusDocTreeCategory", () => {
     );
 
     // Act
-    const category = new DocusaurusDocTreeCategory(dir.name);
+    const category = new DocusaurusDocTreeCategory(dir.name, options);
 
     // Assert
     expect(category).toBeDefined();
@@ -120,7 +124,7 @@ describe("docusaurusDocTreeCategory", () => {
     );
 
     // Act
-    const category = new DocusaurusDocTreeCategory(dir.name);
+    const category = new DocusaurusDocTreeCategory(dir.name, options);
 
     // Assert
     expect(category.meta.confluenceShortName).toBe("Title Name");
@@ -142,7 +146,7 @@ describe("docusaurusDocTreeCategory", () => {
     );
 
     // Act
-    const category = new DocusaurusDocTreeCategory(dir.name);
+    const category = new DocusaurusDocTreeCategory(dir.name, options);
 
     // Assert
     expect(category.meta.confluenceTitle).toBe("Title Name");
@@ -157,7 +161,9 @@ describe("docusaurusDocTreeCategory", () => {
 
         // Act
         // Assert
-        expect(() => new DocusaurusDocTreeCategory(dir.name)).toThrow();
+        expect(
+          () => new DocusaurusDocTreeCategory(dir.name, options),
+        ).toThrow();
       });
 
       it("should extend the metadata from the _category_.yml file", () => {
@@ -170,7 +176,7 @@ describe("docusaurusDocTreeCategory", () => {
           `,
         );
         // Act
-        const category = new DocusaurusDocTreeCategory(dir.name);
+        const category = new DocusaurusDocTreeCategory(dir.name, options);
 
         // Assert
         try {
@@ -193,7 +199,7 @@ describe("docusaurusDocTreeCategory", () => {
           `,
         );
         // Act
-        const category = new DocusaurusDocTreeCategory(dir.name);
+        const category = new DocusaurusDocTreeCategory(dir.name, options);
 
         // Assert
         expect(category.meta?.title).toBe("Category Title");
@@ -211,7 +217,9 @@ describe("docusaurusDocTreeCategory", () => {
 
         // Act
         // Assert
-        expect(() => new DocusaurusDocTreeCategory(dir.name)).toThrow();
+        expect(
+          () => new DocusaurusDocTreeCategory(dir.name, options),
+        ).toThrow();
       });
 
       it("should extend the metadata from the _category_.json file", () => {
@@ -229,7 +237,7 @@ describe("docusaurusDocTreeCategory", () => {
           `,
         );
         // Act
-        const category = new DocusaurusDocTreeCategory(dir.name);
+        const category = new DocusaurusDocTreeCategory(dir.name, options);
 
         // Assert
         expect(category.meta?.title).toBe("Category Title");
@@ -240,7 +248,7 @@ describe("docusaurusDocTreeCategory", () => {
   describe("visited", () => {
     it("should return an empty array if the category is not configured to sync to Confluence", async () => {
       // Arrange
-      const category = new DocusaurusDocTreeCategory(dir.name);
+      const category = new DocusaurusDocTreeCategory(dir.name, options);
 
       // Act
       const result = await category.visit();
@@ -282,7 +290,10 @@ describe("docusaurusDocTreeCategory", () => {
           # Hello World
           `,
         );
-        const category = new DocusaurusDocTreeCategory(categoryDir.name);
+        const category = new DocusaurusDocTreeCategory(
+          categoryDir.name,
+          options,
+        );
 
         // Act
         const result = await category.visit();
@@ -328,7 +339,10 @@ describe("docusaurusDocTreeCategory", () => {
           # Hello World
           `,
         );
-        const category = new DocusaurusDocTreeCategory(categoryDir.name);
+        const category = new DocusaurusDocTreeCategory(
+          categoryDir.name,
+          options,
+        );
 
         // Act
         const result = await category.visit();
@@ -369,7 +383,7 @@ describe("docusaurusDocTreeCategory", () => {
           # Hello World
           `,
         );
-        const category = new DocusaurusDocTreeCategory(dir.name);
+        const category = new DocusaurusDocTreeCategory(dir.name, options);
 
         // Act
         const result = await category.visit();
@@ -395,7 +409,7 @@ describe("docusaurusDocTreeCategory", () => {
 
         it("should return an array with the category if the category is configured to sync to Confluence", async () => {
           // Arrange
-          const category = new DocusaurusDocTreeCategory(dir.name);
+          const category = new DocusaurusDocTreeCategory(dir.name, options);
 
           // Act
           const result = await category.visit();
@@ -433,7 +447,7 @@ describe("docusaurusDocTreeCategory", () => {
             `,
           );
 
-          const category = new DocusaurusDocTreeCategory(dir.name);
+          const category = new DocusaurusDocTreeCategory(dir.name, options);
 
           // Act
           const result = await category.visit();
@@ -458,7 +472,7 @@ describe("docusaurusDocTreeCategory", () => {
             `,
           );
 
-          const category = new DocusaurusDocTreeCategory(dir.name);
+          const category = new DocusaurusDocTreeCategory(dir.name, options);
 
           // Act
           const result = await category.visit();
@@ -495,7 +509,7 @@ describe("docusaurusDocTreeCategory", () => {
             # Hello World
             `,
           );
-          const category = new DocusaurusDocTreeCategory(dir.name);
+          const category = new DocusaurusDocTreeCategory(dir.name, options);
 
           // Act
           const result = await category.visit();

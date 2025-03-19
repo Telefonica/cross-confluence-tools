@@ -20,6 +20,8 @@ export interface MarkdownDocumentsFactoryOptions {
   path: string;
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPattern;
+  /** Pattern with files to be ignored */
+  filesIgnore?: FilesPattern;
   /** Metadata for specific files */
   filesMetadata?: FilesMetadata;
   /** Working directory */

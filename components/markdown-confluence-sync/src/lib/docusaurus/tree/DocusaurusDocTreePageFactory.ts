@@ -8,6 +8,9 @@ import type { DocusaurusDocTreeItem } from "./DocusaurusDocTree.types.js";
 import { DocusaurusDocTreePage } from "./DocusaurusDocTreePage.js";
 import type { DocusaurusDocTreePageFactoryInterface } from "./DocusaurusDocTreePageFactory.types.js";
 import { DocusaurusDocTreePageMdx } from "./DocusaurusDocTreePageMdx.js";
+import globule from "globule";
+import { relative } from "path";
+import { IndexFileIgnoreException } from "../pages/errors/IndexFileIgnoreException.js";
 
 export const DocusaurusDocTreePageFactory: DocusaurusDocTreePageFactoryInterface = class DocusaurusDocTreePageFactory {
   public static fromPath(
@@ -19,9 +22,15 @@ export const DocusaurusDocTreePageFactory: DocusaurusDocTreePageFactoryInterface
 
   public static fromCategoryIndex(
     path: string,
-    options?: DocusaurusDocItemFactoryFromPathOptions,
+    options: DocusaurusDocItemFactoryFromPathOptions,
   ): DocusaurusDocTreeItem {
     const indexPath = getIndexFile(path, options);
+    if (
+      options.filesIgnore &&
+      globule.isMatch(options.filesIgnore, relative(options.cwd, indexPath))
+    ) {
+      throw new IndexFileIgnoreException(path);
+    }
     return this._obtainedDocusaurusDocTreePage(indexPath, options);
   }
 

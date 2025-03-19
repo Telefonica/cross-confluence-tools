@@ -14,6 +14,7 @@ import type {
   ModeOption,
   ContentPreprocessorOption,
   ContentPreprocessor,
+  FilesIgnoreOption,
 } from "../MarkdownConfluenceSync.types.js";
 
 import type {
@@ -46,6 +47,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
   private _config: ConfigInterface;
   private _filesPattern?: FilesPatternOption;
   private _filesMetadata?: FilesMetadataOption;
+  private _filesIgnore?: FilesIgnoreOption;
   private _contentPreprocessorOption: ContentPreprocessorOption;
   private _contentPreprocessor?: ContentPreprocessor;
   private _cwd: string;
@@ -56,6 +58,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     mode,
     filesPattern,
     filesMetadata,
+    filesIgnore,
     contentPreprocessor,
     cwd,
   }: MarkdownDocumentsOptions) {
@@ -64,6 +67,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
     this._modeOption = mode;
     this._filesPattern = filesPattern;
     this._filesMetadata = filesMetadata;
+    this._filesIgnore = filesIgnore;
     this._contentPreprocessorOption = contentPreprocessor;
     this._config = config;
     this._logger = logger;
@@ -95,6 +99,7 @@ export const MarkdownDocuments: MarkdownDocumentsConstructor = class MarkdownDoc
         logger: this._logger,
         path: this._path,
         filesPattern: this._filesPattern?.value as FilesPattern,
+        filesIgnore: this._filesIgnore?.value,
         filesMetadata,
         cwd: this._cwd,
       });

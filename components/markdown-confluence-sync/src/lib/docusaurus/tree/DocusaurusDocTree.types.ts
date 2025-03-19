@@ -10,13 +10,17 @@ import type {
 import {
   ContentPreprocessor,
   FilesMetadata,
+  FilesPattern,
 } from "../../MarkdownConfluenceSync.types";
 
 export interface DocusaurusDocTreeOptions {
+  cwd: string;
   /** Logger */
   logger?: LoggerInterface;
   /** Files metadata */
   filesMetadata?: FilesMetadata;
+  /** Files ignore */
+  filesIgnore?: FilesPattern;
   /** Content preprocessor */
   contentPreprocessor?: ContentPreprocessor;
 }
@@ -31,7 +35,7 @@ export interface DocusaurusDocTreeConstructor {
    */
   new (
     path: string,
-    options?: DocusaurusDocTreeOptions,
+    options: DocusaurusDocTreeOptions,
   ): DocusaurusDocTreeInterface;
 }
 

@@ -20,6 +20,7 @@ import type {
   FilesPatternOption,
   ModeOption,
   FilesMetadataOption,
+  FilesIgnoreOption,
   ContentPreprocessorOption,
 } from "@src/lib";
 import { MarkdownDocuments } from "@src/lib/docusaurus/DocusaurusPages";
@@ -62,6 +63,12 @@ describe("docusaurusPages", () => {
     });
 
     config.addOption({
+      name: "filesIgnore",
+      type: "array",
+      default: [],
+    });
+
+    config.addOption({
       name: "contentPreprocessor",
       type: "unknown",
     });
@@ -71,7 +78,9 @@ describe("docusaurusPages", () => {
       config,
       logger,
       mode: config.option("mode") as ModeOption,
+      filesPattern: config.option("filesPattern") as FilesPatternOption,
       filesMetadata: config.option("filesMetadata") as FilesMetadataOption,
+      filesIgnore: config.option("filesIgnore") as FilesIgnoreOption,
       contentPreprocessor: config.option(
         "contentPreprocessor",
       ) as ContentPreprocessorOption,
@@ -1321,6 +1330,421 @@ describe("docusaurusPages", () => {
 
         // Assert
         expect(pages).toHaveLength(2);
+      });
+    });
+
+    describe("when filesIgnore option is provided", () => {
+      let docusaurusPages: MarkdownDocumentsInterface;
+
+      beforeEach(async () => {
+        docusaurusPages = new MarkdownDocuments({
+          ...docusaurusPagesOptions,
+          cwd: dir.name,
+        });
+      });
+
+      describe("in tree mode", () => {
+        it("should ignore files that match the ignore pattern in the root directory", async () => {
+          // Arrange
+          await config.load({
+            ...CONFIG,
+            docsDir: dir.name,
+            filesIgnore: ["**/*-ignore.md"],
+          });
+
+          const regularFile = fileSync({ dir: dir.name, name: "regular.md" });
+          writeFileSync(
+            regularFile.name,
+            dedent`
+            ---
+            title: Regular File
+            sync_to_confluence: true
+            ---
+            # Regular Content
+            `,
+          );
+
+          const ignoreFile = fileSync({
+            dir: dir.name,
+            name: "file-ignore.md",
+          });
+          writeFileSync(
+            ignoreFile.name,
+            dedent`
+            ---
+            title: Ignored File
+            sync_to_confluence: true
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Act
+          const pages = await docusaurusPages.read();
+
+          // Assert
+          expect(pages).toHaveLength(1);
+          expect(pages[0].title).toBe("Regular File");
+        });
+
+        it("should ignore files that match the ignore pattern in subdirectories", async () => {
+          // Arrange
+          await config.load({
+            ...CONFIG,
+            docsDir: dir.name,
+            filesIgnore: ["**/*-ignore.md"],
+          });
+
+          const subDir = dirSync({ dir: dir.name, name: "subdir" });
+
+          // Create regular index file for the category
+          const indexFile = fileSync({ dir: subDir.name, name: "index.md" });
+          writeFileSync(
+            indexFile.name,
+            dedent`
+            ---
+            title: Category
+            sync_to_confluence: true
+            ---
+            # Category
+            `,
+          );
+
+          // Create a regular file
+          const regularFile = fileSync({
+            dir: subDir.name,
+            name: "regular.md",
+          });
+          writeFileSync(
+            regularFile.name,
+            dedent`
+            ---
+            title: Regular File
+            sync_to_confluence: true
+            ---
+            # Regular Content
+            `,
+          );
+
+          // Create a file that should be ignored
+          const ignoreFile = fileSync({
+            dir: subDir.name,
+            name: "file-ignore.md",
+          });
+          writeFileSync(
+            ignoreFile.name,
+            dedent`
+            ---
+            title: Ignored File
+            sync_to_confluence: true
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Act
+          const pages = await docusaurusPages.read();
+
+          // Assert
+          expect(pages).toHaveLength(2); // Category index and regular file
+          expect(pages.map((p) => basename(p.path))).toEqual(
+            expect.arrayContaining(["index.md", "regular.md"]),
+          );
+          expect(pages.map((p) => basename(p.path))).not.toContain(
+            "file-ignore.md",
+          );
+        });
+
+        it("should ignore files in directories that match the ignore pattern", async () => {
+          // Arrange
+          await config.load({
+            ...CONFIG,
+            docsDir: dir.name,
+            filesIgnore: ["**/ignore-dir/**"],
+          });
+
+          // Create a directory that should be completely ignored
+          const ignoreDir = dirSync({ dir: dir.name, name: "ignore-dir" });
+
+          // Create an index and regular file in the ignored directory
+          const indexFileIgnoreDir = fileSync({
+            dir: ignoreDir.name,
+            name: "index.md",
+          });
+          writeFileSync(
+            indexFileIgnoreDir.name,
+            dedent`
+            ---
+            title: Ignored Category
+            sync_to_confluence: true
+            ---
+            # Ignored Category
+            `,
+          );
+
+          const fileInIgnoreDir = fileSync({
+            dir: ignoreDir.name,
+            name: "file.md",
+          });
+          writeFileSync(
+            fileInIgnoreDir.name,
+            dedent`
+            ---
+            title: Ignored File
+            sync_to_confluence: true
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Create a regular directory
+          const regularDir = dirSync({ dir: dir.name, name: "regular-dir" });
+
+          // Create files in the regular directory
+          const indexFileRegularDir = fileSync({
+            dir: regularDir.name,
+            name: "index.md",
+          });
+          writeFileSync(
+            indexFileRegularDir.name,
+            dedent`
+            ---
+            title: Regular Category
+            sync_to_confluence: true
+            ---
+            # Regular Category
+            `,
+          );
+
+          const fileInRegularDir = fileSync({
+            dir: regularDir.name,
+            name: "file.md",
+          });
+          writeFileSync(
+            fileInRegularDir.name,
+            dedent`
+            ---
+            title: Regular File
+            sync_to_confluence: true
+            ---
+            # This should not be ignored
+            `,
+          );
+
+          // Act
+          const pages = await docusaurusPages.read();
+
+          // Assert
+          expect(pages).toHaveLength(2); // Regular dir index and file
+          expect(pages.map((p) => p.title)).toEqual(
+            expect.arrayContaining(["Regular Category", "Regular File"]),
+          );
+          expect(pages.map((p) => p.title)).not.toContain("Ignored Category");
+          expect(pages.map((p) => p.title)).not.toContain("Ignored File");
+        });
+
+        it("should support multiple ignore patterns", async () => {
+          // Arrange
+          await config.load({
+            ...CONFIG,
+            docsDir: dir.name,
+            filesIgnore: ["**/*-ignore.md", "**/skip-*/**"],
+          });
+
+          // Create a regular file
+          const regularFile = fileSync({ dir: dir.name, name: "regular.md" });
+          writeFileSync(
+            regularFile.name,
+            dedent`
+            ---
+            title: Regular File
+            sync_to_confluence: true
+            ---
+            # Regular Content
+            `,
+          );
+
+          // Create a file that should be ignored by pattern 1
+          const ignoreFile = fileSync({
+            dir: dir.name,
+            name: "file-ignore.md",
+          });
+          writeFileSync(
+            ignoreFile.name,
+            dedent`
+            ---
+            title: Ignored File
+            sync_to_confluence: true
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Create a directory that should be ignored by pattern 2
+          const skipDir = dirSync({ dir: dir.name, name: "skip-dir" });
+          const fileInSkipDir = fileSync({
+            dir: skipDir.name,
+            name: "file.md",
+          });
+          writeFileSync(
+            fileInSkipDir.name,
+            dedent`
+            ---
+            title: Skip File
+            sync_to_confluence: true
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Act
+          const pages = await docusaurusPages.read();
+
+          // Assert
+          expect(pages).toHaveLength(1);
+          expect(pages[0].title).toBe("Regular File");
+        });
+      });
+
+      describe("in flat mode", () => {
+        it("should ignore files that match the ignore pattern", async () => {
+          // Arrange
+          await config.load({
+            ...CONFIG,
+            mode: "flat",
+            docsDir: dir.name,
+            filesPattern: "**/*.md",
+            filesIgnore: ["**/*-ignore.md"],
+          });
+
+          // Create a regular file
+          const regularFile = fileSync({ dir: dir.name, name: "regular.md" });
+          writeFileSync(
+            regularFile.name,
+            dedent`
+            ---
+            title: Regular File
+            sync_to_confluence: true
+            ---
+            # Regular Content
+            `,
+          );
+
+          // Create a file that should be ignored
+          const ignoreFile = fileSync({
+            dir: dir.name,
+            name: "file-ignore.md",
+          });
+          writeFileSync(
+            ignoreFile.name,
+            dedent`
+            ---
+            title: Ignored File
+            sync_to_confluence: true
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Create a subdirectory
+          const subDir = dirSync({ dir: dir.name, name: "subdir" });
+
+          // Create a file in the subdirectory
+          const subDirFile = fileSync({
+            dir: subDir.name,
+            name: "subdir-file.md",
+          });
+          writeFileSync(
+            subDirFile.name,
+            dedent`
+            ---
+            title: Subdir File
+            sync_to_confluence: true
+            ---
+            # Subdir Content
+            `,
+          );
+
+          // Create a file in the subdirectory that should be ignored
+          const subDirIgnoreFile = fileSync({
+            dir: subDir.name,
+            name: "subdir-ignore.md",
+          });
+          writeFileSync(
+            subDirIgnoreFile.name,
+            dedent`
+            ---
+            title: Subdir Ignored File
+            sync_to_confluence: true
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Act
+          const pages = await docusaurusPages.read();
+
+          // Assert
+          expect(pages).toHaveLength(2);
+          expect(pages.map((p) => p.title)).toEqual(
+            expect.arrayContaining(["Regular File", "Subdir File"]),
+          );
+          expect(pages.map((p) => p.title)).not.toContain("Ignored File");
+          expect(pages.map((p) => p.title)).not.toContain(
+            "Subdir Ignored File",
+          );
+        });
+      });
+
+      describe("in id mode", () => {
+        it("should ignore files that match the ignore pattern", async () => {
+          // Arrange
+          await config.load({
+            ...CONFIG,
+            mode: "id",
+            docsDir: dir.name,
+            filesPattern: "**/*.md",
+            filesIgnore: ["**/*-ignore.md"],
+          });
+
+          // Create a regular file
+          const regularFile = fileSync({ dir: dir.name, name: "regular.md" });
+          writeFileSync(
+            regularFile.name,
+            dedent`
+            ---
+            title: Regular File
+            sync_to_confluence: true
+            confluence_page_id: "12345"
+            ---
+            # Regular Content
+            `,
+          );
+
+          // Create a file that should be ignored
+          const ignoreFile = fileSync({
+            dir: dir.name,
+            name: "file-ignore.md",
+          });
+          writeFileSync(
+            ignoreFile.name,
+            dedent`
+            ---
+            title: Ignored File
+            sync_to_confluence: true
+            confluence_page_id: "67890"
+            ---
+            # This should be ignored
+            `,
+          );
+
+          // Act
+          const pages = await docusaurusPages.read();
+
+          // Assert
+          expect(pages).toHaveLength(1);
+          expect(pages[0].title).toBe("Regular File");
+        });
       });
     });
   });

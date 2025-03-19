@@ -270,7 +270,8 @@ The namespace for the configuration of this library is `markdown-confluence-sync
 | --- | --- | --- | --- |
 | `logLevel` | `string` | Log level. One of `silly`, `debug`, `info`, `warn`, `error`, `silent` | `info` |
 | `mode` | `string` | Mode to read the pages to send to Confluence. One of `tree`, `flat` or `id`.  | `tree` |
-| `filesPattern` | `string` | Pattern to read the pages to send to Confluence. This option is mandatory when using `flat` or `id` sync modes.  |  |
+| `filesPattern` | `string` | Pattern to read the pages to send to Confluence. This option is mandatory when using `flat` or `id` sync modes. It has no effect in `tree` mode  |  |
+| `ignore` | `array` | Array of [globule](https://github.com/cowboy/node-globule) patterns to ignore files. Matches are calculated from the `cwd` |  |
 | `filesMetadata` | `array` | Array of objects with the metadata of the files to sync. Each object must have the `path` property with the path of the file. For the rest of properties read the [Configuration per page](#configuration-per-page) section |  |
 | `docsDir` | `string` | Path to the docs directory. | `./docs` |
 | `confluence.url` | `string` | URL of the Confluence instance. | |
@@ -285,7 +286,7 @@ The namespace for the configuration of this library is `markdown-confluence-sync
 | `config.readFile` | `boolean` | Read configuration from file or not | `false` |
 | `config.readEnvironment` | `boolean` | Read configuration from environment or not | `false` |
 | `preprocessor` | `function` | Hook enabling to change the content of files before processing the markdown content to send it to Confluence. It receives the content as first argument and the file path as second argument, and must return the new file content | |
-| `cwd`* | `string` | Path from where the library resolve docsDir, filesPattern, and searches for configuration files | `process.cwd()` |
+| `cwd`* | `string` | Path from where the library resolve options `docsDir`, `filesPattern` and `ignore`, and it searches for configuration files | `process.cwd()` |
 
 > [!NOTE]
 > The `cwd` is a special property that is only settable through the `MARKDOWN_CONFLUENCE_SYNC_CWD` environment variable, or when using the library programmatically.
@@ -306,6 +307,7 @@ Just take into account that the namespace for the configuration is `markdown-con
 ```js title="markdown-confluence-sync.config.js"
 module.exports = {
   docsDir: "docs",
+  ignore: ["docs/no-sync/**"],
   confluence: {
     url: "https://my-confluence.es",
     personalAccessToken: "*******",
@@ -320,7 +322,7 @@ module.exports = {
 Configuration properties can be provided through CLI arguments. The name of the argument is the property name prefixed with `--`. For example, to set the `docsDir` property, you have to set the `--docsDir` argument. For boolean properties with a default value of `true`, you can set the `--no-` prefix to set the property to `false`. For example, to set the `config.readArguments` property to `false`, you have to set the `--no-config.readArguments` argument.
 
 ```sh
-npx markdown-confluence-sync --docsDir ./docs --logLevel debug
+npx markdown-confluence-sync --docsDir ./docs --logLevel debug --ignore "docs/no-sync/**" "docs/ignore-file.md"
 ```
 
 ### Environment variables

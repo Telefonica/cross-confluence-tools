@@ -6,14 +6,19 @@ import type { LoggerInterface } from "@mocks-server/logger";
 import type { DocusaurusDocTreeItem } from "./DocusaurusDocTree.types.js";
 import {
   FilesMetadata,
+  FilesPattern,
   ContentPreprocessor,
 } from "../../MarkdownConfluenceSync.types.js";
 
 export interface DocusaurusDocTreeCategoryOptions {
+  /** Current working directory */
+  cwd: string;
   /** Logger */
   logger?: LoggerInterface;
   /** Files Metadata */
   filesMetadata?: FilesMetadata;
+  /** Files ignore */
+  filesIgnore?: FilesPattern;
   /** Content preprocessor */
   contentPreprocessor?: ContentPreprocessor;
 }
@@ -71,7 +76,7 @@ export interface DocusaurusDocTreeCategoryConstructor {
    */
   new (
     path: string,
-    options?: DocusaurusDocTreeCategoryOptions,
+    options: DocusaurusDocTreeCategoryOptions,
   ): DocusaurusDocTreeCategoryInterface;
 }
 
