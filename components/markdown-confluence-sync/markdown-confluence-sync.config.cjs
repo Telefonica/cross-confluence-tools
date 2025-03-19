@@ -35,4 +35,5 @@ module.exports = {
     rootPageId: process.env.CONFLUENCE_ROOT_PAGE_ID,
     rootPageName: "Cross",
   },
+  logLevel: "debug",
 };
