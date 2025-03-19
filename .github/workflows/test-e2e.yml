@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - feat/CRC-219/absolute-images
 
 permissions:
   contents: read
