@@ -10,6 +10,8 @@ export interface DocusaurusTreePagesOptions
   extends MarkdownDocumentsModeOptions {
   /**  Markdown document path */
   path?: string;
+  /** Current working directory */
+  cwd: string;
 }
 
 /** Creates a DocusaurusTreePagesMode interface */

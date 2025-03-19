@@ -3,13 +3,15 @@
 
 import { existsSync, lstatSync, readFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
-import { basename, join } from "node:path";
+import { basename, join, relative } from "node:path";
 
 import type { LoggerInterface } from "@mocks-server/logger";
 import { parse as parseYaml } from "yaml";
+import globule from "globule";
 
 import { InvalidPathException } from "../pages/errors/InvalidPathException.js";
 import { PathNotExistException } from "../pages/errors/PathNotExistException.js";
+import { IndexFileIgnoreException } from "../pages/errors/IndexFileIgnoreException.js";
 import { isValidFile } from "../util/files.js";
 
 import { DocusaurusDocItemFactory } from "./DocusaurusDocItemFactory.js";
@@ -29,19 +31,22 @@ import { CategoryItemMetadataValidator } from "./support/validators/CategoryItem
 import {
   FilesMetadata,
   ContentPreprocessor,
+  FilesPattern,
 } from "../../MarkdownConfluenceSync.types.js";
 
 export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = class DocusaurusDocTreeCategory
   implements DocusaurusDocTreeCategoryInterface
 {
+  private _cwd: string;
   private _path: string;
   private _index: DocusaurusDocTreePageInterface | undefined;
   private _meta: DocusaurusDocTreeCategoryMeta | undefined;
   private _logger: LoggerInterface | undefined;
   private _filesMetadata: FilesMetadata | undefined;
   private _contentPreprocessor: ContentPreprocessor | undefined;
+  private _filesIgnore: FilesPattern | undefined;
 
-  constructor(path: string, options?: DocusaurusDocTreeCategoryOptions) {
+  constructor(path: string, options: DocusaurusDocTreeCategoryOptions) {
     if (!existsSync(path)) {
       throw new PathNotExistException(`Path ${path} does not exist`);
     }
@@ -54,17 +59,22 @@ export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = c
         options,
       );
     } catch (e) {
-      if (e instanceof PathNotExistException) {
+      if (
+        e instanceof PathNotExistException ||
+        e instanceof IndexFileIgnoreException
+      ) {
         options?.logger?.warn(e.message);
       } else {
         throw e;
       }
     }
+    this._cwd = options.cwd;
     this._path = path;
     this._meta = DocusaurusDocTreeCategory._processCategoryItemMetadata(path);
     this._logger = options?.logger;
     this._filesMetadata = options?.filesMetadata;
     this._contentPreprocessor = options?.contentPreprocessor;
+    this._filesIgnore = options?.filesIgnore;
   }
 
   public get isCategory(): boolean {
@@ -138,13 +148,15 @@ export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = c
     const paths = await readdir(this._path);
     const childrenPaths = paths
       .map((path) => join(this._path, path))
-      .filter(this._isDirectoryOrNotIndexFile);
+      .filter(this._isDirectoryOrNotIndexFile.bind(this));
     const childrenItems = await Promise.all(
       childrenPaths.map((path) =>
         DocusaurusDocItemFactory.fromPath(path, {
+          cwd: this._cwd,
           logger: this._logger?.namespace(path.replace(this._path, "")),
           filesMetadata: this._filesMetadata,
           contentPreprocessor: this._contentPreprocessor,
+          filesIgnore: this._filesIgnore,
         }),
       ),
     );
@@ -160,6 +172,23 @@ export const DocusaurusDocTreeCategory: DocusaurusDocTreeCategoryConstructor = c
   }
 
   private _isDirectoryOrNotIndexFile(path: string): boolean {
-    return lstatSync(path).isDirectory() || isValidFile(path);
+    const isValid = lstatSync(path).isDirectory() || isValidFile(path);
+
+    if (!isValid) {
+      return false;
+    }
+
+    // Check if file should be ignored based on filesIgnore pattern
+    if (this._filesIgnore) {
+      const relativePath = relative(this._cwd, path);
+      if (globule.isMatch(this._filesIgnore, relativePath)) {
+        this._logger?.debug(
+          `Ignoring file ${path} based on filesIgnore pattern`,
+        );
+        return false;
+      }
+    }
+
+    return true;
   }
 };

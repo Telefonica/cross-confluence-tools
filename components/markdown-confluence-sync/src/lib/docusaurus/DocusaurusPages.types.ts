@@ -11,6 +11,8 @@ import type { LoggerInterface } from "@mocks-server/logger";
 import type {
   FilesMetadataOption,
   FilesPatternOption,
+  FilesIgnoreOption,
+  FilesPattern,
   FilesMetadata,
   ModeOption,
   ContentPreprocessorOption,
@@ -50,6 +52,8 @@ export interface MarkdownDocumentsOptions {
   mode: ModeOption;
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPatternOption;
+  /** Pattern with files to be ignored */
+  filesIgnore?: FilesIgnoreOption;
   /** Metadata for specific files */
   filesMetadata?: FilesMetadataOption;
   /** Preprocessor for content */
@@ -96,6 +100,8 @@ export interface MarkdownDocumentsModeOptions {
   contentPreprocessor?: ContentPreprocessor;
   /** Metadata for specific files */
   filesMetadata?: FilesMetadata;
+  /** Files to be ignored */
+  filesIgnore?: FilesPattern;
   /** Configuration interface */
   config: ConfigInterface;
   /** Logger */

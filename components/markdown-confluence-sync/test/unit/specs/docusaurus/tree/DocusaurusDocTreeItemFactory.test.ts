@@ -16,9 +16,11 @@ import { DocusaurusDocTreePageMdx } from "@src/lib/docusaurus/tree/DocusaurusDoc
 
 describe("docusaurusDocTreeItemFactory", () => {
   let dir: DirResult;
+  let options: { cwd: string };
 
   beforeEach(() => {
     dir = dirSync({ unsafeCleanup: true });
+    options = { cwd: process.cwd() };
   });
 
   afterEach(() => {
@@ -45,7 +47,7 @@ describe("docusaurusDocTreeItemFactory", () => {
     );
 
     // Act
-    const result = DocusaurusDocItemFactory.fromPath(docsDir.name);
+    const result = DocusaurusDocItemFactory.fromPath(docsDir.name, options);
 
     // Assert
     expect(result).toBeDefined();
@@ -67,7 +69,7 @@ describe("docusaurusDocTreeItemFactory", () => {
     );
 
     // Act
-    const result = DocusaurusDocItemFactory.fromPath(file.name);
+    const result = DocusaurusDocItemFactory.fromPath(file.name, options);
 
     // Assert
     expect(result).toBeDefined();
@@ -95,7 +97,7 @@ describe("docusaurusDocTreeItemFactory", () => {
     );
 
     // Act
-    const result = DocusaurusDocItemFactory.fromPath(file.name);
+    const result = DocusaurusDocItemFactory.fromPath(file.name, options);
 
     // Assert
     expect(result).toBeDefined();
@@ -156,7 +158,7 @@ import TabItem from '@theme/TabItem';
     );
 
     // Act
-    const result = DocusaurusDocItemFactory.fromPath(file.name);
+    const result = DocusaurusDocItemFactory.fromPath(file.name, options);
 
     // Assert
     expect(result).toBeDefined();

@@ -14,7 +14,7 @@ import { DocusaurusDocTreePageFactory } from "./DocusaurusDocTreePageFactory.js"
 export const DocusaurusDocItemFactory: DocusaurusDocItemFactoryInterface = class DocusaurusDocItemFactory {
   public static fromPath(
     path: string,
-    options?: DocusaurusDocItemFactoryFromPathOptions,
+    options: DocusaurusDocItemFactoryFromPathOptions,
   ): DocusaurusDocTreeItem {
     if (lstatSync(path).isDirectory()) {
       return new DocusaurusDocTreeCategory(path, options);

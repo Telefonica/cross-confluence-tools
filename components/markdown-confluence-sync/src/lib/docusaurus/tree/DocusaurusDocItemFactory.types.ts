@@ -7,13 +7,18 @@ import type { DocusaurusDocTreeItem } from "./DocusaurusDocTree.types.js";
 import {
   ContentPreprocessor,
   FilesMetadata,
+  FilesPattern,
 } from "../../MarkdownConfluenceSync.types.js";
 
 export interface DocusaurusDocItemFactoryFromPathOptions {
+  /** The cwd path */
+  cwd: string;
   /** Logger */
   logger?: LoggerInterface;
   /** Files metadata */
   filesMetadata?: FilesMetadata;
+  /** Files ignore */
+  filesIgnore?: FilesPattern;
   /** Content preprocessor */
   contentPreprocessor?: ContentPreprocessor;
 }
@@ -36,6 +41,6 @@ export interface DocusaurusDocItemFactoryInterface {
    */
   fromPath(
     path: string,
-    options?: DocusaurusDocItemFactoryFromPathOptions,
+    options: DocusaurusDocItemFactoryFromPathOptions,
   ): DocusaurusDocTreeItem;
 }

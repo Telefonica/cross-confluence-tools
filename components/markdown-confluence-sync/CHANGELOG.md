@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
+## [1.2.0] - 2025-03-20
+
+### Added
+
+* feat: Add `ignore` option, enabling to define an array of globule patterns to ignore files when syncing them to Confluence. It is applied in any sync mode.
+
+### Fixed
+
+* fix: Images with absolute URLs were producing an error when syncing to Confluence.
+
+### Changed
+
+* chore: Manage concurrency in sync-to-confluence workflow
+
 ## [1.1.1] - 2025-03-18
 
 ### Fixed
