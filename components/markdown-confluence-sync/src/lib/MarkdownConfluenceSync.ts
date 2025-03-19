@@ -29,6 +29,8 @@ import type {
   ModeOption,
   FilesPatternOption,
   FilesMetadataOptionDefinition,
+  FilesIgnoreOptionDefinition,
+  FilesIgnoreOption,
   FilesMetadataOption,
   ContentPreprocessorOptionDefinition,
   ContentPreprocessorOption,
@@ -61,6 +63,11 @@ const filesPatternOption: FilesPatternOptionDefinition = {
   type: "string",
 };
 
+const filesIgnoreOption: FilesIgnoreOptionDefinition = {
+  name: "ignore",
+  type: "array",
+};
+
 const filesMetadataOption: FilesMetadataOptionDefinition = {
   name: "filesMetadata",
   type: "array",
@@ -84,6 +91,7 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
   private _modeOption: ModeOption;
   private _filesPatternOption: FilesPatternOption;
   private _filesMetadataOption: FilesMetadataOption;
+  private _filesIgnoreOption: FilesIgnoreOption;
   private _contentPreprocessorOption: ContentPreprocessorOption;
   private _cwd: string;
 
@@ -112,6 +120,10 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       filesMetadataOption,
     ) as FilesMetadataOption;
 
+    this._filesIgnoreOption = this._configuration.addOption(
+      filesIgnoreOption,
+    ) as FilesIgnoreOption;
+
     this._contentPreprocessorOption = this._configuration.addOption(
       contentPreprocessorOption as ContentPreprocessorOptionDefinition,
     ) as unknown as ContentPreprocessorOption;
@@ -127,6 +139,7 @@ export const MarkdownConfluenceSync: MarkdownConfluenceSyncConstructor = class M
       logger: markdownLogger,
       mode: this._modeOption,
       filesPattern: this._filesPatternOption,
+      filesIgnore: this._filesIgnoreOption,
       filesMetadata: this._filesMetadataOption,
       contentPreprocessor: this._contentPreprocessorOption,
       cwd: this._cwd,

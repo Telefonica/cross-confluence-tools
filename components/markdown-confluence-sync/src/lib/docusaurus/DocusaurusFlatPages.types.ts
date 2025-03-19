@@ -13,6 +13,8 @@ export interface MarkdownFlatDocumentsOptions
   extends MarkdownDocumentsModeOptions {
   /** Pattern to search files when flat mode is active */
   filesPattern?: FilesPattern;
+  /** Pattern with files to be ignored */
+  filesIgnore?: FilesPattern;
   /** Working directory */
   cwd: string;
   /** Mode */

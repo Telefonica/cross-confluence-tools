@@ -30,13 +30,20 @@ describe("docusaurusDocTree", () => {
   });
 
   it("should fail if the directory does not exist", () => {
-    expect(() => new DocusaurusDocTree("foo")).toThrow(
-      "Path foo does not exist",
-    );
+    expect(
+      () =>
+        new DocusaurusDocTree("foo", {
+          cwd: process.cwd(),
+        }),
+    ).toThrow("Path foo does not exist");
   });
 
   it("should build a tree from a directory", () => {
-    expect(new DocusaurusDocTree(dir.name)).toBeInstanceOf(DocusaurusDocTree);
+    expect(
+      new DocusaurusDocTree(dir.name, {
+        cwd: process.cwd(),
+      }),
+    ).toBeInstanceOf(DocusaurusDocTree);
   });
 
   describe("flattened", () => {
@@ -72,7 +79,9 @@ describe("docusaurusDocTree", () => {
       );
 
       // Act
-      const tree = new DocusaurusDocTree(dir.name);
+      const tree = new DocusaurusDocTree(dir.name, {
+        cwd: process.cwd(),
+      });
       const flattened = await tree.flatten();
 
       // Assert
@@ -110,7 +119,10 @@ describe("docusaurusDocTree", () => {
       );
 
       // Act
-      const tree = new DocusaurusDocTree(dir.name, { logger });
+      const tree = new DocusaurusDocTree(dir.name, {
+        logger,
+        cwd: process.cwd(),
+      });
       const flattened = await tree.flatten();
 
       // Assert
@@ -152,7 +164,9 @@ describe("docusaurusDocTree", () => {
       );
 
       // Act
-      const tree = new DocusaurusDocTree(dir.name);
+      const tree = new DocusaurusDocTree(dir.name, {
+        cwd: process.cwd(),
+      });
       const flattened = await tree.flatten();
 
       // Assert

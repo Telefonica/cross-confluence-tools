@@ -5,6 +5,7 @@ import { relative } from "node:path";
 
 import type { LoggerInterface } from "@mocks-server/logger";
 import { glob } from "glob";
+import globule from "globule";
 
 import type {
   ContentPreprocessor,
@@ -27,10 +28,11 @@ import { SyncModes } from "@tid-xcut/confluence-sync";
 export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class MarkdownFlatDocuments
   implements MarkdownDocumentsInterface
 {
-  private _path: string;
+  private _cwd: string;
   private _logger: LoggerInterface;
   private _initialized = false;
   private _filesPattern: FilesPattern;
+  private _filesIgnore?: FilesPattern;
   private _filesMetadata?: FilesMetadata;
   private _mode: SyncModes.FLAT | SyncModes.ID;
   private _contentPreprocessor?: ContentPreprocessor;
@@ -38,14 +40,16 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
   constructor({
     logger,
     filesPattern,
+    filesIgnore,
     filesMetadata,
     cwd,
     mode,
     contentPreprocessor,
   }: MarkdownFlatDocumentsOptions) {
     this._mode = mode;
-    this._path = cwd;
+    this._cwd = cwd;
     this._filesPattern = filesPattern as FilesPattern;
+    this._filesIgnore = filesIgnore;
     this._filesMetadata = filesMetadata;
     this._contentPreprocessor = contentPreprocessor;
     this._logger = logger.namespace("doc-flat");
@@ -55,17 +59,28 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
     await this._init();
     const filesPaths = await this._obtainedFilesPaths();
     this._logger.debug(
-      `Found ${filesPaths.length} files in ${this._path} matching the pattern '${this._filesPattern}'`,
+      `Found ${filesPaths.length} files in ${this._cwd} matching the pattern '${this._filesPattern}'`,
     );
     return await this._transformFilePathsToMarkdownDocuments(filesPaths);
   }
 
   private async _obtainedFilesPaths(): Promise<string[]> {
     return await glob(this._filesPattern, {
-      cwd: this._path,
+      cwd: this._cwd,
       absolute: true,
+      // @ts-expect-error The globule types are not compatible with the glob types
       ignore: {
-        ignored: (p) => !/\.mdx?$/.test(p.name),
+        ignored: (p) => {
+          return (
+            !/\.mdx?$/.test(p.name) ||
+            (this._filesIgnore &&
+              globule.isMatch(
+                this._filesIgnore,
+                // cspell:disable-next-line
+                relative(this._cwd, p.fullpath()),
+              ))
+          );
+        },
       },
     });
   }
@@ -84,12 +99,12 @@ export const MarkdownFlatDocuments: MarkdownFlatDocumentsConstructor = class Mar
       title: item.meta.confluenceTitle || item.meta.title,
       id: item.meta.confluencePageId,
       path: item.path,
-      relativePath: relative(this._path, item.path),
+      relativePath: relative(this._cwd, item.path),
       content: item.content,
       ancestors: [],
       name: item.meta.confluenceShortName,
     }));
-    this._logger.debug(`Found ${pages.length} pages in ${this._path}`);
+    this._logger.debug(`Found ${pages.length} pages in ${this._cwd}`);
     return pages;
   }
 

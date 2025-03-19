@@ -85,6 +85,10 @@ export type FilesPatternOptionDefinition = OptionDefinition<FilesPattern>;
 
 export type FilesPatternOption = OptionInterfaceOfType<FilesPattern>;
 
+export type FilesIgnoreOptionDefinition = OptionDefinition<FilesPattern>;
+
+export type FilesIgnoreOption = OptionInterfaceOfType<FilesPattern>;
+
 export type FilesMetadataOptionDefinition = OptionDefinition<FilesMetadata>;
 
 export type FilesMetadataOption = OptionInterfaceOfType<FilesMetadata>;
