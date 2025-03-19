@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * fix: Images with absolute URLs were producing an error when syncing to Confluence.
 
+### Changed
+
+* chore: Manage concurrency in sync-to-confluence workflow
+
 ## [1.1.1] - 2025-03-18
 
 ### Fixed
