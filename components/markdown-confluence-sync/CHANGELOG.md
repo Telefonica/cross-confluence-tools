@@ -11,7 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Deprecated
 #### Removed
 
-## [1.2.0] - 2025-03-20
+## [1.2.1] - 2025-03-20
+
+### Fixed
+
+* fix: Add `ignore` option to the TypeScript typings
+
+## [1.2.0] - 2025-03-19
 
 ### Added
 
