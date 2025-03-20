@@ -56,6 +56,10 @@ declare global {
       /** Metadata for specific files */
       filesMetadata?: FilesMetadata;
 
+      /** Patterns of files to ignore */
+      ignore?: FilesPattern[];
+
+      /** Hook enabling to modify the content of files before processing them */
       preprocessor?: ContentPreprocessor;
     }
   }
