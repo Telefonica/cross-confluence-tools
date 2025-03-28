@@ -41,7 +41,8 @@ licenses:
 npm:
   excludeModules:
     # The following packages are references to local packages
-    - nameMatch: "@tid-xcut\/.*"
+    - nameMatch: "@tid-xcut\/.*
+      ignore: true
     # The following packages have a license that is not a valid SPDX identifier
     - "babel-plugin-transform-import-meta@2.2.1" # BSD
     
