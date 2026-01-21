@@ -202,21 +202,9 @@ export const ConfluencePageTransformer: ConfluencePageTransformerConstructor = c
   private _transformPageTitles(
     pages: ConfluenceSyncPage[],
   ): ConfluenceSyncPage[] {
-    const pagesMap = new Map(pages.map((page) => [page.path, page]));
-    const rootPageAncestor =
-      this._rootPageName !== undefined ? [this._rootPageName] : [];
     const pageTitleLookupTable = new Map(
       pages.map((page) => {
-        const ancestors = this._resolveAncestorsTitles(page, pagesMap);
-        const ancestorsTitle = rootPageAncestor
-          .concat(ancestors)
-          .map((ancestor) => `[${ancestor}]`)
-          .join("");
-        const title =
-          ancestorsTitle !== ""
-            ? `${ancestorsTitle} ${page.title}`
-            : page.title;
-        return [page.path, title];
+        return [page.path, page.title];
       }),
     );
     this._logger?.debug(
@@ -231,18 +219,4 @@ export const ConfluencePageTransformer: ConfluencePageTransformerConstructor = c
     }));
   }
 
-  private _resolveAncestorsTitles(
-    page: ConfluenceSyncPage,
-    pages: Map<string, ConfluenceSyncPage>,
-  ): string[] {
-    return page.ancestors.map((ancestor) => {
-      const ancestorPage = pages.get(ancestor);
-      // NOTE: Coverage ignored because it is unreachable from tests. Defensive programming.
-      // istanbul ignore next
-      if (!ancestorPage) {
-        throw new Error(`Ancestor page not found: ${ancestor}`);
-      }
-      return ancestorPage.name ?? ancestorPage.title;
-    });
-  }
 };

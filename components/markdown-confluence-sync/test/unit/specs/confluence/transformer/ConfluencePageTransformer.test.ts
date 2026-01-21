@@ -250,14 +250,14 @@ describe("confluencePageTransformer", () => {
           attachments: {},
         },
         {
-          title: "[Parent 1] Page 1",
+          title: "Page 1",
           ancestors: ["Parent 1"],
           content: expect.stringContaining("<p>Page 1 content</p>"),
           attachments: {},
         },
         {
-          title: "[Parent 1][Page 1] Child 1",
-          ancestors: ["Parent 1", "[Parent 1] Page 1"],
+          title: "Child 1",
+          ancestors: ["Parent 1", "Page 1"],
           content: expect.stringContaining("<p>Child 1 content</p>"),
           attachments: {},
         },
@@ -307,14 +307,14 @@ describe("confluencePageTransformer", () => {
           attachments: {},
         },
         {
-          title: "[Root] Title Page 1",
+          title: "Title Page 1",
           ancestors: ["Parent 1"],
           content: expect.stringContaining("<p>Page 1 content</p>"),
           attachments: {},
         },
         {
-          title: "[Root][Page 1] Child 1",
-          ancestors: ["Parent 1", "[Root] Title Page 1"],
+          title: "Child 1",
+          ancestors: ["Parent 1", "Title Page 1"],
           content: expect.stringContaining("<p>Child 1 content</p>"),
           attachments: {},
         },
@@ -352,14 +352,14 @@ describe("confluencePageTransformer", () => {
     // Assert
     expect(transformedPages).toEqual([
       {
-        title: "[Root] Page 1",
+        title: "Page 1",
         ancestors: [],
         content: expect.stringContaining("<p>Page 1 content</p>"),
         attachments: {},
       },
       {
-        title: "[Root][Page 1] Child 1",
-        ancestors: ["[Root] Page 1"],
+        title: "Child 1",
+        ancestors: ["Page 1"],
         content: expect.stringContaining("<p>Child 1 content</p>"),
         attachments: {},
       },
