@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 #### Changed
 #### Fixed
+
+* fix: Update glob dependency from 10.3.10 to 10.5.0 to address security
+  vulnerability. This patch version addresses potential security issues in
+  the glob package used for file pattern matching.
+
 #### Deprecated
 #### Removed
 
