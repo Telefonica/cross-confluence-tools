@@ -58,7 +58,7 @@
     ]
   },
   "dependencies": {
-    "axios": "1.6.7",
+    "axios": "1.15.0",
     "@mocks-server/logger": "2.0.0-beta.2",
     "confluence.js": "2.1.0",
     "fastq": "1.17.1"
@@ -70,7 +70,7 @@
     "@types/tmp": "0.2.6",
     "cross-fetch": "4.0.0",
     "start-server-and-test": "2.0.8",
-    "tmp": "0.2.3"
+    "tmp": "0.2.4"
   },
   "files": [
     "dist"
